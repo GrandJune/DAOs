@@ -23,4 +23,3 @@ class Simulator:
         pass
     def turnover(self):
         pass
-    def

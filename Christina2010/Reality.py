@@ -8,7 +8,7 @@ import numpy as np
 import math
 
 class Reality:
-    def __init__(self, m=10, s=0):
+    def __init__(self, m=10, s=0, reality_change=None):
         self.m = m
         self.s = s
         if self.s == 0:
@@ -16,8 +16,7 @@ class Reality:
         if self.s > self.m:
             raise ValueError("s ({0}) is greater than m ({1})".format(self.s, self.m))
         self.cluster_num = math.ceil(m / s)
-        self.real_code = np.random.choice([0,1], self.m, p=[0.5, 0.5])
-        # self.payoff = 0
+        self.real_code = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
 
     def describe(self):
         print("m: {0}, s: {1}, cluster: {2}".format(self.m, self.s, self.cluster_num))
@@ -25,14 +24,14 @@ class Reality:
         # print("Payoff: ", self.payoff)
         print("*"*10)
 
-    def get_payoff(self, solution=None):
+    def get_payoff(self, belief=None):
         ress = 0
         for i in range(self.cluster_num):
             result = 1
             for j in range(self.s):
                 index = j + i * self.s
                 if index < self.m:
-                    if self.real_code[index] == solution[index]:
+                    if self.real_code[index] == belief[index]:
                         result = 1
                     else:
                         result = 0
@@ -43,10 +42,15 @@ class Reality:
         ress *= self.s
         return ress
 
+    def change(self, reality_change_rate=None):
+        for index in range(self.m):
+            if np.random.uniform(0, 1) < reality_change_rate:
+                self.real_code[index] *= -1
+
 
 if __name__ == '__main__':
     reality = Reality(m=40, s=3)
     # reality.describe()
-    result = reality.get_payoff(solution=[1]*10)
+    result = reality.get_payoff(belief=[1]*10)
     reality.describe()
     print(result)

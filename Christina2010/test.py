@@ -25,12 +25,12 @@ print(cluster_num)
 #     #     print(cluster_index)
 
 # network = np.diag(range(10))
-network = [[1, 0, 0],
-           [0, 1, 0],
-           [0, 0, 1]]
-network = np.array(network)
-print(network)
-free_space = np.array(np.where(network == 0))
-element = network[np.where(network == 0)]
-print(free_space)
-print(element)
+# network = [[1, 0, 0],
+#            [0, 1, 0],
+#            [0, 0, 1]]
+# network = np.array(network)
+# print(network)
+# free_space = np.array(np.where(network == 0))
+# element = network[np.where(network == 0)]
+# print(free_space)
+# print(element)
