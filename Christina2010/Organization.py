@@ -8,7 +8,7 @@ import numpy as np
 from Reality import Reality
 from Individual import Individual
 import math
-
+import matplotlib.pyplot as plt
 
 class Organization:
     def __init__(self, n=None, beta=None, subgroup_size=None, m=None, s=None,
@@ -33,8 +33,8 @@ class Organization:
         # DV
         self.performance_average = 0
         self.performance_variance = 0
-
-
+        self.performance_list = []
+        self.performance_curve = []
 
     def form_network(self):
         # connections within the cluster (minimal connectivity)
@@ -59,15 +59,20 @@ class Organization:
     def get_majority_view(self, individual=None):
         superior_group = []
         for connection in individual.connections:
-            if self.individuals[connection].payoff > individual.payoff:
+            if self.individuals[connection].payoff >= individual.payoff:
                 superior_group.append(connection)
-        majority_view = [1] * self.m
-        for dimension in range(self.m):
-            temp = 0
-            for i in superior_group:
-                temp += self.individuals[i].belief[dimension]
-            if temp < 0:
-                majority_view[dimension] = -1
+        majority_view = []
+        if len(superior_group) > 0:
+            for dimension in range(self.m):
+                temp = 0
+                for i in superior_group:
+                    temp += self.individuals[i].belief[dimension]
+                if temp < 0:
+                    majority_view.append(-1)
+                elif temp > 0:
+                    majority_view.append(1)
+                else:
+                    majority_view.append(0)
         return majority_view
 
     def get_overall_similarity(self):
@@ -96,30 +101,36 @@ class Organization:
 
     def process(self, loop=None, change_freq=None):
         for iteration in range(loop):
-            # Search
-            for individual in self.individuals:
-                individual.local_search()
-            # Learning
-            for individual in self.individuals:
-                majority_view = self.get_majority_view(individual=individual)
-                # print("majority_view: ", majority_view)
-                individual.learn(majority_view=majority_view)
-
-            payoff_list = [individual.payoff for individual in self.individuals]
-            self.performance_average = sum(payoff_list) / len(payoff_list)
-            self.performance_variance = np.std(payoff_list)
-
+            # environment change
+            # print(self.individuals[0].belief)
+            if change_freq:
+                if iteration % change_freq == 0:
+                    self.reality.change(reality_change_rate=self.reality_change_rate)
+                    for individual in self.individuals:
+                        individual.reality = self.reality
+                        individual.payoff = self.reality.get_payoff(belief=individual.belief)
+            # personnel turnonver
             if self.turnover_rate:
                 for individual in self.individuals:
                     if np.random.uniform(0, 1) < self.turnover_rate:
                         individual.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
                         individual.payoff = self.reality.get_payoff(belief=individual.belief)
+            # Search
+            for individual in self.individuals:
+                individual.local_search()
+            # Learning
+            for individual in self.individuals:
+                individual.majority_view = self.get_majority_view(individual=individual)
+                # print("majority_view: ", majority_view)
+                individual.learn()
+            payoff_list = [individual.payoff for individual in self.individuals]
+            self.performance_curve.append(sum(payoff_list) / len(payoff_list))
 
-            if iteration % change_freq == 0:
-                self.reality.change(reality_change_rate=self.reality_change_rate)
-                for individual in self.individuals:
-                    individual.reality = self.reality
-                    individual.payoff = self.reality.get_payoff(belief=individual.belief)
+        # Convergence
+        payoff_list = [individual.payoff for individual in self.individuals]
+        self.performance_average = sum(payoff_list) / len(payoff_list)
+        self.performance_variance = np.std(payoff_list)
+        self.performance_list = payoff_list
 
     def describe(self):
         print("-" * 10)
@@ -132,20 +143,27 @@ class Organization:
 
 
 if __name__ == '__main__':
-    n = 200
-    beta = 0.1
-    m = 10
+    n = 280
+    beta = 0
+    m = 100
     s = 1
-    lr = 0
-    subgroup_size = 50
-    reality_change_rate = 0.1
+    lr = 1
+    subgroup_size = 7
+    reality_change_rate = 0
+    change_freq = None
+    loop = 100
     reality = Reality(m=m, s=s)
     organization = Organization(n=n, beta=beta, subgroup_size=subgroup_size, m=m, s=s, reality=reality,
                                 lr=lr, reality_change_rate=reality_change_rate)
     organization.form_network()
-    organization.individuals[0].describe()
-    organization.process(loop=400, change_freq=200)
+    # organization.individuals[0].describe()
+    organization.process(loop=loop, change_freq=change_freq)
     organization.describe()
+    x = np.arange(loop)
+    plt.plot(x, organization.performance_curve, "k-")
+    plt.show()
+    organization.describe()
+    print("Complete!")
 
 
 

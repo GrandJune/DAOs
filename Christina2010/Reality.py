@@ -25,15 +25,18 @@ class Reality:
         print("*"*10)
 
     def get_payoff(self, belief=None):
+        """
+        The main calculation cost -- Need to design it carefully
+        :param belief:
+        :return:
+        """
         ress = 0
         for i in range(self.cluster_num):
             result = 1
             for j in range(self.s):
                 index = j + i * self.s
                 if index < self.m:
-                    if self.real_code[index] == belief[index]:
-                        result = 1
-                    else:
+                    if self.real_code[index] != belief[index]:
                         result = 0
                         break
                 else:
@@ -43,14 +46,17 @@ class Reality:
         return ress
 
     def change(self, reality_change_rate=None):
-        for index in range(self.m):
-            if np.random.uniform(0, 1) < reality_change_rate:
-                self.real_code[index] *= -1
+        if reality_change_rate:
+            for index in range(self.m):
+                if np.random.uniform(0, 1) < reality_change_rate:
+                    self.real_code[index] *= -1
 
 
 if __name__ == '__main__':
-    reality = Reality(m=40, s=3)
+    m = 10
+    s = 3
+    reality = Reality(m=m, s=s)
     # reality.describe()
-    result = reality.get_payoff(belief=[1]*10)
+    result = reality.get_payoff(belief=[1]*m)
     reality.describe()
     print(result)

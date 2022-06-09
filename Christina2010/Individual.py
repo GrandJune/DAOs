@@ -20,6 +20,7 @@ class Individual:
         # using the index of individuals list as the network index
         self.reality = reality
         self.payoff = self.reality.get_payoff(belief=self.belief)
+        self.majority_view = []
 
     def describe(self):
         print("*" * 10)
@@ -35,8 +36,11 @@ class Individual:
         success = 0
         focal_index = np.random.choice(range(self.m), p=[1 / self.m] * self.m)
         next_belief = self.belief.copy()
-        next_belief[focal_index] = 1 - next_belief[focal_index]
-        # print(next_belief, self.belief)
+        if next_belief[focal_index] != 0:
+            next_belief[focal_index] = -1 * next_belief[focal_index]
+        else:
+            next_belief[focal_index] = np.random.choice([-1, 1], p=[0.5, 0.5])
+        # print(next_belief, self.belief)G
         next_payoff = self.reality.get_payoff(belief=next_belief)
         # print(next_belief, self.belief, next_payoff, self.payoff)
         if next_payoff > self.payoff:
@@ -45,10 +49,12 @@ class Individual:
             success = 1
         return success
 
-    def learn(self, majority_view):
+    def learn(self):
+        if not self.majority_view:
+            return
         for index in range(self.m):
             if np.random.uniform(0, 1) < self.lr:
-                self.belief[index] = majority_view[index]
+                self.belief[index] = self.majority_view[index]
 
     def turnover(self):
         """
@@ -61,7 +67,7 @@ class Individual:
 
 if __name__ == '__main__':
     m = 10
-    s = 1
+    s = 5
     lr = 0
     reality = Reality(m=m, s=s)
     # reality.describe()
@@ -69,7 +75,7 @@ if __name__ == '__main__':
     success = 0
     for _ in range(200):
         success += individual.local_search()
-        # print(individual.belief, individual.payoff)
+        print(individual.belief, individual.payoff)
     print(reality.real_code)
     print("success: ", success)
     individual.describe()
