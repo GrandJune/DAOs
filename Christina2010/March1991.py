@@ -6,6 +6,8 @@
 # Observing PEP 8 coding style
 import numpy as np
 
+# March 1991's paper, as reference
+
 
 class Reality:
     def __init__(self, element_num=10):

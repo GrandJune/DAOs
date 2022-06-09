@@ -98,7 +98,6 @@ class Organization:
                 res += 1
         return res / self.m
 
-
     def process(self, loop=None, change_freq=None):
         for iteration in range(loop):
             # environment change
