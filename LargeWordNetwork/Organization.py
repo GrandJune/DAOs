@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 class Organization:
     def __init__(self, n=None, beta=None, m=None, s=None,
                  reality=None, lr=None, turnover_rate=None,
-                 reality_change_rate=None, code=None):
+                 reality_change_rate=None, code=None, subgroup_size=None):
         self.n = n
         # Beta: the probability of self-driven membership exchange
         self.beta = beta
@@ -23,6 +23,7 @@ class Organization:
         self.reality = reality
         self.code = code
         self.individuals = []
+        self.subgroup_size = subgroup_size
 
         # Extensive parameters
         self.lr = lr  # learning rate
