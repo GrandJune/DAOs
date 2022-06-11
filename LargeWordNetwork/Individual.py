@@ -34,12 +34,13 @@ class Individual:
 
     def local_search(self):
         success = 0
-        focal_index = np.random.choice(range(self.m), p=[1 / self.m] * self.m)
-        next_belief = self.belief.copy()
-        if next_belief[focal_index] != 0:
-            next_belief[focal_index] = -1 * next_belief[focal_index]
-        else:
-            next_belief[focal_index] = np.random.choice([-1, 1], p=[0.5, 0.5])
+        while True:
+            focal_index = np.random.choice(range(self.m), p=[1 / self.m] * self.m)
+            next_belief = self.belief.copy()
+            if next_belief[focal_index] != 0:
+                next_belief[focal_index] = -1 * next_belief[focal_index]
+            else:  # no knowledge accumulation
+                continue
         # print(next_belief, self.belief)G
         next_payoff = self.reality.get_payoff(belief=next_belief)
         # print(next_belief, self.belief, next_payoff, self.payoff)

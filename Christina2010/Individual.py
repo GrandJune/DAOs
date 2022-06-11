@@ -21,6 +21,7 @@ class Individual:
         self.reality = reality
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.majority_view = []
+        self.freedom_space = []
 
     def describe(self):
         print("*" * 10)
@@ -32,7 +33,41 @@ class Individual:
         print("payoff: ", self.payoff)
         print("*" * 10)
 
+    def local_search_slim(self):
+        success = 0
+        self.freedom_space = [i for i in range(self.m) if self.belief[i] != 0]
+        if len(self.freedom_space) == 0:
+            return 0
+        focal_index = np.random.choice(self.freedom_space, p=[1 / len(self.freedom_space)] * len(self.freedom_space))
+        next_belief = self.belief.copy()
+        next_belief[focal_index] = -1 * next_belief[focal_index]
+        # print(next_belief, self.belief)G
+        next_payoff = self.reality.get_payoff(belief=next_belief)
+        # print(next_belief, self.belief, next_payoff, self.payoff)
+        if next_payoff > self.payoff:
+            self.belief = next_belief
+            self.payoff = next_payoff
+            self.freedom_space.remove(focal_index)
+            success = 1
+        return success
+
     def local_search(self):
+        success = 0
+        while True:
+            focal_index = np.random.choice(range(self.m), p=[1 / self.m] * self.m)
+            next_belief = self.belief.copy()
+            if next_belief[focal_index] != 0:
+                next_belief[focal_index] = -1 * next_belief[focal_index]
+            else:
+                continue
+        next_payoff = self.reality.get_payoff(belief=next_belief)
+        if next_payoff > self.payoff:
+            self.belief = next_belief
+            self.payoff = next_payoff
+            success = 1
+        return success
+
+    def local_search_accumulative(self):
         success = 0
         focal_index = np.random.choice(range(self.m), p=[1 / self.m] * self.m)
         next_belief = self.belief.copy()
@@ -40,9 +75,7 @@ class Individual:
             next_belief[focal_index] = -1 * next_belief[focal_index]
         else:
             next_belief[focal_index] = np.random.choice([-1, 1], p=[0.5, 0.5])
-        # print(next_belief, self.belief)G
         next_payoff = self.reality.get_payoff(belief=next_belief)
-        # print(next_belief, self.belief, next_payoff, self.payoff)
         if next_payoff > self.payoff:
             self.belief = next_belief
             self.payoff = next_payoff

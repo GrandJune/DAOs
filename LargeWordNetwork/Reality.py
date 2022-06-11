@@ -28,21 +28,19 @@ class Reality:
         """
         The main calculation cost -- Need to design it carefully
         :param belief:
-        :return:
+        :return:get the payoff of the specific belief
         """
         ress = 0
         for i in range(self.cluster_num):
-            result = 1
+            correct_num = 0
             for j in range(self.s):
-                index = j + i * self.s
-                if index < self.m:
-                    if self.real_code[index] != belief[index]:
-                        result = 0
-                        break
-                else:
-                    break
-            ress += result
-        ress *= self.s
+                index = i * self.s + j
+                if self.real_code[index] * belief[index] == 1:
+                    correct_num += 1
+            # A generalized payoff function for Christina's m/s payoff function
+            # when correct_num = 0, and s, the payoff expectation would be 0 and s, respectively. That's the Christina's model.
+            # for correct_num varying from 1 to (s-1), the expectation would be (correct_num)^2/s
+            ress += np.random.choice([0, correct_num], p=[1-correct_num / self.s, correct_num / self.s])
         return ress
 
     def change(self, reality_change_rate=None):

@@ -9,6 +9,7 @@ from Reality import Reality
 from Individual import Individual
 import math
 import matplotlib.pyplot as plt
+import time
 
 
 class Organization:
@@ -24,6 +25,7 @@ class Organization:
         self.code = code
         self.individuals = []
         self.subgroup_size = subgroup_size
+        self.cluster_num = math.ceil(self.n / self.subgroup_size)
 
         # Extensive parameters
         self.lr = lr  # learning rate
@@ -39,7 +41,7 @@ class Organization:
         for i in range(self.n):
             individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
             individual.index = i
-            individual.cluster = np.random
+            individual.cluster = np.random.choice(range(self.cluster_num))
             self.individuals.append(individual)
 
     def form_network(self):
@@ -148,11 +150,12 @@ class Organization:
 
 
 if __name__ == '__main__':
+    t0 = time.time()
     n = 280
     beta = 0
-    m = 100
-    s = 1
-    lr = 1
+    m = 10
+    s = 2
+    lr = 0.3
     subgroup_size = 7
     reality_change_rate = 0
     change_freq = None
@@ -166,9 +169,11 @@ if __name__ == '__main__':
     organization.describe()
     x = np.arange(loop)
     plt.plot(x, organization.performance_curve, "k-")
+    plt.savefig("m{0}s{1}_search.jpg".format(m, s))
     plt.show()
     organization.describe()
-    print("Complete!")
+    t1 = time.time()
+    print("Time used: ", t1-t0)
 
 
 

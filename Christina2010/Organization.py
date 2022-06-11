@@ -9,6 +9,8 @@ from Reality import Reality
 from Individual import Individual
 import math
 import matplotlib.pyplot as plt
+import time
+
 
 class Organization:
     def __init__(self, n=None, beta=None, subgroup_size=None, m=None, s=None,
@@ -59,7 +61,7 @@ class Organization:
     def get_majority_view(self, individual=None):
         superior_group = []
         for connection in individual.connections:
-            if self.individuals[connection].payoff >= individual.payoff:
+            if self.individuals[connection].payoff > individual.payoff:
                 superior_group.append(connection)
         majority_view = []
         if len(superior_group) > 0:
@@ -98,7 +100,7 @@ class Organization:
                 res += 1
         return res / self.m
 
-    def process(self, loop=None, change_freq=None):
+    def process(self, loop=None, change_freq=None, flag=None):
         for iteration in range(loop):
             # environment change
             # print(self.individuals[0].belief)
@@ -116,7 +118,12 @@ class Organization:
                         individual.payoff = self.reality.get_payoff(belief=individual.belief)
             # Search
             for individual in self.individuals:
-                individual.local_search()
+                if flag == "local_search":
+                    individual.local_search()
+                elif flag == "accumulative_search":
+                    individual.local_search_accumulative()
+                elif flag == "slim_search":
+                    individual.local_search_slim()
             # Learning
             for individual in self.individuals:
                 individual.majority_view = self.get_majority_view(individual=individual)
@@ -142,15 +149,16 @@ class Organization:
 
 
 if __name__ == '__main__':
+    t0 = time.time()
     n = 280
     beta = 0
     m = 100
     s = 1
-    lr = 1
+    lr = 0.3
     subgroup_size = 7
     reality_change_rate = 0
     change_freq = None
-    loop = 100
+    loop = 500
     reality = Reality(m=m, s=s)
     organization = Organization(n=n, beta=beta, subgroup_size=subgroup_size, m=m, s=s, reality=reality,
                                 lr=lr, reality_change_rate=reality_change_rate)
@@ -160,9 +168,11 @@ if __name__ == '__main__':
     organization.describe()
     x = np.arange(loop)
     plt.plot(x, organization.performance_curve, "k-")
+    plt.savefig("m{0}s{1}_search_freedom.jpg".format(m, s))
     plt.show()
     organization.describe()
-    print("Complete!")
+    t1 = time.time()
+    print("Time used: ", t1-t0)
 
 
 
