@@ -158,17 +158,19 @@ if __name__ == '__main__':
     subgroup_size = 7
     reality_change_rate = 0
     change_freq = None
-    loop = 500
+    loop = 100
+    # flag = "slim_search"
+    flag = "local_search"
     reality = Reality(m=m, s=s)
     organization = Organization(n=n, beta=beta, subgroup_size=subgroup_size, m=m, s=s, reality=reality,
                                 lr=lr, reality_change_rate=reality_change_rate)
     organization.form_network()
     # organization.individuals[0].describe()
-    organization.process(loop=loop, change_freq=change_freq)
+    organization.process(loop=loop, change_freq=change_freq, flag=flag)
     organization.describe()
     x = np.arange(loop)
     plt.plot(x, organization.performance_curve, "k-")
-    plt.savefig("m{0}s{1}_search_freedom.jpg".format(m, s))
+    plt.savefig("m{0}s{1}_{2}.jpg".format(m, s, flag))
     plt.show()
     organization.describe()
     t1 = time.time()
