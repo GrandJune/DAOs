@@ -35,8 +35,11 @@ class Reality:
             correct_num = 0
             for j in range(self.s):
                 index = i * self.s + j
-                if self.real_code[index] * belief[index] == 1:
-                    correct_num += 1
+                if index >= self.m:
+                    break
+                else:
+                    if self.real_code[index] * belief[index] == 1:
+                        correct_num += 1
             # A generalized payoff function for Christina's m/s payoff function
             # when correct_num = 0, and s, the payoff expectation would be 0 and s, respectively. That's the Christina's model.
             # for correct_num varying from 1 to (s-1), the expectation would be (correct_num)^2/s

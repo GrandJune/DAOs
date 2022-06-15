@@ -34,5 +34,5 @@ print(cluster_num)
 # element = network[np.where(network == 0)]
 # print(free_space)
 # print(element)
-x = np.random.uniform(0, 0)
+x = [[]] * 10
 print(x)
