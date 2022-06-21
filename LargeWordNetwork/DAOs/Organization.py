@@ -20,9 +20,9 @@ class Organization:
         self.s = s
         self.index = index
         self.reality = reality
-        self.code = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
+        self.code = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3]).tolist()
+        self.payoff = self.reality.get_payoff(belief=self.code)
         self.size = size  # initial size (will be self-organized over time)
-        self.individuals = []  # the list of individuals
         # DV
         self.performance = 0
 
@@ -63,20 +63,6 @@ if __name__ == '__main__':
     reality_change_rate = 0
     change_freq = None
     loop = 100
-    reality = Reality(m=m, s=s)
-    organization = Organization(n=n, beta=beta, subgroup_size=subgroup_size, m=m, s=s, reality=reality,
-                                lr=lr, reality_change_rate=reality_change_rate)
-    organization.form_network()
-    # organization.individuals[0].describe()
-    organization.process(loop=loop, change_freq=change_freq)
-    organization.describe()
-    x = np.arange(loop)
-    plt.plot(x, organization.performance_curve, "k-")
-    plt.savefig("m{0}s{1}_search.jpg".format(m, s))
-    plt.show()
-    organization.describe()
-    t1 = time.time()
-    print("Time used: ", t1-t0)
 
 
 

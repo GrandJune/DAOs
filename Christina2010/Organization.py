@@ -37,6 +37,7 @@ class Organization:
         self.performance_variance = 0
         self.performance_list = []
         self.performance_curve = []
+        self.diversity_curve = []
 
     def form_network(self):
         # connections within the cluster (minimal connectivity)
@@ -60,9 +61,10 @@ class Organization:
 
     def get_majority_view(self, individual=None):
         superior_group = []
-        for connection in individual.connections:
-            if self.individuals[connection].payoff > individual.payoff:
-                superior_group.append(connection)
+        for index, flag in enumerate(individual.connections):
+            if flag:
+                if self.individuals[index].payoff > individual.payoff:
+                    superior_group.append(index)
         majority_view = []
         if len(superior_group) > 0:
             for dimension in range(self.m):
@@ -74,7 +76,7 @@ class Organization:
                 elif temp > 0:
                     majority_view.append(1)
                 else:
-                    majority_view.append(0)
+                    majority_view.append(0)  # the focal individual will keep the same element
         return majority_view
 
     def get_overall_similarity(self):
@@ -83,27 +85,23 @@ class Organization:
         :return:
         """
         distance = 0
-        count = 0
         for i in range(self.n):
             for j in range(self.n):
                 if i < j:
                     a = self.individuals[i]
                     b = self.individuals[j]
                     distance += self.get_distance(a.belief, b.belief)
-                    count += 1
-        return distance / count
+        return distance / (self.n * (self.n-1)) * 2
 
     def get_distance(self, belief_1=None, belief_2=None):
         res = 0
         for i in range(self.m):
-            if belief_1[i] == belief_2[i]:
+            if belief_1[i] != belief_2[i]:
                 res += 1
         return res / self.m
 
-    def process(self, loop=None, change_freq=None, flag=None):
+    def process(self, loop=None, change_freq=None):
         for iteration in range(loop):
-            # environment change
-            # print(self.individuals[0].belief)
             if change_freq:
                 if iteration % change_freq == 0:
                     self.reality.change(reality_change_rate=self.reality_change_rate)
@@ -116,21 +114,14 @@ class Organization:
                     if np.random.uniform(0, 1) < self.turnover_rate:
                         individual.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
                         individual.payoff = self.reality.get_payoff(belief=individual.belief)
-            # Search
-            for individual in self.individuals:
-                if flag == "local_search":
-                    individual.local_search()
-                elif flag == "accumulative_search":
-                    individual.local_search_accumulative()
-                elif flag == "slim_search":
-                    individual.local_search_slim()
-            # Learning
+            # Socialization / Learning
             for individual in self.individuals:
                 individual.majority_view = self.get_majority_view(individual=individual)
-                # print("majority_view: ", majority_view)
+                # print(individual.index, individual.majority_view)
                 individual.learn()
             payoff_list = [individual.payoff for individual in self.individuals]
             self.performance_curve.append(sum(payoff_list) / len(payoff_list))
+            self.diversity_curve.append(self.get_overall_similarity())
 
         # Convergence
         payoff_list = [individual.payoff for individual in self.individuals]
@@ -151,26 +142,24 @@ class Organization:
 if __name__ == '__main__':
     t0 = time.time()
     n = 280
-    beta = 0
+    beta = 0.2
     m = 100
-    s = 1
+    s = 2
     lr = 0.3
     subgroup_size = 7
     reality_change_rate = 0
     change_freq = None
-    loop = 100
-    # flag = "slim_search"
-    flag = "local_search"
+    loop = 200
     reality = Reality(m=m, s=s)
     organization = Organization(n=n, beta=beta, subgroup_size=subgroup_size, m=m, s=s, reality=reality,
                                 lr=lr, reality_change_rate=reality_change_rate)
     organization.form_network()
     # organization.individuals[0].describe()
-    organization.process(loop=loop, change_freq=change_freq, flag=flag)
-    organization.describe()
+    organization.process(loop=loop, change_freq=change_freq)
+    # organization.describe()
     x = np.arange(loop)
     plt.plot(x, organization.performance_curve, "k-")
-    plt.savefig("m{0}s{1}_{2}.jpg".format(m, s, flag))
+    plt.savefig("m{0}s{1}.jpg".format(m, s))
     plt.show()
     organization.describe()
     t1 = time.time()

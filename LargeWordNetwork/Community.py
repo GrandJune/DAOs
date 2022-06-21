@@ -10,10 +10,9 @@ from Individual import Individual
 from Reality import Reality
 
 
-
 class Community:
     def __init__(self, m=None, s=None, n=None, size=None,
-                 reality=None, beta=None, lr=None):
+                 reality=None, alpha=None, beta=None, lr_code=None, lr_peer=None):
         self.m = m
         self.s = s
         self.n = n
@@ -23,8 +22,10 @@ class Community:
         self.code_list = []
         self.reality = reality
         self.cluster_num = self.n // self.size
-        self.beta = beta
-        self.lr = lr
+        self.alpha = alpha  # the emphasis on payoff
+        self.beta = beta  # the emphasis on identity
+        self.lr_peer = lr_peer
+        self.lr_code = lr_code
         # Network
         self.individual_2_cluster = []  # get the individuals' belonging [i1, 12, ..., ]
         self.cluster_2_individual = []  # get the clusters' substance [c1: [], c2: [], ...]
@@ -48,7 +49,7 @@ class Community:
             self.code_list.append(cluster.code)
         # initialize the individual, and randomly assign the belonging
         for i in range(self.n):
-            individual = Individual(m=m, s=s, reality=self.reality, index=i, lr=self.lr, beta=self.beta)
+            individual = Individual(m=m, s=s, reality=self.reality, index=i, lr_code=self.lr_code, lr_peer=self.lr_peer, beta=self.beta)
             self.individuals.append(individual)
             self.individual_2_cluster.append(np.random.choice(range(self.cluster_num)))
         # record the clusters' substance
@@ -79,11 +80,19 @@ class Community:
         pass
 
     def get_cluster(self, belief=None, code_list=None):
-        sum_list = []
+        """
+        According to the emphasis allocation, select the optimal cluster
+        :param belief: individual belief, without payoff
+        :param code_list: cluster code list, for identity and profit calculation
+        :return:the optimal cluster index
+        """
+        identity_list, payoff_list = [], []
+        payoff_list = [cluster.payoff for cluster in self.clusters]
         for index, code in enumerate(code_list):
-            sum_list.append(sum([a*b for a, b in zip(belief, code)]))
-        max_value = max(sum_list)
-        max_index = [index for index, value in enumerate(sum_list) if value == max_value]
+            identity_list.append(sum([a*b for a, b in zip(belief, code)]))
+        utility_list = [self.alpha*a+self.beta*b for a, b in zip(payoff_list, identity_list)]
+        max_value = max(utility_list)
+        max_index = [index for index, value in enumerate(identity_list) if value == max_value]
         return np.random.choice(max_index)
 
     def get_cluster_code_majority(self, index=None):
@@ -174,15 +183,16 @@ class Community:
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-    m = 12
-    s = 6
+    m = 100
+    s = 2
     n = 200
     size = 10
-    loop = 200
-    lr = 0
-    beta = 0.5
+    loop = 500
+    lr_code = 0
+    lr_peer = 0.1
+    beta = 0
     reality = Reality(m=m, s=s)
-    community = Community(m=m, s=s, n=n, size=size, reality=reality, lr=lr, beta=beta)
+    community = Community(m=m, s=s, n=n, size=size, reality=reality, lr_code=lr_code, lr_peer=lr_peer, beta=beta)
     community.initialize()
     community.describe()
     for _ in range(loop):
@@ -191,9 +201,9 @@ if __name__ == '__main__':
     plt.plot(range(loop), community.performance_curve_individual, "k:", label='Individual')
     plt.xlabel('Iteration')
     plt.ylabel('Performance')
-    plt.title("lr_{0}_beta_{1}".format(lr, beta))
+    plt.title("lrcode_{0}_lrpeer_{1}_beta_{2}".format(lr_code, lr_peer, beta))
     plt.legend()
-    plt.savefig("./figures/m_{2}_s{3}_lr_{0}_beta_{1}_n{4}.jpg".format(lr, beta, m, s, n))
+    plt.savefig("./figures/m_{0}_s{1}_lr1_{2}_lr2_{3}_beta_{4}_n{5}.jpg".format(m, s, lr_code, lr_peer, beta, n))
     plt.show()
     community.describe()
     print("Done")

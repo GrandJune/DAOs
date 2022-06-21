@@ -34,5 +34,15 @@ print(cluster_num)
 # element = network[np.where(network == 0)]
 # print(free_space)
 # print(element)
-x = [[]] * 10
-print(x)
+import matplotlib.pyplot as plt
+x = range(10)
+y = np.arange(10, 20)
+l1=plt.plot(x, y, 'k-.',label='z=7')
+plt.plot(x, y+1, 'k:',label='z=2')
+plt.plot(x, y+2, 'k--',label='z=2')
+plt.plot(x, y*2, 'k-',label='z=2')
+plt.title('Effect of Subgroup Size on Organizational Performance')
+plt.xlabel('beta')
+plt.ylabel('Performance')
+plt.legend()
+plt.show()
