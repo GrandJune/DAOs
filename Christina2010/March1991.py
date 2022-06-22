@@ -22,6 +22,7 @@ class Individual:
     def __init__(self, element_num, p1):
         self.element_num = element_num
         self.belief = np.random.choice([-1, 0, 1], self.element_num, p=[1 / 3, 1 / 3, 1 / 3])
+        self.action = [np.random.choice(-1, 1) for each in self.belief if each == 0]
         # 0 refers to the unknown domain.
         # p1 refers to the socialization effectiveness, i.e., learning from the code
         self.socialization_rate = p1
@@ -92,6 +93,7 @@ class Organization:
 
     def calculate_k(self, superior_group):
         """
+        The payoff function here
         Compare the organization code and the superior goup's belief
         SO what's k? -> the organizational knowledge
         :param superior_group: have a better similarity than the organizational code
@@ -202,7 +204,6 @@ def get_dominant_belief(xs):
 
 if __name__ == '__main__':
     ress = []
-
     for p1 in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
         for p2 in [0.1, 0.5, 0.9]:
             print(p1, p2)
