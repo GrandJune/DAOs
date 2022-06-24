@@ -129,6 +129,35 @@ class Organization:
         self.performance_variance = np.std(payoff_list)
         self.performance_list = payoff_list
 
+    def process_2(self, loop=None, change_freq=None):
+        for iteration in range(loop):
+            if change_freq:
+                if iteration % change_freq == 0:
+                    self.reality.change(reality_change_rate=self.reality_change_rate)
+                    for individual in self.individuals:
+                        individual.reality = self.reality
+                        individual.payoff = self.reality.get_payoff(belief=individual.belief)
+            # personnel turnonver
+            if self.turnover_rate:
+                for individual in self.individuals:
+                    if np.random.uniform(0, 1) < self.turnover_rate:
+                        individual.belief = np.random.choice([-1, 0, 1], self.m, p=[1 / 3, 1 / 3, 1 / 3])
+                        individual.payoff = self.reality.get_payoff(belief=individual.belief)
+            # Socialization / Learning
+            for individual in self.individuals:
+                individual.majority_view = self.get_majority_view(individual=individual)
+                # print(individual.index, individual.majority_view)
+                individual.limited_learn()
+            payoff_list = [individual.payoff for individual in self.individuals]
+            self.performance_curve.append(sum(payoff_list) / len(payoff_list))
+            self.diversity_curve.append(self.get_overall_similarity())
+
+        # Convergence
+        payoff_list = [individual.payoff for individual in self.individuals]
+        self.performance_average = sum(payoff_list) / len(payoff_list)
+        self.performance_variance = np.std(payoff_list)
+        self.performance_list = payoff_list
+
     def describe(self):
         print("-" * 10)
         print("n: {0}, size: {1}, m: {2}, s: {3}".format(self.n, self.subgroup_size, self.m, self.s))

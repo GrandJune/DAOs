@@ -42,6 +42,18 @@ class Individual:
                 self.belief[index] = self.majority_view[index]
         self.payoff = self.reality.get_payoff(belief=self.belief)
 
+    def limited_learn(self):
+        if not self.majority_view:
+            return
+        for index in range(self.m):
+            if self.majority_view[index] == 0:
+                continue
+            if self.belief[index] == 0:
+                continue
+            if np.random.uniform(0, 1) < self.lr:
+                self.belief[index] = self.majority_view[index]
+        self.payoff = self.reality.get_payoff(belief=self.belief)
+
     def turnover(self):
         """
         Recreate this individual

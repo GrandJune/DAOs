@@ -44,12 +44,13 @@ class Community:
         """
         # initialize the cluster
         for i in range(self.cluster_num):
-            cluster = Organization(m=self.m, s=self.s, beta=self.beta, reality=self.reality, index=i)
+            cluster = Organization(m=self.m, s=self.s)
             self.clusters.append(cluster)
             self.code_list.append(cluster.code)
         # initialize the individual, and randomly assign the belonging
         for i in range(self.n):
-            individual = Individual(m=m, s=s, reality=self.reality, index=i, lr_code=self.lr_code, lr_peer=self.lr_peer, beta=self.beta)
+            individual = Individual(m=m, s=s, reality=self.reality, index=i, lr_code=self.lr_code,
+                                    lr_peer=self.lr_peer, alpha=self.alpha, beta=self.beta)
             self.individuals.append(individual)
             self.individual_2_cluster.append(np.random.choice(range(self.cluster_num)))
         # record the clusters' substance

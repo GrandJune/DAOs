@@ -15,6 +15,7 @@ class Individual:
         self.m = m
         self.s = s
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3]).tolist()
+        self.knowledge = [index for index, value in enumerate(self.belief) if value != 0]
         # self.next_belief = self.belief.copy()
         self.lr_code = lr_code
         self.lr_peer = lr_peer
@@ -57,11 +58,5 @@ if __name__ == '__main__':
     lr = 0
     reality = Reality(m=m, s=s)
     # reality.describe()
-    individual = Individual(m=m, s=s, reality=reality, lr=lr)
-    success = 0
-    for _ in range(200):
-        success += individual.local_search()
-        print(individual.belief, individual.payoff)
-    print(reality.real_code)
-    print("success: ", success)
-    individual.describe()
+    individual = Individual(m=m, s=s, reality=reality)
+

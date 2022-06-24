@@ -7,6 +7,7 @@
 import numpy as np
 import math
 
+
 class Reality:
     def __init__(self, m=10, s=0, reality_change=None):
         self.m = m
