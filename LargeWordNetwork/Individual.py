@@ -8,55 +8,55 @@ import numpy as np
 from Reality import Reality
 
 
-class Individual:
-    def __init__(self, m=None, s=None, reality=None,
-                 lr_code=None, lr_peer=None, index=None,
-                 alpha=None, beta=None):
-        self.m = m
-        self.s = s
-        self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3]).tolist()
-        self.knowledge = [index for index, value in enumerate(self.belief) if value != 0]
-        # self.next_belief = self.belief.copy()
-        self.lr_code = lr_code
-        self.lr_peer = lr_peer
-        self.alpha = alpha  # the emphasis on community payoff
-        self.beta = beta  # the emphasis on community identity
 
+class Individual:
+    def __init__(self, index=None, m=None, p1=None, reality=None):
         self.index = index
+        self.m = m
+        self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
+        # self.action = self.belief.copy()
+        # for index in range(self.m):
+        #     if self.action[index] == 0:
+        #         self.action[index] = np.random.choice([-1, 1])
+        self.p1 = p1  # socialization rate
         self.reality = reality
         self.payoff = self.reality.get_payoff(belief=self.belief)
-        self.cog_payoff = 0
-        self.superior_belief = None  # learn from peers
-
-    def describe(self):
-        print("*" * 10)
-        print("m: {0}, s: {1}".format(self.m, self.s))
-        print("belief: ", self.belief)
-        print("learning rate: ", self.lr_code)
-        print("payoff: ", self.payoff)
-        print("*" * 10)
+        self.partial_payoff = None
 
     def learn_from_code(self, code=None):
-        # learn from the code
+        next_belief = self.belief.copy()
         for index in range(self.m):
-            if np.random.uniform(0, 1) < self.lr_code:
-                self.belief[index] = code[index]
-                # if index not in self.freedom_space:
-                #     self.freedom_space.append(index)
+            if code[index] == 0:
+                continue
+            if np.random.uniform(0, 1) < self.p1:
+                next_belief[index] = code[index]
+        self.belief = next_belief
+        # self.action = self.belief.copy()
+        # for index in range(self.m):
+        #     if self.action[index] == 0:
+        #         self.action[index] = np.random.choice([-1, 1])
+        self.payoff = self.reality.get_payoff(belief=self.belief)
 
-    def learn_from_peers(self):
+    def get_similarity(self, belief_1=None, belief_2=None):
+        res = 0
+        for i in range(self.m):
+            if belief_1 == belief_2:
+                res += 1
+        return res
+
+    def get_dominant_belif(self, belief_list=None):
+        res = [0] * self.m
         for index in range(self.m):
-            if np.random.uniform(0, 1) < self.lr_peer:
-                self.belief[index] = self.superior_belief[index]
-                # if index not in self.freedom_space:
-                #     self.freedom_space.append(index)
+            temp = sum([each[index] for each in belief_list])
+            if temp > 0:
+                res[index] = 1
+            elif temp < 0:
+                res[index] = -1
+        return res
 
 
 if __name__ == '__main__':
-    m = 10
-    s = 5
-    lr = 0
-    reality = Reality(m=m, s=s)
-    # reality.describe()
-    individual = Individual(m=m, s=s, reality=reality)
-
+    m = 30
+    p1 = 0.3
+    reality = Reality(m=m)
+    individual = Individual(m=m, p1=p1, reality=reality)

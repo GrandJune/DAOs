@@ -35,9 +35,6 @@ class Individual:
         #         self.action[index] = np.random.choice([-1, 1])
         self.payoff = self.reality.get_payoff(belief=self.belief)
 
-    def volitional_socialization(self, code=None, peers=None, upper=0.1, lower=0.9):
-        pass
-
     def get_similarity(self, belief_1=None, belief_2=None):
         res = 0
         for i in range(self.m):

@@ -65,7 +65,6 @@ class Organization:
             self.learn_from_beliefs()  # update the organizational code and payoff
             for individual in self.individuals:
                 individual.learn_from_code(code=self.code)  # update the individual belief and payoff
-            # print(len(self.superior_group))
             if p3:
                 self.personnel_turnover(p3=p3)
             if p4:

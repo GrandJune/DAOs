@@ -5,5 +5,8 @@
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 
-a = [0, 1, 0, -1]
-b = [1, 1, 1, 1]
+
+x = list(range(10))
+y = list(range(0, 10, 2))
+z = [x[i] for i in y]
+print(z)

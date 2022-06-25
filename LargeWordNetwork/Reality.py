@@ -9,30 +9,29 @@ import math
 
 
 class Reality:
-    def __init__(self, m=10, s=0, reality_change=None):
+    def __init__(self, m=10, s=0):
         self.m = m
         self.s = s
-        if self.s == 0:
-            raise ValueError("s cannot be zero")
+        if self.s < 1:
+            raise ValueError("The number of complexity should be greater than 0")
         if self.s > self.m:
-            raise ValueError("s ({0}) is greater than m ({1})".format(self.s, self.m))
-        self.cluster_num = math.ceil(m / s)
+            raise ValueError("The number of complexity should be less than the number of reality")
+        self.dependency_cell_num = math.ceil(m / s)
         self.real_code = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
 
     def describe(self):
-        print("m: {0}, s: {1}, cluster: {2}".format(self.m, self.s, self.cluster_num))
+        print("m: {0}, s: {1}, cells: {2}".format(self.m, self.s, self.dependency_cell_num))
         print("Reality Code: ", self.real_code)
-        # print("Payoff: ", self.payoff)
         print("*"*10)
 
     def get_payoff(self, belief=None):
         """
-        The main calculation cost -- Need to design it carefully
-        :param belief:
-        :return:get the payoff of the specific belief
+        Calculate the payoff of the belief
+        :param belief: either the individual belief or the organizational code
+        :return: payoff
         """
         ress = 0
-        for i in range(self.cluster_num):
+        for i in range(self.dependency_cell_num):
             correct_num = 0
             for j in range(self.s):
                 index = i * self.s + j
@@ -42,9 +41,33 @@ class Reality:
                     if self.real_code[index] * belief[index] == 1:
                         correct_num += 1
             # A generalized payoff function for Christina's m/s payoff function
-            # when correct_num = 0, and s, the payoff expectation would be 0 and s, respectively. That's the Christina's model.
+            # when correct_num = 0, and s, the payoff expectation would be 0 and s, respectively.
+            # That's the Christina's model.
             # for correct_num varying from 1 to (s-1), the expectation would be (correct_num)^2/s
             ress += np.random.choice([0, correct_num], p=[1-correct_num / self.s, correct_num / self.s])
+        return ress
+
+    def get_partial_payoff(self, belief=None, task=None):
+        """
+        Calculate the payoff for a specific belief piece
+        :param belief: belief piece
+        :return: partial payoff
+        """
+        cell_index = [index // self.dependency_cell_num for index in range(self.m) if index in task]
+        cell_index = set(cell_index)
+        ress, correct_num = 0, 0
+        for cell in cell_index:
+            for j in range(self.s):
+                index = cell * self.s + j
+                if index >= self.m:
+                    break
+                else:
+                    if self.real_code[index] * belief[index] == 1:
+                        correct_num += 1
+            if correct_num == 0:
+                continue
+            else:
+                ress += np.random.choice([0, correct_num], p=[1-correct_num / self.s, correct_num / self.s])
         return ress
 
     def change(self, reality_change_rate=None):
@@ -52,6 +75,12 @@ class Reality:
             for index in range(self.m):
                 if np.random.uniform(0, 1) < reality_change_rate:
                     self.real_code[index] *= -1
+
+    def generate_task(self, task_size=None):
+        if not task_size:
+            task_size = math.ceil(self.m * 0.5)
+        task = np.random.choice(range(self.m), task_size, p=[1 / self.m] * self.m)
+        return task
 
 
 if __name__ == '__main__':
