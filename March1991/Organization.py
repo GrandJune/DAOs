@@ -58,19 +58,25 @@ class Organization:
                 individual.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
                 individual.payoff = self.reality.get_payoff(belief=individual.belief)
 
-    def process(self, loop=100, p3=None):
+    def process(self, loop=100, p3=None, p4=None):
         for _ in range(loop):
             self.get_superior_group()
             # print(len(self.superior_group))
             self.learn_from_beliefs()  # update the organizational code and payoff
             for individual in self.individuals:
                 individual.learn_from_code(code=self.code)  # update the individual belief and payoff
-            payoff_list = [individual.payoff for individual in self.individuals]
-            self.performance_average = sum(payoff_list) / self.n
-            self.performance_curve.append(self.performance_average)
             # print(len(self.superior_group))
             if p3:
                 self.personnel_turnover(p3=p3)
+            if p4:
+                change = self.reality.turbulence(p4=p4)
+                if change:
+                    self.payoff = self.reality.get_payoff(belief=self.code)
+                    for individual in self.individuals:
+                        individual.payoff = self.reality.get_payoff(belief=individual.belief)
+            payoff_list = [individual.payoff for individual in self.individuals]
+            self.performance_average = sum(payoff_list) / self.n
+            self.performance_curve.append(self.performance_average)
 
 
 if __name__ == '__main__':

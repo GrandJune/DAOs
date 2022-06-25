@@ -21,8 +21,13 @@ class Reality:
             #     res -= 1
         return res / self.m
 
-    def turbulence(self):
-        self.code = np.random.choice([-1, 1], self.m, p=[0.5, 0.5]).tolist()
+    def turbulence(self, p4=None):
+        success = 0
+        for index in range(self.m):
+            if np.random.uniform(0, 1) < p4:
+                self.code[index] *= -1
+                success = 1
+        return success
 
 
 if __name__ == '__main__':
