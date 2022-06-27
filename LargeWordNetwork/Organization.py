@@ -16,7 +16,7 @@ class Organization:
         self.n = n
         self.code = np.random.choice([-1, 1], self.m, p=[0.5, 0.5]).tolist()
         self.p1 = p1  # learning from code
-        self.p2 = p2  # learning from beliefs
+        self.p2 = p2  # learning from beliefs (herein the focal task scope)
         self.reality = reality
         self.partial_payoff = 0
         self.individuals = []
@@ -32,9 +32,9 @@ class Organization:
         self.performance_curve = []  # the evolution of performance
         self.performance_average = 0  # performance iteration
 
-    def learn_from_beliefs(self):
+    def learn_from_beliefs(self, task=None):
         belief_list = [individual.belief for individual in self.individuals if individual.index in self.superior_group]
-        dominant_belief = self.get_partial_dominant_belief(belief_list=belief_list)
+        dominant_belief = self.get_partial_dominant_belief(belief_list=belief_list, task=task)
         for index in range(self.m):
             if np.random.uniform(0, 1) < self.p2:
                 self.code[index] = dominant_belief[index]
@@ -79,10 +79,10 @@ class Organization:
     def process(self, loop=100, p3=None, p4=None, task_size=None):
         for _ in range(loop):
             task = self.reality.generate_task(task_size=task_size)
-            print("task:", task)
-            self.get_superior_group(task=task)
+            # print("task:", task)
+            self.get_superior_group(task=task)  # get the superior group for the task
             # print(len(self.superior_group))
-            self.learn_from_beliefs()  # update the organizational code and payoff
+            self.learn_from_beliefs(task=task)  # update the organizational code and payoff, based on task
             for individual in self.individuals:
                 individual.learn_from_code(code=self.code)  # update the individual belief and payoff
             if p3:
@@ -105,17 +105,17 @@ if __name__ == '__main__':
     n = 100
     p1 = 0.3
     p2 = 0.3
-    loop = 50
+    loop = 100
     task_size = 10
     reality = Reality(m=m, s=s)
     # individual = Individual(m=m, p1=p1, reality=reality)
     organization = Organization(m=m, s=s, n=n, p1=p1, p2=p2, reality=reality)
-    organization.process(loop=loop)
+    organization.process(loop=loop, task_size=task_size)
     x = range(loop)
     plt.plot(x, organization.performance_curve, "k-")
     # plt.savefig("search.jpg")
     plt.title('Search Evolution')
     plt.xlabel('Time')
     plt.ylabel('Performance')
-    plt.legend()
+    # plt.legend()
     plt.show()

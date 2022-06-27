@@ -9,7 +9,7 @@ import math
 
 
 class Reality:
-    def __init__(self, m=10, s=0):
+    def __init__(self, m=10, s=1):
         self.m = m
         self.s = s
         if self.s < 1:
@@ -45,7 +45,7 @@ class Reality:
             # That's the Christina's model.
             # for correct_num varying from 1 to (s-1), the expectation would be (correct_num)^2/s
             ress += np.random.choice([0, correct_num], p=[1-correct_num / self.s, correct_num / self.s])
-        return ress
+        return ress / self.m
 
     def get_partial_payoff(self, belief=None, task=None):
         """
@@ -55,8 +55,9 @@ class Reality:
         """
         cell_index = [index // self.dependency_cell_num for index in range(self.m) if index in task]
         cell_index = set(cell_index)
-        ress, correct_num = 0, 0
+        ress = 0
         for cell in cell_index:
+            correct_num = 0
             for j in range(self.s):
                 index = cell * self.s + j
                 if index >= self.m:
@@ -64,11 +65,8 @@ class Reality:
                 else:
                     if self.real_code[index] * belief[index] == 1:
                         correct_num += 1
-            if correct_num == 0:
-                continue
-            else:
-                ress += np.random.choice([0, correct_num], p=[1-correct_num / self.s, correct_num / self.s])
-        return ress
+            ress += np.random.choice([0, correct_num], p=[1-correct_num / self.s, correct_num / self.s])
+        return ress / self.m
 
     def change(self, reality_change_rate=None):
         if reality_change_rate:
