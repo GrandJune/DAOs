@@ -14,6 +14,8 @@ class Individual:
         self.m = m
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
         self.p1 = p1  # socialization rate, learning from the organizational code
+        self.token = 0  # assigned from the Organization class
+        self.
         self.reality = reality
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.partial_payoff = None

@@ -104,7 +104,7 @@ if __name__ == '__main__':
     s = 2
     n = 100
     p1 = 0.3
-    p2 = 0.3
+    p2 = 0.5
     loop = 100
     task_size = 10
     reality = Reality(m=m, s=s)
