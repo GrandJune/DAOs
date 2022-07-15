@@ -14,11 +14,11 @@ class Individual:
         self.m = m
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
         self.p1 = p1  # socialization rate, learning from the organizational code
-        self.token = 0  # assigned from the Organization class
-        self.
+        self.voting_power = 0  # assigned from the Organization class
         self.reality = reality
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.partial_payoff = None
+        self.superior_index = None  # people self-select whom to vote for/ emphasis on
 
     def learn_from_code(self, code=None):
         next_belief = self.belief.copy()
@@ -46,6 +46,24 @@ class Individual:
             elif temp < 0:
                 res[index] = -1
         return res
+
+    def local_search(self):
+        """
+        Update the belief once, to stimulate the wisdom of crowd
+        :return: the updated belief and payoff
+        """
+        while True:
+            focal_index = np.random.randint(0, self.m)
+            next_belief = self.belief.copy()
+            if next_belief[focal_index] == 0:
+                next_belief[focal_index] = np.random.choice([-1, 1])
+            else:
+                next_belief[focal_index] *= -1
+            next_payoff = self.reality.get_payoff(belief=next_belief)
+            if next_payoff > self.payoff:
+                self.belief = next_belief
+                self.payoff = next_payoff
+                break
 
 
 if __name__ == '__main__':

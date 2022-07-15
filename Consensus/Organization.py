@@ -10,7 +10,7 @@ from Individual import Individual
 
 
 class Organization:
-    def __init__(self, m=None, s=None, n=None, p1=None, p2=None, reality=None):
+    def __init__(self, m=None, s=None, n=None, p1=None, p2=None, reality=None, path_length=None):
         self.m = m
         self.s = s
         self.n = n
@@ -20,17 +20,51 @@ class Organization:
         self.reality = reality
         self.partial_payoff = 0
         self.individuals = []
+        self.belief_pool = []
+        self.payoff_pool = []
         for i in range(self.n):
             individual = Individual(index=i, m=self.m, p1=self.p1, reality=self.reality)
             self.individuals.append(individual)
+            self.belief_pool.append(individual.belief)
+            self.payoff_pool.append(individual.payoff)
         self.superior_group = []  # change the definition of superior group
         # previous view stands the organizational elitism (select the over-performance individuals as managers,
         # whose opinions are more rrepresentative of the organization)
         # our view stands the consensus based mechanism, which is the most important feature of the DAOs system
+        # IV
+        self.path_length = 0
 
         # DV
         self.performance_curve = []  # the evolution of performance
         self.performance_average = 0  # performance iteration
+
+    def form_network(self):
+        weight_matrix = []
+        for individual in self.individuals:
+            superior_index = [i for i in range(self.n) if self.payoff_pool[i] > individual.payoff]
+            print("superior_index: ", superior_index)
+            if len(superior_index) != 0:
+                # connections = np.random.choice(superior_index, size=self.path_length, replace=False, p=[1/len(superior_index)]*len(superior_index))
+                # print("connections: ", connections)
+                connections = [0.1 if i in superior_index else 0.01 for i in range(self.n)]
+                connections[individual.index] = 1 - sum(connections)
+                individual.superior_index = connections
+                weight_matrix.append(connections)
+            else:
+                weight_matrix.append([0.01 if i != individual.index
+                                      else 1 - 0.01 * (self.n - 1) for i in range(self.n)])
+        weight_matrix = np.array(weight_matrix).transpose()
+        print("Matrix: ", weight_matrix)
+        # Markov Process to reach a consensus
+        state_distribution_next = np.random.uniform(0, 1, self.n)
+        state_distribution_next = [each/sum(state_distribution_next) for each in state_distribution_next]
+        print("initial state: ", state_distribution_next)
+        print("sum of state", sum(state_distribution_next))
+        print()
+        for i in range(n):
+            state_distribution_next = np.dot(weight_matrix, state_distribution_next)
+            # print("状态1", "第n次", i + 1, "的状态概率分布", state_distribution_next)
+        print("final state: ", state_distribution_next)
 
     def learn_from_beliefs(self, task=None):
         belief_list = [individual.belief for individual in self.individuals if individual.index in self.superior_group]
@@ -97,25 +131,54 @@ class Organization:
             self.performance_average = sum(payoff_list) / self.n
             self.performance_curve.append(self.performance_average)
 
+    def get_dominant_belief(self):
+        dominant_belief = []
+        for index in range(self.m):
+            temp = 0
+            for individual in self.individuals:
+                temp += individual.belief[index]
+            if temp > 0:
+                dominant_belief.append(1)
+            elif temp < 0:
+                dominant_belief.append(-1)
+            else:
+                dominant_belief.append(0)
+        return dominant_belief
+
+    def consensus_evolve(self, loop=None):
+        for individual in self.individuals:
+            individual.local_search()  # do one search to initialize the wisdom of crowd
+        for _ in range(loop):
+            dominant_belief = self.get_dominant_belief()
+            for index in range(self.m):
+                if np.random.uniform(0, 1) < self.p2:
+                    self.code[index] = dominant_belief[index]
+            for individual in self.individuals:
+                individual.learn_from_code(code=self.code)
+            payoff_list = [individual.payoff for individual in self.individuals]
+            self.performance_average = sum(payoff_list) / self.n
+            self.performance_curve.append(self.performance_average)
+
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
     m = 30
     s = 2
-    n = 100
+    n = 5
     p1 = 0.3
     p2 = 0.5
     loop = 100
     task_size = 10
     reality = Reality(m=m, s=s)
     # individual = Individual(m=m, p1=p1, reality=reality)
-    organization = Organization(m=m, s=s, n=n, p1=p1, p2=p2, reality=reality)
-    organization.process(loop=loop, task_size=task_size)
-    x = range(loop)
-    plt.plot(x, organization.performance_curve, "k-")
-    # plt.savefig("search.jpg")
-    plt.title('Search Evolution')
-    plt.xlabel('Time')
-    plt.ylabel('Performance')
-    # plt.legend()
-    plt.show()
+    organization = Organization(m=m, s=s, n=n, p1=p1, p2=p2, reality=reality, path_length=1)
+    organization.form_network()
+    # organization.process(loop=loop, task_size=task_size)
+    # x = range(loop)
+    # plt.plot(x, organization.performance_curve, "k-")
+    # # plt.savefig("search.jpg")
+    # plt.title('Search Evolution')
+    # plt.xlabel('Time')
+    # plt.ylabel('Performance')
+    # # plt.legend()
+    # plt.show()

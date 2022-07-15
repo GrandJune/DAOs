@@ -4,9 +4,5 @@
 # @FileName: test.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
+import numpy as np
 
-
-x = list(range(10))
-y = list(range(0, 10, 2))
-z = [x[i] for i in y]
-print(z)
