@@ -27,7 +27,7 @@ if __name__ == '__main__':
                                   [0.01, 0.01, 0.01, 0.1, 0.6]])
     # Transition_matrix = np.array([[0.2, 0.2, 0.2], [0.5, 0.5, 0.5], [0.3, 0.3, 0.3]])
     print("Transition_matrix", Transition_matrix)
-    state_distribution1 = np.array([0.2, 0.1, 0.1, 0.1, 0.5])  # [0.13374385 0.40631994 0.12285496 0.02235605 0.02235605]
+    state_distribution1 = np.array([0.1, 0.1, 0.1, 0.1, 0.6])  # [0.13374385 0.40631994 0.12285496 0.02235605 0.02235605]
     # state_distribution2 = np.array([0.3, 0.6, 0.1])
     # state_distribution3 = np.array([0.5, 0.2, 0.3])
     state_distribution_next = state_distribution1
