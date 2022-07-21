@@ -9,7 +9,7 @@ from Reality import Reality
 from Individual import Individual
 
 
-class Organization:
+class DAO:
     def __init__(self, m=None, s=None, n=None, p1=None, p2=None, reality=None):
         self.m = m # State length
         self.s = s  # Complexity

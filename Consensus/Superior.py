@@ -11,7 +11,7 @@ from Reality import Reality
 
 
 class Superior:
-    def __init__(self, m=None, s=None, t=None, n=None, reality=None, alpha=None):
+    def __init__(self, m=None, s=None, t=None, n=None, reality=None):
         self.m = m  # state length
         self.s = s  # lower-level interdependency
         self.t = t  # upper-level interdependency
@@ -26,7 +26,7 @@ class Superior:
             self.individuals.append(individual)
             self.beliefs.append(individual.belief)
         self.reality = reality
-        self.payoff = self.reality.get_hierarchy_payoff(alpha=alpha, policy=self.policy, beliefs=self.beliefs)
+        self.payoff = self.reality.get_policy_payoff(policy=self.policy)
 
     def local_search(self, alpha=None):
         """
@@ -38,19 +38,13 @@ class Superior:
             next_policy[focal_index] = np.random.choice([-1, 1])
         else:
             next_policy[focal_index] *= -1
-        # the subunits need to confirm to the new policy
-        for individual in self.individuals:
-            individual.constrained_local_search(focal_policy=next_policy[focal_index], focal_policy_index=focal_index)
-            self.beliefs = [individual.belief for individual in self.individuals]
-        next_payoff = self.reality.get_hierarchy_payoff(alpha=alpha, policy=next_policy, beliefs=self.beliefs)
-        print("The current policy is: ", self.payoff)
-        print("The next payoff is: ", next_payoff)
+        next_payoff = self.reality.get_policy_payoff(policy=next_policy)
         if next_payoff > self.payoff:
             self.policy = next_policy
             self.payoff = next_payoff
-        else:
+            # print("Success")
             for individual in self.individuals:
-                individual.roll_back()
+                individual.constrained_local_search(focal_policy=self.policy[focal_index], focal_policy_index=focal_index)
 
     def describe(self):
         print("The policy is: ", self.policy)
