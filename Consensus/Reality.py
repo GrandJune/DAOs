@@ -46,7 +46,10 @@ class Reality:
                     else:
                         if self.real_code[index] * belief[index] == 1:
                             correct_num += 1
-                ress += np.random.choice([0, correct_num], p=[1-correct_num / self.s, correct_num / self.s])
+                if correct_num == 0:
+                    continue
+                else:
+                    ress += np.random.choice([0, correct_num], p=[1-correct_num / self.s, correct_num / self.s])
             return ress / self.m
         elif version == "Rushed":
             ress = 0
@@ -66,9 +69,13 @@ class Reality:
 
     def get_hierarchy_payoff_rushed(self, alpha=None, belief_list=None, belief=None, policy=None, version="Rushed"):
         """
-        Calculate the hierarchical payoff, based on the rushed payoff function
-        :param alpha: the weight of the lower-level payoff
-        :return: the weighted payoff combination
+
+        :param alpha: can borrowed from reality
+        :param belief_list: if it's superior, there is a group of managers
+        :param belief: if it's manager, there is only one belief
+        :param policy: could be superior's or manager's belief
+        :param version: "Rushed" or "Smooth"
+        :return: integrated payoff
         """
         if alpha:
             self.alpha = alpha
@@ -81,7 +88,7 @@ class Reality:
         else:
             raise ValueError("Either belief or beliefs is needed!")
         # upper-level payoff
-        upper_payoff = self.get_policy_payoff(policy, version=version)
+        upper_payoff = self.get_policy_payoff(policy=policy, version=version)
         return self.alpha * lower_payoff + (1 - self.alpha) * upper_payoff
 
     def get_policy_payoff(self, policy=None, version="Rushed"):
@@ -109,7 +116,10 @@ class Reality:
                     else:
                         if self.real_policy[index] * policy[index] == 1:
                             correct_num += 1
-                ress_upper += np.random.choice([0, correct_num], p=[1-correct_num / self.s, correct_num / self.s])
+                if correct_num == 0:
+                    continue
+                else:
+                    ress_upper += np.random.choice([0, correct_num], p=[1-correct_num / self.s, correct_num / self.s])
             return ress_upper / self.m
 
     def change(self, reality_change_rate=None):

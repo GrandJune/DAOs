@@ -39,7 +39,8 @@ class Individual:
         for next_belief_pieces in alternatives:
             next_belief[focal_policy_index*self.s:(focal_policy_index+1)*self.s] = next_belief_pieces
             next_policy = self.reality.belief_2_policy(belief=next_belief)
-            next_payoff = self.reality.get_hierarchy_payoff_rushed(belief=next_belief, policy=next_policy, version=version)
+            next_payoff = self.reality.get_hierarchy_payoff_rushed(policy=self.policy, belief=next_belief, version=version)
+            next_payoff = self.reality.get_belief_payoff(belief=next_belief, version=version)
             if next_payoff > self.payoff:
                 self.belief = next_belief
                 self.policy = next_policy
@@ -57,7 +58,8 @@ class Individual:
         else:
             next_belief[focal_index] *= -1
         next_policy = self.reality.belief_2_policy(belief=next_belief)
-        next_payoff = self.reality.get_hierarchy_payoff_rushed(belief=next_belief, policy=next_policy, version=version)
+        # next_payoff = self.reality.get_hierarchy_payoff_rushed(belief=next_belief, policy=next_policy, version=version)
+        next_payoff = self.reality.get_belief_payoff(belief=next_belief, version=version)
         if next_payoff > self.payoff:
             self.belief = next_belief
             self.payoff = next_payoff
