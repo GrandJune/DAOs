@@ -21,6 +21,8 @@ class Reality:
             raise ValueError("The number of complexity should be greater than 0")
         if self.s > self.m:
             raise ValueError("The number of complexity should be less than the number of reality")
+        if not alpha:
+            raise ValueError("alpha is absent for Reality class")
         self.cell_num_1 = math.ceil(m / s)
         self.cell_num_2 = math.ceil(m / s / t)
         self.alpha = alpha
@@ -32,51 +34,37 @@ class Reality:
         print("Reality Code: ", self.real_code)
         print("*"*10)
 
-    def get_smooth_payoff(self, belief=None):
-        """
-        Calculate the payoff of the belief (smooth version)
-        # A generalized payoff function for Christina's m/s payoff function
-        # when correct_num = 0, and s, the payoff expectation would be 0 and s, respectively.
-        # That's the Christina's model.
-        # for correct_num varying from 1 to (s-1), the expectation would be (correct_num)^2/s
-        :param belief: either the individual belief or the organizational code
-        :return: payoff
-        """
-        ress = 0
-        for i in range(self.cell_num_1):
-            correct_num = 0
-            for j in range(self.s):
-                index = i * self.s + j
-                if index >= self.m:
-                    break
-                else:
-                    if self.real_code[index] * belief[index] == 1:
-                        correct_num += 1
-            ress += np.random.choice([0, correct_num], p=[1-correct_num / self.s, correct_num / self.s])
-        return ress / self.m
+    def get_belief_payoff(self, belief=None, version="Rushed"):
+        if version == "Smooth":
+            ress = 0
+            for i in range(self.cell_num_1):
+                correct_num = 0
+                for j in range(self.s):
+                    index = i * self.s + j
+                    if index >= self.m:
+                        break
+                    else:
+                        if self.real_code[index] * belief[index] == 1:
+                            correct_num += 1
+                ress += np.random.choice([0, correct_num], p=[1-correct_num / self.s, correct_num / self.s])
+            return ress / self.m
+        elif version == "Rushed":
+            ress = 0
+            for i in range(self.cell_num_1):
+                flag = False
+                for j in range(self.s):
+                    index = i * self.s + j
+                    # print(self.real_code, belief)
+                    if self.real_code[index] == belief[index]:
+                        flag = True
+                    else:
+                        flag = False
+                        break
+                if flag:
+                    ress += self.s
+            return ress / self.m
 
-    def get_rushed_payoff(self, belief=None):
-        """
-        Calculate the payoff of the belief (rushed version)
-        :param belief: either the individual belief or the organizational code
-        :return: rushed payoff for belief (i.e., either s or 0)
-        """
-        ress = 0
-        for i in range(self.cell_num_1):
-            flag = False
-            for j in range(self.s):
-                index = i * self.s + j
-                # print(self.real_code, belief)
-                if self.real_code[index] == belief[index]:
-                    flag = True
-                else:
-                    flag = False
-                    break
-            if flag:
-                ress += self.s
-        return ress / self.m
-
-    def get_hierarchy_payoff_rushed(self, alpha=None, belief_list=None, belief=None, policy=None):
+    def get_hierarchy_payoff_rushed(self, alpha=None, belief_list=None, belief=None, policy=None, version="Rushed"):
         """
         Calculate the hierarchical payoff, based on the rushed payoff function
         :param alpha: the weight of the lower-level payoff
@@ -86,30 +74,43 @@ class Reality:
             self.alpha = alpha
         # lower-level payoff
         if len(belief):
-            lower_payoff = self.get_rushed_payoff(belief)
+            lower_payoff = self.get_belief_payoff(belief, version)
         elif len(belief_list):
-            lower_payoff = [self.get_rushed_payoff(belief) for belief in belief_list]
+            lower_payoff = [self.get_belief_payoff(belief, version) for belief in belief_list]
             lower_payoff = sum(lower_payoff) / len(lower_payoff)
         else:
             raise ValueError("Either belief or beliefs is needed!")
         # upper-level payoff
-        upper_payoff = self.get_policy_payoff(policy)
+        upper_payoff = self.get_policy_payoff(policy, version=version)
         return self.alpha * lower_payoff + (1 - self.alpha) * upper_payoff
 
-    def get_policy_payoff(self, policy=None):
+    def get_policy_payoff(self, policy=None, version="Rushed"):
         ress_upper = 0
-        for i in range(self.cell_num_2):
-            flag = False
-            for j in range(self.t):
-                index = i * self.t + j
-                if self.real_policy[index] != policy[index]:
-                    flag = False
-                    break
-                else:
-                    flag = True
-            if flag:
-                ress_upper += self.t
-        return ress_upper / self.cell_num_1
+        if version == "Rushed":
+            for i in range(self.cell_num_2):
+                flag = False
+                for j in range(self.t):
+                    index = i * self.t + j
+                    if self.real_policy[index] != policy[index]:
+                        flag = False
+                        break
+                    else:
+                        flag = True
+                if flag:
+                    ress_upper += self.t
+            return ress_upper / self.cell_num_1
+        elif version == "Smooth":
+            for i in range(self.cell_num_2):
+                correct_num = 0
+                for j in range(self.t):
+                    index = i * self.t + j
+                    if index >= self.cell_num_1:
+                        break
+                    else:
+                        if self.real_policy[index] * policy[index] == 1:
+                            correct_num += 1
+                ress_upper += np.random.choice([0, correct_num], p=[1-correct_num / self.s, correct_num / self.s])
+            return ress_upper / self.m
 
     def change(self, reality_change_rate=None):
         if reality_change_rate:
