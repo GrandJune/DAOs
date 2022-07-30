@@ -119,8 +119,8 @@ class Reality:
                 if correct_num == 0:
                     continue
                 else:
-                    ress_upper += np.random.choice([0, correct_num], p=[1-correct_num / self.s, correct_num / self.s])
-            return ress_upper / self.m
+                    ress_upper += np.random.choice([0, correct_num], p=[1-correct_num / self.cell_num_1, correct_num / self.cell_num_1])
+            return ress_upper / self.cell_num_1
 
     def change(self, reality_change_rate=None):
         if reality_change_rate:

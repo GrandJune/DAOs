@@ -17,7 +17,7 @@ class Superior:
         self.t = t  # upper-level interdependency
         self.n = n  # the number of subunits under this superior
         self.policy_num = math.ceil(self.m / self.s)
-        self.policy = np.random.choice([-1, 0, 1], self.policy_num, p=[1/3, 1/3, 1/3])
+        self.policy = np.random.choice([-1, 1], self.policy_num, p=[0.5, 0.5])
         self.individuals = []
         self.beliefs = []
         for i in range(self.n):
@@ -65,10 +65,12 @@ if __name__ == '__main__':
     n = 4
     alpha = 0.5
     reality = Reality(m=m, s=s, t=t, alpha=alpha)
-    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, alpha=alpha)
+    superior = Superior(m=m, s=s, t=t, n=n, reality=reality)
     for _ in range(100):
         superior.local_search()
-        print("*"*10)
+        print(superior.payoff)
+        # print("*"*10)
     # superior.describe()
-    truth_payoff = reality.get_hierarchy_payoff(alpha=alpha, policy=reality.real_policy, beliefs=[reality.real_code])
-    print("The truth payoff is: ", truth_payoff)
+    # truth_payoff = reality.get_policy_payoff(policy=reality.real_policy)
+    # truth_payoff = reality.get_policy_payoff(policy=reality.real_policy)
+    # print("The truth payoff is: ", truth_payoff)
