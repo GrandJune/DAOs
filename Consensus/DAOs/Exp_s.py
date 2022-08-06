@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# @Time     : 8/5/2022 16:58
+# @Time     : 8/5/2022 20:22
 # @Author   : Junyi
-# @FileName: Exp_Comparison.py
+# @FileName: Exp_s.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 from Superior import Superior
@@ -14,10 +14,9 @@ import numpy as np
 import time
 import pickle
 
-# Comparison between Overall Payoff, Policy Payoff, and Belief Payoff
 m = 120
-s = 3
-t_list = [1, 2, 4]
+s_list = [1, 3, 5]
+t = 2
 n = 200
 search_round = 100
 repetition_round = 500
@@ -27,7 +26,7 @@ manager_across_para = []
 superior_across_para = []
 version = "Rushed"
 t0 = time.time()
-for t in t_list: # parameter
+for s in s_list:  # parameter
     overall_payoff_across_repeat = []
     manager_payoff_across_repeat = []
     superior_payoff_across_repeat = []
@@ -81,37 +80,37 @@ for t in t_list: # parameter
 
 
 x = range(search_round)
-plt.plot(x, overall_across_para[0], "k-", label="t=1")
-plt.plot(x, overall_across_para[1], "k--", label="t=2")
-plt.plot(x, overall_across_para[2], "k:", label="t=4")
+plt.plot(x, overall_across_para[0], "k-", label="s=1")
+plt.plot(x, overall_across_para[1], "k--", label="s=3")
+plt.plot(x, overall_across_para[2], "k:", label="s=5")
 plt.title('Overall Performance')
 plt.xlabel('Time')
 plt.ylabel('Performance')
 plt.legend()
-plt.savefig("Exp_t_overall_performance.jpg")
+plt.savefig("Exp_s_overall_performance.jpg")
 
 
 # Only managers
 x = range(search_round)
-plt.plot(x, manager_across_para[0], "k-", label="t=1")
-plt.plot(x, manager_across_para[1], "k--", label="t=2")
-plt.plot(x, manager_across_para[2], "k:", label="t=4")
+plt.plot(x, manager_across_para[0], "k-", label="s=1")
+plt.plot(x, manager_across_para[1], "k--", label="s=3")
+plt.plot(x, manager_across_para[2], "k:", label="s=5")
 plt.title('Manager Performance')
 plt.xlabel('Time')
 plt.ylabel('Performance')
 plt.legend()
-plt.savefig("Exp_t_manager_performance.jpg")
+plt.savefig("Exp_s_manager_performance.jpg")
 
 
 # Only superior
 x = range(search_round)
-plt.plot(x, superior_across_para[0], "k-", label="t=1")
-plt.plot(x, superior_across_para[1], "k--", label="t=2")
-plt.plot(x, superior_across_para[2], "k:", label="t=4")
+plt.plot(x, superior_across_para[0], "k-", label="s=1")
+plt.plot(x, superior_across_para[1], "k--", label="s=3")
+plt.plot(x, superior_across_para[2], "k:", label="s=5")
 plt.title('Superior Performance')
 plt.xlabel('Time')
 plt.ylabel('Performance')
 plt.legend()
-plt.savefig("Exp_t_superior_performance.jpg")
+plt.savefig("Exp_s_superior_performance.jpg")
 t1 = time.time()
 # print("Time spent: ", t1-t0)

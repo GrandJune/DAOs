@@ -74,12 +74,14 @@ class Individual:
         :return:
         """
         for index, value in enumerate(policy):
-            alternatives = [value] * math.ceil(self.s / 2) + [-1 * value] * (self.s - math.ceil(self.s / 2))
-            alternatives = list(set(permutations(alternatives)))
-            # print(alternatives)
-            alternatives.append([value] * self.s)
-            belief_pieces = alternatives[np.random.choice(len(alternatives))]
-            self.belief[index*self.s:(index+1)*self.s] = belief_pieces
+            if value == 0:
+                continue
+            elif value != self.policy[index]:  # Only confirm the conflicting beliefs
+                alternatives = [value] * math.ceil(self.s / 2) + [-1 * value] * (self.s - math.ceil(self.s / 2))
+                alternatives = list(set(permutations(alternatives)))
+                alternatives.append([value] * self.s)
+                belief_pieces = alternatives[np.random.choice(len(alternatives))]
+                self.belief[index*self.s:(index+1)*self.s] = belief_pieces
         self.policy = self.reality.belief_2_policy(belief=self.belief)
         self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
