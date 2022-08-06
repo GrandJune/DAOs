@@ -6,13 +6,10 @@
 # Observing PEP 8 coding style
 from Superior import Superior
 from Reality import Reality
-from Individual import Individual
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
-import numpy as np
-import time
-import pickle
+
 
 # Comparison between Overall Payoff, Policy Payoff, and Belief Payoff
 m = 120
@@ -26,7 +23,6 @@ overall_across_para = []
 manager_across_para = []
 superior_across_para = []
 version = "Rushed"
-t0 = time.time()
 for t in t_list: # parameter
     overall_payoff_across_repeat = []
     manager_payoff_across_repeat = []
@@ -101,5 +97,3 @@ plt.xlabel('Time')
 plt.ylabel('Performance')
 plt.legend()
 plt.savefig("Exp_NonConsensus_superior_performance.jpg")
-t1 = time.time()
-# print("Time spent: ", t1-t0)

@@ -6,13 +6,10 @@
 # Observing PEP 8 coding style
 from Superior import Superior
 from Reality import Reality
-from Individual import Individual
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
-import numpy as np
-import time
-import pickle
+
 
 m = 120
 s = 3

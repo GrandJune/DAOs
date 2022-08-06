@@ -6,13 +6,10 @@
 # Observing PEP 8 coding style
 from Superior import Superior
 from Reality import Reality
-from Individual import Individual
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
-import numpy as np
-import time
-import pickle
+
 
 m = 120
 s_list = [1, 3, 5]
@@ -25,7 +22,6 @@ overall_across_para = []
 manager_across_para = []
 superior_across_para = []
 version = "Rushed"
-t0 = time.time()
 for s in s_list:  # parameter
     overall_payoff_across_repeat = []
     manager_payoff_across_repeat = []
@@ -112,5 +108,3 @@ plt.xlabel('Time')
 plt.ylabel('Performance')
 plt.legend()
 plt.savefig("Exp_s_superior_performance.jpg")
-t1 = time.time()
-# print("Time spent: ", t1-t0)
