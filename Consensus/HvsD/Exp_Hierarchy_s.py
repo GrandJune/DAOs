@@ -13,8 +13,8 @@ import pickle
 
 
 m = 120
-s = 3
-t_list = [1, 2, 4]
+s_list = [1, 3, 5]
+t = 2
 n = 200
 search_round = 100
 repetition_round = 500
@@ -23,7 +23,7 @@ overall_across_para = []
 manager_across_para = []
 superior_across_para = []
 version = "Rushed"
-for t in t_list:  # parameter
+for s in s_list:  # parameter
     overall_payoff_across_repeat = []
     manager_payoff_across_repeat = []
     superior_payoff_across_repeat = []
@@ -35,22 +35,8 @@ for t in t_list:  # parameter
         manager_payoff_across_time = []
         superior_payoff_across_time = []
         for _ in range(search_round):  # free search loop
-            for individual in superior.individuals:
-                individual.free_local_search(version=version)
-            # form the consensus
-            consensus = []
-            for i in range(m//s):
-                temp = sum(individual.policy[i] for individual in superior.individuals)
-                if temp < 0:
-                    consensus.append(-1)
-                elif temp > 0:
-                    consensus.append(1)
-                else:
-                    consensus.append(0)
-            for individual in superior.individuals:
-                individual.confirm_to_supervision(policy=consensus)
-
-            overall_performance = [alpha * individual.payoff + (1-alpha) * superior.payoff for individual in superior.individuals]
+            superior.local_search()
+            overall_performance = [alpha * individual.payoff + (1-alpha) * individual.policy_payoff for individual in superior.individuals]
             manager_performance = [individual.payoff for individual in superior.individuals]
             policy_performance = [individual.policy_payoff for individual in superior.individuals]
             overall_payoff_across_time.append(sum(overall_performance) / len(overall_performance))
@@ -76,43 +62,43 @@ for t in t_list:  # parameter
     superior_across_para.append(result_2)
 
 # Save the original data for further analysis
-with open("DAO_overall_performance_t124", 'wb') as out_file:
+with open("Hierarchy_overall_performance_s135", 'wb') as out_file:
     pickle.dump(overall_across_para, out_file)
-with open("DAO_manager_performance_t124", 'wb') as out_file:
+with open("Hierarchy_manager_performance_s135", 'wb') as out_file:
     pickle.dump(manager_across_para, out_file)
-with open("DAO_superior_performance_t124", 'wb') as out_file:
+with open("Hierarchy_superior_performance_s135", 'wb') as out_file:
     pickle.dump(superior_across_para, out_file)
 
 x = range(search_round)
-plt.plot(x, overall_across_para[0], "k-", label="t=1")
-plt.plot(x, overall_across_para[1], "k--", label="t=2")
-plt.plot(x, overall_across_para[2], "k:", label="t=4")
+plt.plot(x, overall_across_para[0], "k-", label="s=1")
+plt.plot(x, overall_across_para[1], "k--", label="s=3")
+plt.plot(x, overall_across_para[2], "k:", label="s=5")
 plt.title('Overall Performance')
 plt.xlabel('Time')
 plt.ylabel('Performance')
 plt.legend()
-plt.savefig("DAO_t_overall_performance.jpg")
+plt.savefig("Hierarchy_s_overall_performance.jpg")
 
 
 # Only managers
 x = range(search_round)
-plt.plot(x, manager_across_para[0], "k-", label="t=1")
-plt.plot(x, manager_across_para[1], "k--", label="t=2")
-plt.plot(x, manager_across_para[2], "k:", label="t=4")
+plt.plot(x, manager_across_para[0], "k-", label="s=1")
+plt.plot(x, manager_across_para[1], "k--", label="s=3")
+plt.plot(x, manager_across_para[2], "k:", label="s=5")
 plt.title('Manager Performance')
 plt.xlabel('Time')
 plt.ylabel('Performance')
 plt.legend()
-plt.savefig("DAO_t_manager_performance.jpg")
+plt.savefig("Hierarchy_s_manager_performance.jpg")
 
 
 # Only superior
 x = range(search_round)
-plt.plot(x, superior_across_para[0], "k-", label="t=1")
-plt.plot(x, superior_across_para[1], "k--", label="t=2")
-plt.plot(x, superior_across_para[2], "k:", label="t=4")
+plt.plot(x, superior_across_para[0], "k-", label="s=1")
+plt.plot(x, superior_across_para[1], "k--", label="s=3")
+plt.plot(x, superior_across_para[2], "k:", label="s=5")
 plt.title('Superior Performance')
 plt.xlabel('Time')
 plt.ylabel('Performance')
 plt.legend()
-plt.savefig("DAO_t_superior_performance.jpg")
+plt.savefig("Hierarchy_s_superior_performance.jpg")

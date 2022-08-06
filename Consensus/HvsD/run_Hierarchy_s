@@ -1,7 +1,7 @@
 #!/bin/sh
 #SBATCH --partition=long
-#SBATCH --job-name=S
+#SBATCH --time=4200
+#SBATCH --job-name=Hierarchy_s
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=junyi@comp.nus.edu.sg
-
-python Exp_DAO.py
+python Exp_Hierarchy_s.py

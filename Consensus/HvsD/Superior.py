@@ -16,7 +16,7 @@ class Superior:
         self.s = s  # lower-level interdependency
         self.t = t  # upper-level interdependency
         self.n = n  # the number of subunits under this superior
-        self.policy_num = math.ceil(self.m / self.s)
+        self.policy_num = self.m // self.s
         self.policy = np.random.choice([-1, 1], self.policy_num, p=[0.5, 0.5])
         self.individuals = []
         self.beliefs = []
@@ -28,7 +28,7 @@ class Superior:
         self.reality = reality
         self.payoff = self.reality.get_policy_payoff(policy=self.policy)
 
-    def local_search(self, alpha=None):
+    def local_search(self):
         """
         Superior can do a free local search
         """
@@ -60,7 +60,7 @@ class Superior:
 
 if __name__ == '__main__':
     m = 27
-    s = 3
+    s = 1
     t = 3
     n = 4
     alpha = 0.5

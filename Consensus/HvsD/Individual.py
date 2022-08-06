@@ -40,7 +40,6 @@ class Individual:
         next_belief_pieces = alternatives[np.random.choice(len(alternatives))]
         next_belief[focal_policy_index*self.s:(focal_policy_index+1)*self.s] = next_belief_pieces
         next_policy = self.reality.belief_2_policy(belief=next_belief)
-        # next_payoff = self.reality.get_hierarchy_payoff_rushed(policy=self.policy, belief=next_belief, version=version)
         next_payoff = self.reality.get_belief_payoff(belief=next_belief, version=version)
         if next_payoff > self.payoff:
             self.belief = next_belief
@@ -82,6 +81,9 @@ class Individual:
                 alternatives.append([value] * self.s)
                 belief_pieces = alternatives[np.random.choice(len(alternatives))]
                 self.belief[index*self.s:(index+1)*self.s] = belief_pieces
+            else:
+                # the policy bit is consistent with current individual policy bit
+                continue
         self.policy = self.reality.belief_2_policy(belief=self.belief)
         self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 

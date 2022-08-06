@@ -38,7 +38,7 @@ for t in t_list: # parameter
             for individual in superior.individuals:
                 individual.free_local_search(version=version)
 
-            overall_performance = [alpha * individual.payoff + (1-alpha) * superior.payoff for individual in superior.individuals]
+            overall_performance = [alpha * individual.payoff + (1-alpha) * individual.policy_payoff for individual in superior.individuals]
             manager_performance = [individual.payoff for individual in superior.individuals]
             policy_performance = [individual.policy_payoff for individual in superior.individuals]
             overall_payoff_across_time.append(sum(overall_performance) / len(overall_performance))
