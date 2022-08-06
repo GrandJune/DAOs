@@ -75,6 +75,14 @@ for s in s_list:  # parameter
         result_2.append(sum(temp) / len(temp))
     superior_across_para.append(result_2)
 
+# Save the original data for further analysis
+with open("DAO_overall_performance_s135", 'wb') as out_file:
+    pickle.dump(overall_across_para, out_file)
+with open("DAO_manager_performance_s135", 'wb') as out_file:
+    pickle.dump(manager_across_para, out_file)
+with open("DAO_superior_performance_s135", 'wb') as out_file:
+    pickle.dump(superior_across_para, out_file)
+
 x = range(search_round)
 plt.plot(x, overall_across_para[0], "k-", label="s=1")
 plt.plot(x, overall_across_para[1], "k--", label="s=3")
@@ -83,7 +91,7 @@ plt.title('Overall Performance')
 plt.xlabel('Time')
 plt.ylabel('Performance')
 plt.legend()
-plt.savefig("Exp_s_overall_performance.jpg")
+plt.savefig("DAO_s_overall_performance.jpg")
 
 
 # Only managers
@@ -95,7 +103,7 @@ plt.title('Manager Performance')
 plt.xlabel('Time')
 plt.ylabel('Performance')
 plt.legend()
-plt.savefig("Exp_s_manager_performance.jpg")
+plt.savefig("DAO_s_manager_performance.jpg")
 
 
 # Only superior
@@ -107,4 +115,4 @@ plt.title('Superior Performance')
 plt.xlabel('Time')
 plt.ylabel('Performance')
 plt.legend()
-plt.savefig("Exp_s_superior_performance.jpg")
+plt.savefig("DAO_s_superior_performance.jpg")

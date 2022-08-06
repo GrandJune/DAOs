@@ -1,6 +1,7 @@
 #!/bin/sh
 #SBATCH --partition=long
-#SBATCH --job-name=test
+#SBATCH --job-name=S
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=junyi@comp.nus.edu.sg
-python Exp_NonConsensus.py
+
+python Exp_DAO.py
