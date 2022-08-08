@@ -4,20 +4,22 @@
 # @FileName: Exp_s.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
+import time
 from Superior import Superior
 from Reality import Reality
-import matplotlib
-matplotlib.use('agg')
-import matplotlib.pyplot as plt
+# import matplotlib
+# matplotlib.use('agg')
+# import matplotlib.pyplot as plt
 import pickle
 
 
-m = 120
+t0 = time.time()
+m = 100
 s = 3
 t_list = [1, 2, 4]
-n = 200
-search_round = 100
-repetition_round = 500
+n = 280
+search_round = 200
+repetition_round = 200
 alpha = 0.5
 overall_across_para = []
 manager_across_para = []
@@ -30,7 +32,6 @@ for t in t_list:  # parameter
     for _ in range(repetition_round):  # repetation
         reality = Reality(m=m, s=s, t=t, alpha=alpha)
         superior = Superior(m=m, s=s, t=t, n=n, reality=reality)
-        superior.policy = []  # remove the policy
         overall_payoff_across_time = []
         manager_payoff_across_time = []
         superior_payoff_across_time = []
@@ -83,36 +84,43 @@ with open("DAO_manager_performance_t124", 'wb') as out_file:
 with open("DAO_superior_performance_t124", 'wb') as out_file:
     pickle.dump(superior_across_para, out_file)
 
-x = range(search_round)
-plt.plot(x, overall_across_para[0], "k-", label="t=1")
-plt.plot(x, overall_across_para[1], "k--", label="t=2")
-plt.plot(x, overall_across_para[2], "k:", label="t=4")
-plt.title('Overall Performance')
-plt.xlabel('Time')
-plt.ylabel('Performance')
-plt.legend()
-plt.savefig("DAO_t_overall_performance.jpg")
+t1 = time.time()
+print("Time spent: ", t1-t0)
 
-
-# Only managers
-x = range(search_round)
-plt.plot(x, manager_across_para[0], "k-", label="t=1")
-plt.plot(x, manager_across_para[1], "k--", label="t=2")
-plt.plot(x, manager_across_para[2], "k:", label="t=4")
-plt.title('Manager Performance')
-plt.xlabel('Time')
-plt.ylabel('Performance')
-plt.legend()
-plt.savefig("DAO_t_manager_performance.jpg")
-
-
-# Only superior
-x = range(search_round)
-plt.plot(x, superior_across_para[0], "k-", label="t=1")
-plt.plot(x, superior_across_para[1], "k--", label="t=2")
-plt.plot(x, superior_across_para[2], "k:", label="t=4")
-plt.title('Superior Performance')
-plt.xlabel('Time')
-plt.ylabel('Performance')
-plt.legend()
-plt.savefig("DAO_t_superior_performance.jpg")
+# x = range(search_round)
+# plt.plot(x, overall_across_para[0], "k-", label="t=1")
+# plt.plot(x, overall_across_para[1], "k--", label="t=2")
+# plt.plot(x, overall_across_para[2], "k:", label="t=4")
+# plt.title('Overall Performance')
+# plt.xlabel('Time')
+# plt.ylabel('Performance')
+# plt.legend()
+# plt.savefig("DAO_t_overall_performance.jpg")
+# plt.clf()
+#
+#
+# # Only managers
+# x = range(search_round)
+# plt.plot(x, manager_across_para[0], "k-", label="t=1")
+# plt.plot(x, manager_across_para[1], "k--", label="t=2")
+# plt.plot(x, manager_across_para[2], "k:", label="t=4")
+# plt.title('Manager Performance')
+# plt.xlabel('Time')
+# plt.ylabel('Performance')
+# plt.legend()
+# plt.savefig("DAO_t_manager_performance.jpg")
+# plt.clf()
+#
+#
+# # Only superior
+# x = range(search_round)
+# plt.plot(x, superior_across_para[0], "k-", label="t=1")
+# plt.plot(x, superior_across_para[1], "k--", label="t=2")
+# plt.plot(x, superior_across_para[2], "k:", label="t=4")
+# plt.title('Superior Performance')
+# plt.xlabel('Time')
+# plt.ylabel('Performance')
+# plt.legend()
+# plt.savefig("DAO_t_superior_performance.jpg")
+# plt.clf()
+# plt.close()

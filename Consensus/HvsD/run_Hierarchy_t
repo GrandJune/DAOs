@@ -1,7 +1,8 @@
-#!/bin/sh
-#SBATCH --partition=long
-#SBATCH --time=4200
+#!/bin/bash
+#SBATCH --time=24:50:00
 #SBATCH --job-name=Hierarchy_t
-#SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --mail-user=junyi@comp.nus.edu.sg
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=junyili@u.nus.edu
+#SBATCH --mem=20gb
+#SBATCH --partition=long
 python Exp_Hierarchy_t.py

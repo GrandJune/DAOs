@@ -34,6 +34,12 @@ class Superior:
         """
         focal_index = np.random.randint(0, self.policy_num)
         next_policy = self.policy.copy()
+        try:
+            if next_policy[focal_index] == 0:
+                pass
+        except:
+            print("Next_policy:", next_policy)
+            print("focal_index: ", focal_index)
         if next_policy[focal_index] == 0:
             next_policy[focal_index] = np.random.choice([-1, 1])
         else:
@@ -42,7 +48,6 @@ class Superior:
         if next_payoff > self.payoff:
             self.policy = next_policy
             self.payoff = next_payoff
-            # print("Success")
             for individual in self.individuals:
                 individual.constrained_local_search(focal_policy=self.policy[focal_index], focal_policy_index=focal_index)
 
