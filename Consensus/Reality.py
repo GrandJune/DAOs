@@ -9,23 +9,20 @@ import math
 
 
 class Reality:
-    def __init__(self, m=None, s=None, t=None, alpha=None):
+    def __init__(self, m=None, s=None, t=None):
         self.m = m  # the total length of the reality code
         self.s = s  # the lower-level of interdependency (staff interdependency)
         self.t = t  # the upper-level of interdependency (policy interdependency)
-        if self.m % (self.s * self.t) != 0:
-            raise ValueError("m must be a multiple of (s * t)")
+        if m < (s * t):
+            raise ValueError("m must be smaller than s*t")
         if self.s % 2 == 0:
             raise ValueError("s must be an odd number")
         if self.s < 1:
             raise ValueError("The number of complexity should be greater than 0")
         if self.s > self.m:
             raise ValueError("The number of complexity should be less than the number of reality")
-        if not alpha:
-            raise ValueError("alpha is absent for Reality class")
         self.cell_num_1 = math.ceil(m / s)
-        self.cell_num_2 = math.ceil(m / s / t)
-        self.alpha = alpha
+        self.cell_num_2 = math.ceil(m / s / t)  # the last cell will be not full
         self.real_code = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
         self.real_policy = self.belief_2_policy(belief=self.real_code)
 
@@ -67,30 +64,6 @@ class Reality:
                     ress += self.s
             return ress / self.m
 
-    def get_hierarchy_payoff_rushed(self, alpha=None, belief_list=None, belief=None, policy=None, version="Rushed"):
-        """
-
-        :param alpha: can borrowed from reality
-        :param belief_list: if it's superior, there is a group of managers
-        :param belief: if it's manager, there is only one belief
-        :param policy: could be superior's or manager's belief
-        :param version: "Rushed" or "Smooth"
-        :return: integrated payoff
-        """
-        if alpha:
-            self.alpha = alpha
-        # lower-level payoff
-        if len(belief):
-            lower_payoff = self.get_belief_payoff(belief, version)
-        elif len(belief_list):
-            lower_payoff = [self.get_belief_payoff(belief, version) for belief in belief_list]
-            lower_payoff = sum(lower_payoff) / len(lower_payoff)
-        else:
-            raise ValueError("Either belief or beliefs is needed!")
-        # upper-level payoff
-        upper_payoff = self.get_policy_payoff(policy=policy, version=version)
-        return self.alpha * lower_payoff + (1 - self.alpha) * upper_payoff
-
     def get_policy_payoff(self, policy=None, version="Rushed"):
         ress_upper = 0
         if version == "Rushed":
@@ -129,12 +102,6 @@ class Reality:
                     self.real_code[index] *= -1
             self.real_policy = self.belief_2_policy(belief=self.real_code)
 
-    def generate_task(self, task_size=None):
-        if not task_size:
-            task_size = math.ceil(self.m * 0.5)
-        task = np.random.choice(range(self.m), task_size, p=[1 / self.m] * self.m)
-        return task
-
     def belief_2_policy(self, belief):
         policy = []
         for i in range(self.cell_num_1):
@@ -153,4 +120,5 @@ if __name__ == '__main__':
     s = 3
     t = 3
     alpha = 0.5
-    reality = Reality(m, s, t, alpha)
+    reality = Reality(m, s, t)
+    print("End")

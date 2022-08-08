@@ -9,7 +9,7 @@ import math
 
 
 class Reality:
-    def __init__(self, m=None, s=None, t=None, alpha=None):
+    def __init__(self, m=None, s=None, t=None, alpha=0.5):
         self.m = m  # the total length of the reality code
         self.s = s  # the lower-level of interdependency (staff interdependency)
         self.t = t  # the upper-level of interdependency (policy interdependency)

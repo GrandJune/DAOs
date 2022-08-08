@@ -1,9 +1,7 @@
 from multiprocessing import Pool
-
-def f(x):
-    return x*x
-
-
-if __name__ == '__main__':
-    with Pool(5) as p:
-        print(p.map(f, [1, 2, 3]))
+m = 120
+s = 7
+t = 2
+if m % (s * t) != 0:
+    m = s * t * (m // s // t)
+print(m)
