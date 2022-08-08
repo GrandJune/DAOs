@@ -14,7 +14,7 @@ import pickle
 
 
 t0 = time.time()
-m = 100
+m = 60
 s = 3
 t_list = [1, 2, 4]
 n = 280

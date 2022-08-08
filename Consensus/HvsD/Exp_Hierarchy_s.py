@@ -13,7 +13,7 @@ import pickle
 import time
 
 t0 = time.time()
-m = 100
+m = 60
 s_list = [1, 3, 5]
 t = 2
 n = 280

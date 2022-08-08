@@ -13,10 +13,10 @@ import pickle
 import time
 
 
-m = 100  # Christina's paper
+m = 60  # Christina's paper: 100
 s_list = [1, 3, 5]
 t = 2
-n = 280  # Christina's paper
+n = 500  # Christina's paper: 280
 search_round = 200
 repetition_round = 200  # Christina's paper
 alpha = 0.5
