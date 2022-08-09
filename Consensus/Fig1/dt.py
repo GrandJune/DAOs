@@ -15,13 +15,12 @@ import time
 
 m = 120  # Christina's paper: 100
 s = 3
-t_list = [1, 2, 3, 4, 5, 6, 7]
-n = 280  # Christina's paper: 280
-search_round = 200
-repetition_round = 200  # Christina's paper
+t_list = [1, 2, 3, 4, 5, 6, 7, 9, 10]
+n = 500  # Christina's paper: 280
+search_round = 500
+repetition_round = 500  # Christina's paper
 d_across_para = []
 version = "Rushed"
-t0 = time.time()
 for t in t_list:  # parameter
     if m % (s * t) != 0:
         m = s * t * (m // s // t)  # deal with the cell number issue
@@ -29,7 +28,6 @@ for t in t_list:  # parameter
     for _ in range(repetition_round):  # repetation
         reality = Reality(m=m, s=s, t=t)
         superior = Superior(m=m, s=s, t=t, n=n, reality=reality)
-        manager_payoff_across_time = []
         for _ in range(search_round):  # free search loop
             for individual in superior.individuals:
                 individual.free_local_search(version=version)
@@ -45,15 +43,9 @@ for t in t_list:  # parameter
                     consensus.append(0)
             for individual in superior.individuals:
                 individual.confirm_to_supervision(policy=consensus)
-            manager_performance = [individual.payoff for individual in superior.individuals]
-            manager_payoff_across_time.append(sum(manager_performance) / len(manager_performance))
-        manager_payoff_across_repeat.append(manager_payoff_across_time)
-
-    result_1 = []
-    for index in range(search_round):
-        temp = [payoff_list[index] for payoff_list in manager_payoff_across_repeat]
-        result_1.append(sum(temp) / len(temp))
-    d_across_para.append(result_1)
+        manager_performance = [individual.payoff for individual in superior.individuals]
+        manager_payoff_across_repeat.append(sum(manager_performance) / len(manager_performance))
+    d_across_para.append(sum(manager_payoff_across_repeat) / len(manager_payoff_across_repeat))
 
 
 # Save the original data for further analysis

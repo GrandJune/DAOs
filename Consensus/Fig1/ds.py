@@ -16,13 +16,12 @@ import time
 m = 120  # Christina's paper: 100
 s_list = [1, 3, 5, 7, 9, 11]
 t = 2
-n = 280  # Christina's paper: 280
-search_round = 200
-repetition_round = 200  # Christina's paper
+n = 500  # Christina's paper: 280
+search_round = 500
+repetition_round = 500  # Christina's paper
 d_across_para = []
 h_across_para = []
 version = "Rushed"
-t0 = time.time()
 for s in s_list:  # parameter
     if m % (s * t) != 0:
         m = s * t * (m // s // t)  # deal with the cell number issue
@@ -30,7 +29,6 @@ for s in s_list:  # parameter
     for _ in range(repetition_round):  # repetation
         reality = Reality(m=m, s=s, t=t)
         superior = Superior(m=m, s=s, t=t, n=n, reality=reality)
-        manager_payoff_across_time = []
         for _ in range(search_round):  # free search loop
             for individual in superior.individuals:
                 individual.free_local_search(version=version)
@@ -46,24 +44,13 @@ for s in s_list:  # parameter
                     consensus.append(0)
             for individual in superior.individuals:
                 individual.confirm_to_supervision(policy=consensus)
-
-            manager_performance = [individual.payoff for individual in superior.individuals]
-            manager_payoff_across_time.append(sum(manager_performance) / len(manager_performance))
-        manager_payoff_across_repeat.append(manager_payoff_across_time)
-
-    result_1 = []
-    for index in range(search_round):
-        temp = [payoff_list[index] for payoff_list in manager_payoff_across_repeat]
-        result_1.append(sum(temp) / len(temp))
-    d_across_para.append(result_1)
-
+        manager_performance = [individual.payoff for individual in superior.individuals]
+        manager_payoff_across_repeat.append(sum(manager_performance) / len(manager_performance))
+    d_across_para.append(sum(manager_payoff_across_repeat) / len(manager_payoff_across_repeat))
 
 # Save the original data for further analysis
 with open("DAO_performance_s", 'wb') as out_file:
     pickle.dump(d_across_para, out_file)
-t1 = time.time()
-print("Time 1:", t1-t0)
-
 
 # x = range(search_round)
 # plt.plot(x, overall_across_para[0], "k-", label="s=1")
