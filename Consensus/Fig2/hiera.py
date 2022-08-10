@@ -10,8 +10,10 @@ from Reality import Reality
 # matplotlib.use('agg')
 # import matplotlib.pyplot as plt
 import pickle
+import time
 
 
+t0 = time.time()
 m = 120
 s = 3
 t = 2
@@ -37,6 +39,8 @@ for index in range(search_round):
 # Save the original data for further analysis
 with open("Hierarchy_diversity", 'wb') as out_file:
     pickle.dump(result_1, out_file)
+t1 = time.time()
+print(t1 - t0)
 
 # x = range(search_round)
 # plt.plot(x, overall_across_para[0], "k-", label="s=1")

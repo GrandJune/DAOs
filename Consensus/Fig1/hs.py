@@ -10,17 +10,22 @@ from Reality import Reality
 # matplotlib.use('agg')
 # import matplotlib.pyplot as plt
 import pickle
+import time
 
+
+t0 = time.time()
 m = 120  # Christina's paper: 100
 s_list = [1, 3, 5, 7, 9, 11]
 t = 2
 n = 500  # Christina's paper: 280
 search_round = 500
-repetition_round = 500  # Christina's paper
+repetition_round = 200  # Christina's paper
 d_across_para = []
 h_across_para = []
 
 for s in s_list:  # parameter
+    if m % (s * t) != 0:
+        m = s * t * (m // s // t)  # deal with the cell number issue
     manager_payoff_across_repeat = []
     for _ in range(repetition_round):  # repetation
         reality = Reality(m=m, s=s, t=t)
@@ -40,6 +45,8 @@ for s in s_list:  # parameter
 # Save the original data for further analysis
 with open("Hierarchy_performance_s", 'wb') as out_file:
     pickle.dump(h_across_para, out_file)
+t1 = time.time()
+print(t1 - t0)
 
 # x = range(search_round)
 # plt.plot(x, overall_across_para[0], "k-", label="s=1")

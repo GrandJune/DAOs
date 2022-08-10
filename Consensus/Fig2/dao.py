@@ -10,8 +10,10 @@ from Reality import Reality
 # matplotlib.use('agg')  # For NUS HPC only
 # import matplotlib.pyplot as plt
 import pickle
+import time
 
 
+t0 = time.time()
 m = 120  # Christina's paper: 100
 s = 3
 t = 2
@@ -51,6 +53,9 @@ for index in range(search_round):
 # Save the original data for further analysis
 with open("DAO_diversity", 'wb') as out_file:
     pickle.dump(result_1, out_file)
+t1 = time.time()
+print(t1 - t0)
+
 
 # x = range(search_round)
 # plt.plot(x, result_1[0], "k-", label="DAO")

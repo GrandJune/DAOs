@@ -12,13 +12,13 @@ from Reality import Reality
 import pickle
 import time
 
-
+t0 = time.time()
 m = 120  # Christina's paper: 100
 s = 3
 t_list = [1, 2, 3, 4, 5, 6, 7, 9, 10]
 n = 500  # Christina's paper: 280
 search_round = 500
-repetition_round = 500  # Christina's paper
+repetition_round = 200  # Christina's paper
 d_across_para = []
 version = "Rushed"
 for t in t_list:  # parameter
@@ -52,4 +52,4 @@ for t in t_list:  # parameter
 with open("DAO_performance_t", 'wb') as out_file:
     pickle.dump(d_across_para, out_file)
 t1 = time.time()
-print("Time 1:", t1-t0)
+print(t1 - t0)
