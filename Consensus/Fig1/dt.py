@@ -30,10 +30,10 @@ for t in t_list:  # parameter
     for _ in range(repetition_round):  # repetation
         reality = Reality(m=m, s=s, t=t)
         superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=False)
-        consensus = [0] * m
+        consensus = [0] * (m // s)
         for _ in range(search_round):  # free search loop
             for individual in superior.individuals:
-                next_index = np.random.choice(range(m))
+                next_index = np.random.choice(len(consensus))
                 next_policy = consensus[next_index]
                 individual.constrained_local_search(focal_policy=next_policy, focal_policy_index=next_index)
             # form the consensus

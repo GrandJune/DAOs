@@ -31,10 +31,10 @@ for _ in range(repetition_round):  # repetation
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=False)
     manager_payoff_across_time = []
     # first step to initialize the search
-    consensus = [0] * m
+    consensus = [0] * (m // s)
     for _ in range(search_round):  # free search loop
         for individual in superior.individuals:
-            next_index = np.random.choice(range(m))
+            next_index = np.random.choice(len(consensus))
             next_policy = consensus[next_index]
             individual.constrained_local_search(focal_policy=next_policy, focal_policy_index=next_index)
         # build the consensus

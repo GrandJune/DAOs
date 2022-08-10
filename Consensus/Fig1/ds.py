@@ -30,10 +30,10 @@ for s in s_list:  # parameter
     manager_payoff_across_repeat = []
     for _ in range(repetition_round):  # repetation
         reality = Reality(m=m, s=s, t=t)
-        consensus = [0] * m
+        consensus = [0] * (m // s)
         superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=False)
         for individual in superior.individuals:
-            next_index = np.random.choice(range(m))
+            next_index = np.random.choice(len(consensus))
             next_policy = consensus[next_index]
             individual.constrained_local_search(focal_policy=next_policy, focal_policy_index=next_index)
             # form the consensus
