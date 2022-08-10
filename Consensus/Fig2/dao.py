@@ -20,7 +20,7 @@ s = 3
 t = 2
 n = 500  # Christina's paper: 280
 search_round = 500
-repetition_round = 500  # Christina's paper
+repetition_round = 200  # Christina's paper
 
 version = "Rushed"
 diversity_across_repeat = []
