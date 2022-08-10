@@ -27,7 +27,7 @@ version = "Rushed"
 manager_payoff_across_repeat = []
 for _ in range(repetition_round):  # repetation
     reality = Reality(m=m, s=s, t=t)
-    superior = Superior(m=m, s=s, t=t, n=n, reality=reality)
+    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=False)
     manager_payoff_across_time = []
     for _ in range(search_round):  # free search loop
         for individual in superior.individuals:

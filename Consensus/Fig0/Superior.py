@@ -11,7 +11,7 @@ from Reality import Reality
 
 
 class Superior:
-    def __init__(self, m=None, s=None, t=None, n=None, reality=None):
+    def __init__(self, m=None, s=None, t=None, n=None, reality=None, confirm=True):
         self.m = m  # state length
         self.s = s  # lower-level interdependency
         self.t = t  # upper-level interdependency
@@ -22,7 +22,8 @@ class Superior:
         self.beliefs = []
         for i in range(self.n):
             individual = Individual(m=self.m, s=self.s, t=self.t, reality=reality)
-            individual.confirm_to_supervision(policy=self.policy)
+            if confirm:
+                individual.confirm_to_supervision(policy=self.policy)
             self.individuals.append(individual)
             self.beliefs.append(individual.belief)
         self.reality = reality
