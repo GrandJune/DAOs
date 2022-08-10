@@ -1,0 +1,8 @@
+#!/bin/bash
+#SBATCH --time=2:30:00
+#SBATCH --job-name=DAO_s
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=junyili@u.nus.edu
+#SBATCH --mem=20gb
+#SBATCH --partition=medium
+python autonomy_across_time.py
