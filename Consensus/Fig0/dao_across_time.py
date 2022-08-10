@@ -36,8 +36,12 @@ for _ in range(repetition_round):  # repetation
         for individual in superior.individuals:
             next_index = np.random.choice(len(consensus))
             next_policy = consensus[next_index]
-            individual.constrained_local_search(focal_policy=next_policy, focal_policy_index=next_index)
+            try:
+                individual.constrained_local_search(focal_policy=next_policy, focal_policy_index=next_index)
+            except:
+                print(next_index, next_policy)
         # build the consensus
+        consensus = []  # reset the consensus; Otherwise, an increasing consensus
         for i in range(m//s):
             temp = sum(individual.policy[i] for individual in superior.individuals)
             if temp < 0:
