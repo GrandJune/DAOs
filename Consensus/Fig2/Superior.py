@@ -11,7 +11,7 @@ from Reality import Reality
 
 
 class Superior:
-    def __init__(self, m=None, s=None, t=None, n=None, reality=None):
+    def __init__(self, m=None, s=None, t=None, n=None, reality=None, confirm=True):
         self.m = m  # state length
         self.s = s  # lower-level interdependency
         self.t = t  # upper-level interdependency
@@ -19,10 +19,13 @@ class Superior:
         self.policy_num = self.m // self.s
         self.policy = np.random.choice([-1, 1], self.policy_num, p=[0.5, 0.5])
         self.individuals = []
+        self.beliefs = []
         for i in range(self.n):
             individual = Individual(m=self.m, s=self.s, t=self.t, reality=reality)
-            individual.confirm_to_supervision(policy=self.policy)
+            if confirm:
+                individual.confirm_to_supervision(policy=self.policy)
             self.individuals.append(individual)
+            self.beliefs.append(individual.belief)
         self.reality = reality
         self.payoff = self.reality.get_policy_payoff(policy=self.policy)
 
@@ -44,21 +47,19 @@ class Superior:
                 individual.constrained_local_search(focal_policy=self.policy[focal_index], focal_policy_index=focal_index)
 
     def get_diversity(self):
-        whole_pool = [individual.belief for individual in self.individuals]
-        pair_wise_diversity = [self.get_pair_distance(individual.belief, whole_pool)
-                               for individual in self.individuals]
-        return sum(pair_wise_diversity) / self.n
+        belief_pool = [individual.belief for individual in self.individuals]
+        diversity = 0
+        for individual in self.individuals:
+            one_pair_diversity = [self.get_distance(individual.belief, belief_b) for belief_b in belief_pool]
+            diversity += sum(one_pair_diversity) / self.m
+        return diversity / self.n
 
-    def get_pair_distance(self, a=None, belief_pool=None):
-        distance = 0
-        for belief in belief_pool:
-            acc = 0
-            for i in range(self.m):
-                if a[i] == belief[i]:
-                    acc += 1
-            distance += acc
-        return distance / self.m
-
+    def get_distance(self, a=None, b=None):
+        acc = 0
+        for i in range(self.m):
+            if a[i] == b[i]:
+                acc += 1
+        return acc
 
 
 if __name__ == '__main__':
@@ -67,8 +68,8 @@ if __name__ == '__main__':
     t = 3
     n = 4
     alpha = 0.5
-    reality = Reality(m=m, s=s, t=t, alpha=alpha)
-    superior = Superior(m=m, s=s, t=t, n=n, reality=reality)
+    reality = Reality(m=m, s=s, t=t)
+    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=True)
     for _ in range(100):
         superior.local_search()
         print(superior.payoff)

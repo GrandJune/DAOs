@@ -11,6 +11,7 @@ from Reality import Reality
 # import matplotlib.pyplot as plt
 import pickle
 import time
+import numpy as np
 
 
 t0 = time.time()
@@ -27,10 +28,13 @@ for _ in range(repetition_round):  # repetation
     reality = Reality(m=m, s=s, t=t)
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality)
     diversity_across_time = []
+    consensus = [0] * m
     for _ in range(search_round):  # free search loop
         diversity_across_time.append(superior.get_diversity())
         for individual in superior.individuals:
-            individual.free_local_search(version=version)
+            next_index = np.random.choice(range(m))
+            next_policy = consensus[next_index]
+            individual.constrained_local_search(focal_policy=next_policy, focal_policy_index=next_index)
         # form the consensus
         consensus = []
         for i in range(m//s):
@@ -41,8 +45,6 @@ for _ in range(repetition_round):  # repetation
                 consensus.append(1)
             else:
                 consensus.append(0)
-        for individual in superior.individuals:
-            individual.confirm_to_supervision(policy=consensus)
     diversity_across_repeat.append(diversity_across_time)
 
 result_1 = []

@@ -11,7 +11,7 @@ from Reality import Reality
 
 
 class Superior:
-    def __init__(self, m=None, s=None, t=None, n=None, reality=None):
+    def __init__(self, m=None, s=None, t=None, n=None, reality=None, confirm=True):
         self.m = m  # state length
         self.s = s  # lower-level interdependency
         self.t = t  # upper-level interdependency
@@ -22,7 +22,8 @@ class Superior:
         self.beliefs = []
         for i in range(self.n):
             individual = Individual(m=self.m, s=self.s, t=self.t, reality=reality)
-            individual.confirm_to_supervision(policy=self.policy)
+            if confirm:
+                individual.confirm_to_supervision(policy=self.policy)
             self.individuals.append(individual)
             self.beliefs.append(individual.belief)
         self.reality = reality
@@ -45,16 +46,20 @@ class Superior:
             for individual in self.individuals:
                 individual.constrained_local_search(focal_policy=self.policy[focal_index], focal_policy_index=focal_index)
 
-    def describe(self):
-        print("The policy is: ", self.policy)
-        print("The payoff is: ", self.payoff)
-        print("The individuals are: ")
-        # for individual in self.individuals:
-        #     individual.describe()
-        print("The beliefs are: ")
-        for belief in self.beliefs:
-            print(belief)
-        print("The reality is: ", self.reality.real_code, self.reality.real_policy)
+    def get_diversity(self):
+        belief_pool = [individual.belief for individual in self.individuals]
+        diversity = 0
+        for individual in self.individuals:
+            one_pair_diversity = [self.get_distance(individual.belief, belief_b) for belief_b in belief_pool]
+            diversity += sum(one_pair_diversity) / self.m
+        return diversity / self.n
+
+    def get_distance(self, a=None, b=None):
+        acc = 0
+        for i in range(self.m):
+            if a[i] == b[i]:
+                acc += 1
+        return acc
 
 
 if __name__ == '__main__':
@@ -63,8 +68,8 @@ if __name__ == '__main__':
     t = 3
     n = 4
     alpha = 0.5
-    reality = Reality(m=m, s=s, t=t, alpha=alpha)
-    superior = Superior(m=m, s=s, t=t, n=n, reality=reality)
+    reality = Reality(m=m, s=s, t=t)
+    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=True)
     for _ in range(100):
         superior.local_search()
         print(superior.payoff)
