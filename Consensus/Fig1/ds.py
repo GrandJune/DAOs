@@ -15,12 +15,12 @@ import numpy as np
 
 
 t0 = time.time()
-m = 120  # Christina's paper: 100
+m = 100  # Christina's paper: 100
 s_list = [1, 3, 5, 7, 9, 11]
 t = 2
-n = 500  # Christina's paper: 280
-search_round = 500
-repetition_round = 200  # Christina's paper
+n = 100  # Christina's paper: 280
+search_round = 200
+repetition_round = 100  # Christina's paper
 d_across_para = []
 h_across_para = []
 version = "Rushed"
@@ -54,7 +54,7 @@ for s in s_list:  # parameter
 with open("DAO_performance_s", 'wb') as out_file:
     pickle.dump(d_across_para, out_file)
 t1 = time.time()
-print(t1 - t0)
+print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
 
 
 # x = range(search_round)

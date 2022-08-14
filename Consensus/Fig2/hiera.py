@@ -15,7 +15,7 @@ import time
 
 t0 = time.time()
 m = 30
-s = 1
+s = 3
 t = 1
 n = 100
 search_round = 100
@@ -39,8 +39,9 @@ for index in range(search_round):
 # Save the original data for further analysis
 with open("Hierarchy_diversity", 'wb') as out_file:
     pickle.dump(result_1, out_file)
+
 t1 = time.time()
-print(t1 - t0)
+print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
 
 # x = range(search_round)
 # plt.plot(x, overall_across_para[0], "k-", label="s=1")

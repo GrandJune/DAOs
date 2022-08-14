@@ -9,7 +9,7 @@ import math
 
 
 class Reality:
-    def __init__(self, m=None, s=None, t=None, alpha=None):
+    def __init__(self, m=None, s=None, t=None, alpha=0.5):
         self.m = m  # the total length of the reality code
         self.s = s  # the lower-level of interdependency (staff interdependency)
         self.t = t  # the upper-level of interdependency (policy interdependency)
@@ -132,7 +132,7 @@ class Reality:
     def belief_2_policy(self, belief):
         policy = []
         for i in range(self.cell_num_1):
-            temp = sum(belief[index] for index in range(i * self.s, (i + 1) * self.s))
+            temp = sum(belief[i * self.s:(i + 1) * self.s])
             if temp < 0:
                 policy.append(-1)
             elif temp > 0:

@@ -20,7 +20,7 @@ class Superior:
         self.policy = np.random.choice([-1, 1], self.policy_num, p=[0.5, 0.5])
         self.individuals = []
         self.beliefs = []
-        for i in range(self.n):
+        for _ in range(self.n):
             individual = Individual(m=self.m, s=self.s, t=self.t, reality=reality)
             if confirm:
                 individual.confirm_to_supervision(policy=self.policy)

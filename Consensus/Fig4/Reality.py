@@ -132,7 +132,7 @@ class Reality:
     def belief_2_policy(self, belief):
         policy = []
         for i in range(self.cell_num_1):
-            temp = sum(belief[index] for index in range(i * self.s, (i + 1) * self.s))
+            temp = sum(belief[i * self.s:(i + 1) * self.s])
             if temp < 0:
                 policy.append(-1)
             elif temp > 0:

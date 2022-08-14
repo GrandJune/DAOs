@@ -20,7 +20,7 @@ class Superior:
         self.policy = np.random.choice([-1, 1], self.policy_num, p=[0.5, 0.5])
         self.individuals = []
         self.beliefs = []
-        for i in range(self.n):
+        for _ in range(self.n):
             individual = Individual(m=self.m, s=self.s, t=self.t, reality=reality)
             if confirm:
                 individual.confirm_to_supervision(policy=self.policy)
@@ -51,13 +51,13 @@ class Superior:
         diversity = 0
         for individual in self.individuals:
             one_pair_diversity = [self.get_distance(individual.belief, belief_b) for belief_b in belief_pool]
-            diversity += sum(one_pair_diversity) / self.m
-        return diversity / self.n
+            diversity += sum(one_pair_diversity)
+        return diversity / self.n / self.n / self.m
 
     def get_distance(self, a=None, b=None):
         acc = 0
         for i in range(self.m):
-            if a[i] == b[i]:
+            if a[i] * b[i] == -1:
                 acc += 1
         return acc
 
