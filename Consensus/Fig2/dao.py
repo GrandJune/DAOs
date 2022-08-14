@@ -15,18 +15,18 @@ import numpy as np
 
 
 t0 = time.time()
-m = 120  # Christina's paper: 100
-s = 3
-t = 2
-n = 500  # Christina's paper: 280
-search_round = 500
-repetition_round = 200  # Christina's paper
+m = 30  # Christina's paper: 100
+s = 1
+t = 1
+n = 100  # Christina's paper: 280
+search_round = 100
+repetition_round = 100  # Christina's paper
 
 version = "Rushed"
 diversity_across_repeat = []
 for _ in range(repetition_round):  # repetation
     reality = Reality(m=m, s=s, t=t)
-    superior = Superior(m=m, s=s, t=t, n=n, reality=reality)
+    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=False)
     diversity_across_time = []
     consensus = [0] * (m // s)
     for _ in range(search_round):  # free search loop
@@ -60,10 +60,12 @@ print(t1 - t0)
 
 
 # x = range(search_round)
-# plt.plot(x, result_1[0], "k-", label="DAO")
-# # plt.plot(x, overall_across_para[2], "k:", label="s=5")
+# plt.plot(x, result_1, "k-", label="DAO")
+# plt.plot(x, overall_across_para[2], "k:", label="s=5")
 # plt.title('Diversity Decrease')
 # plt.xlabel('Time')
 # plt.ylabel('Diversity')
 # plt.legend()
+# plt.savefig("DAO_diversity.jpg")
+# plt.show()
 # plt.savefig("DAO_diversity.jpg")

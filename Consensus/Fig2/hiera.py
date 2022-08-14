@@ -14,12 +14,12 @@ import time
 
 
 t0 = time.time()
-m = 120
-s = 3
-t = 2
-n = 500
-search_round = 500
-repetition_round = 200
+m = 30
+s = 1
+t = 1
+n = 100
+search_round = 100
+repetition_round = 100
 version = "Rushed"
 diversity_across_repeat = []
 for _ in range(repetition_round):  # repetition
