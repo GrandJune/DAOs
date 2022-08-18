@@ -15,12 +15,12 @@ import numpy as np
 
 
 t0 = time.time()
-m = 30  # Christina's paper: 100
-s = 3
-t = 1
-n = 100  # Christina's paper: 280
-search_round = 100
-repetition_round = 100  # Christina's paper
+m = 60
+s = 1
+t = 2
+n = 500
+search_round = 300
+repetition_round = 100
 
 version = "Rushed"
 diversity_across_repeat = []

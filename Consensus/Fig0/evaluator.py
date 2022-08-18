@@ -7,26 +7,26 @@
 import matplotlib.pyplot as plt
 import pickle
 
-
-dao_performance_across_time = r"C:\Python_Workplace\dao-0810\Fig0\DAO_performance_across_time"
-autonomy_performance_across_time = r"C:\Python_Workplace\dao-0810\Fig0\Autonomy_performance_across_time"
-hierarchy_performance_across_time = r"C:\Python_Workplace\dao-0810\Fig0\Hierarchy_performance_across_time"
+folder = r"C:\Python_Workplace\dao-0815\DAO"
+dao_performance_across_time = folder + r"\Fig0\DAO_performance_across_time"
+autonomy_performance_across_time = folder + r"\Fig0\Autonomy_performance_across_time"
+hierarchy_performance_across_time = folder + r"\Fig0\Hierarchy_performance_across_time"
 with open(dao_performance_across_time, 'rb') as in_file:
     data_dao = pickle.load(in_file)
-with open(dao_performance_across_time, 'rb') as in_file:
+with open(autonomy_performance_across_time, 'rb') as in_file:
     data_autonomy = pickle.load(in_file)
-with open(dao_performance_across_time, 'rb') as in_file:
+with open(hierarchy_performance_across_time, 'rb') as in_file:
     data_hierarchy = pickle.load(in_file)
 
-x = range(500)
-# plt.plot(x, data_dao, "k-", label="DAO")
-# plt.plot(x, data_autonomy, "k--", label="Autonomy")
+x = range(len(data_dao))
+plt.plot(x, data_dao, "k-", label="DAO")
+plt.plot(x, data_autonomy, "k--", label="Autonomy")
 plt.plot(x, data_hierarchy, "k:", label="Hierarchy")
-plt.title('Performance across Iterations')
-plt.xlabel('Time')
-plt.ylabel('Performance')
-plt.legend()
+# plt.title('Performance across Iterations')
+plt.xlabel('Iteration', fontweight='bold', fontsize=12)
+plt.ylabel('Performance', fontweight='bold', fontsize=12)
+plt.legend(frameon=False, ncol=1)
+plt.savefig("HAD_comparison.png", transparent=True, dpi=1200)
 plt.show()
-# plt.savefig("Hierarchy_s_pure_superior_performance.jpg")
 # plt.clf()
 # plt.close()

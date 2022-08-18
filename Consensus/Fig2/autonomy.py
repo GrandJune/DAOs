@@ -11,50 +11,38 @@ from Reality import Reality
 # import matplotlib.pyplot as plt
 import pickle
 import time
-import numpy as np
 
 
 t0 = time.time()
-m = 120  # Christina's paper: 100
-s_list = [1, 3, 5, 7, 9, 11]
+m = 60
+s = 1
 t = 2
-n = 500  # Christina's paper: 280
-search_round = 500
-repetition_round = 200  # Christina's paper
-d_across_para = []
-h_across_para = []
+n = 500
+search_round = 300
+repetition_round = 100
 version = "Rushed"
-for s in s_list:  # parameter
-    if m % (s * t) != 0:
-        m = s * t * (m // s // t)  # deal with the cell number issue
-    manager_payoff_across_repeat = []
-    for _ in range(repetition_round):  # repetation
-        reality = Reality(m=m, s=s, t=t)
-        consensus = [0] * (m // s)
-        superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=False)
+
+diversity_across_repeat = []
+for _ in range(repetition_round):  # repetation
+    reality = Reality(m=m, s=s, t=t)
+    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=False)
+    diversity_across_time = []
+    for _ in range(search_round):  # free search loop
+        diversity_across_time.append(superior.get_diversity())
         for individual in superior.individuals:
-            next_index = np.random.choice(len(consensus))
-            next_policy = consensus[next_index]
-            individual.constrained_local_search(focal_policy=next_policy, focal_policy_index=next_index)
-            # form the consensus
-            consensus = []
-            for i in range(m//s):
-                temp = sum(individual.policy[i] for individual in superior.individuals)
-                if temp < 0:
-                    consensus.append(-1)
-                elif temp > 0:
-                    consensus.append(1)
-                else:
-                    consensus.append(0)
-        manager_performance = [individual.payoff for individual in superior.individuals]
-        manager_payoff_across_repeat.append(sum(manager_performance) / len(manager_performance))
-    d_across_para.append(sum(manager_payoff_across_repeat) / len(manager_payoff_across_repeat))
+            individual.free_local_search(version=version)
+    diversity_across_repeat.append(diversity_across_time)
+
+result_1 = []
+for i in range(search_round):
+    temp = [payoff_list[i] for payoff_list in diversity_across_repeat]
+    result_1.append(sum(temp) / len(temp))
 
 # Save the original data for further analysis
-with open("DAO_performance_s", 'wb') as out_file:
-    pickle.dump(d_across_para, out_file)
+with open("Autonomy_diversity", 'wb') as out_file:
+    pickle.dump(result_1, out_file)
 t1 = time.time()
-print(t1 - t0)
+print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
 
 
 # x = range(search_round)

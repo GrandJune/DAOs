@@ -9,20 +9,20 @@ import pickle
 
 
 data_folder = r"C:\Python_Workplace\dao-0808\HvsD"
-file_name = data_folder + r"\DAO_manager_performance_s135"
-print(file_name)
-with open(file_name, 'rb') as in_file:
-    data = pickle.load(in_file)
+file_name_1 = data_folder + r"\DAO_performance_s"
+with open(file_name_1, 'rb') as in_file:
+    data_1 = pickle.load(in_file)
 # print(data)
 x = range(200)
-plt.plot(x, data[0], "k-", label="s=1")
-plt.plot(x, data[1], "k--", label="s=3")
-plt.plot(x, data[2], "k:", label="s=5")
+plt.plot(x, data_1, "k-", label="DAO")
+plt.plot(x, data_1[1], "k--", label="s=3")
+plt.plot(x, data_1[2], "k:", label="s=5")
 plt.title('Pure Superior Performance')
-plt.xlabel('Time')
-plt.ylabel('Performance')
-plt.legend()
+plt.xlabel('Operational Complexity', fontweight='bold', fontsize=12)
+plt.ylabel('Performance', fontweight='bold', fontsize=12)
+plt.legend(frameon=False, ncol=1)
+
+plt.savefig("Performance_across_s.png")
 plt.show()
-# plt.savefig("Hierarchy_s_pure_superior_performance.jpg")
 # plt.clf()
 # plt.close()

@@ -15,44 +15,51 @@ import numpy as np
 
 
 t0 = time.time()
-m = 100  # Christina's paper: 100
-s_list = [1, 3, 5, 7, 9, 11]
+m = 60  # Christina's paper: 100
+s_list = [1, 3, 5, 7, 9]
 t = 2
 n = 100  # Christina's paper: 280
-search_round = 200
-repetition_round = 100  # Christina's paper
-d_across_para = []
-h_across_para = []
+search_round = 600
+repetition_round = 50  # Christina's paper
+data_across_para = []
 version = "Rushed"
 for s in s_list:  # parameter
+    m = 60
     if m % (s * t) != 0:
         m = s * t * (m // s // t)  # deal with the cell number issue
-    manager_payoff_across_repeat = []
+    performance_across_repeat = []
     for _ in range(repetition_round):  # repetation
         reality = Reality(m=m, s=s, t=t)
         consensus = [0] * (m // s)
         superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=False)
-        for individual in superior.individuals:
-            next_index = np.random.choice(len(consensus))
-            next_policy = consensus[next_index]
-            individual.constrained_local_search(focal_policy=next_policy, focal_policy_index=next_index)
-            # form the consensus
-            consensus = []
-            for i in range(m//s):
-                temp = sum(individual.policy[i] for individual in superior.individuals)
-                if temp < 0:
-                    consensus.append(-1)
-                elif temp > 0:
-                    consensus.append(1)
-                else:
-                    consensus.append(0)
-        manager_performance = [individual.payoff for individual in superior.individuals]
-        manager_payoff_across_repeat.append(sum(manager_performance) / len(manager_performance))
-    d_across_para.append(sum(manager_payoff_across_repeat) / len(manager_payoff_across_repeat))
+        performance_across_time = []
+        for _ in range(search_round):
+            for individual in superior.individuals:
+                next_index = np.random.choice(len(consensus))
+                next_policy = consensus[next_index]
+                individual.constrained_local_search(focal_policy=next_policy, focal_policy_index=next_index)
+                # form the consensus
+                consensus = []
+                for i in range(m//s):
+                    temp = sum(individual.policy[i] for individual in superior.individuals)
+                    if temp < 0:
+                        consensus.append(-1)
+                    elif temp > 0:
+                        consensus.append(1)
+                    else:
+                        consensus.append(0)
+            manager_performance = [individual.payoff for individual in superior.individuals]
+            performance_across_time.append(sum(manager_performance) / len(manager_performance))
+        performance_across_repeat.append(performance_across_time)
+    result = []
+    for i in range(search_round):
+        temp = [payoff_list[i] for payoff_list in performance_across_repeat]
+        result.append(sum(temp) / len(temp))
+    data_across_para.append(result)
 
 # Save the original data for further analysis
 with open("DAO_performance_s", 'wb') as out_file:
-    pickle.dump(d_across_para, out_file)
+    pickle.dump(data_across_para, out_file)
 t1 = time.time()
 print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
 

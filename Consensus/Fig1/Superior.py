@@ -49,10 +49,11 @@ class Superior:
     def get_diversity(self):
         belief_pool = [individual.belief for individual in self.individuals]
         diversity = 0
-        for individual in self.individuals:
-            one_pair_diversity = [self.get_distance(individual.belief, belief_b) for belief_b in belief_pool]
+        for index, individual in enumerate(self.individuals):
+            selected_pool = belief_pool[index::]
+            one_pair_diversity = [self.get_distance(individual.belief, belief) for belief in selected_pool]
             diversity += sum(one_pair_diversity)
-        return diversity / self.n / self.n / self.m
+        return diversity / self.m / (self.n - 1) / self.n * 2
 
     def get_distance(self, a=None, b=None):
         acc = 0
