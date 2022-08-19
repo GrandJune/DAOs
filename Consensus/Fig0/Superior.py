@@ -55,6 +55,19 @@ class Superior:
             for individual in self.individuals:
                 individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index], focal_policy_index=focal_index, authority=self.authority)
 
+    def random_guess(self):
+        focal_index = np.random.randint(0, self.policy_num)
+        next_policy = self.policy.copy()
+        if next_policy[focal_index] == 0:
+            next_policy[focal_index] = np.random.choice([-1, 1])
+        else:
+            next_policy[focal_index] *= -1
+        next_payoff = self.reality.get_policy_payoff(policy=next_policy)
+        self.policy = next_policy
+        self.payoff = next_payoff
+        for individual in self.individuals:
+            individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index], focal_policy_index=focal_index, authority=self.authority)
+
     def get_diversity(self):
         belief_pool = [individual.belief for individual in self.individuals]
         diversity = 0
@@ -79,7 +92,7 @@ if __name__ == '__main__':
     n = 4
     alpha = 0.5
     reality = Reality(m=m, s=s, t=t)
-    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=True)
+    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=True)
     for _ in range(100):
         superior.local_search()
         print(superior.payoff)
