@@ -14,47 +14,61 @@ import time
 
 
 t0 = time.time()
-m = 60
-s = 1
-t = 2
-n = 500
-search_round = 1
-repetition_round = 1
-confirm = 0.8
-version = "Rushed"
-diversity_across_repeat = []
-for _ in range(repetition_round):  # repetition
-    reality = Reality(m=m, s=s, t=t)
-    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=confirm)
-    diversity_across_time = []
-    for _ in range(search_round):  # free search loop
-        diversity_across_time.append(superior.get_diversity())
-        superior.local_search()
-    diversity_across_repeat.append(diversity_across_time)
-    for individual in superior.individuals:
-        if superior.get_distance(a=individual.belief, b=superior.policy) != 0:
-            print(individual.belief)
+m = 90  # Christina's paper: 100
+s = 3
+t = 6
+n = 400  # Christina's paper: 280
+search_round = 600
+repetition_round = 50  # Christina's paper
 
+# Tough Search
+performance_across_repeat = []
+for _ in range(repetition_round):  # repetation
+    reality = Reality(m=m, s=s, t=t)
+    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=True)
+    performance_across_time = []
+    for _ in range(search_round):  # free search loop
+        superior.local_search()
+        manager_performance = [individual.payoff for individual in superior.individuals]
+        performance_across_time.append(sum(manager_performance) / len(manager_performance))
+    performance_across_repeat.append(performance_across_time)
 result_1 = []
 for index in range(search_round):
-    temp = [diversity_list[index] for diversity_list in diversity_across_repeat]
+    temp = [payoff_list[index] for payoff_list in performance_across_repeat]
     result_1.append(sum(temp) / len(temp))
 
-# Save the original data for further analysis
-with open("Hierarchy_diversity", 'wb') as out_file:
-    pickle.dump(result_1, out_file)
+# Random Guess
+performance_across_repeat = []
+for _ in range(repetition_round):  # repetation
+    reality = Reality(m=m, s=s, t=t)
+    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=True)
+    performance_across_time = []
+    for _ in range(search_round):  # free search loop
+        superior.random_guess()
+        manager_performance = [individual.payoff for individual in superior.individuals]
+        performance_across_time.append(sum(manager_performance) / len(manager_performance))
+    performance_across_repeat.append(performance_across_time)
+result_2 = []
+for index in range(search_round):
+    temp = [payoff_list[index] for payoff_list in performance_across_repeat]
+    result_2.append(sum(temp) / len(temp))
 
+data_across_para = [result_1, result_2]
+# Save the original data for further analysis
+with open("robust_random_guess", 'wb') as out_file:
+    pickle.dump(data_across_para, out_file)
 t1 = time.time()
 print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
 
 # x = range(search_round)
-# plt.plot(x, overall_across_para[0], "k-", label="s=1")
+# plt.plot(x, h_across_para[0], "k-", label="s=1")
 # plt.plot(x, overall_across_para[1], "k--", label="s=3")
 # plt.plot(x, overall_across_para[2], "k:", label="s=5")
 # plt.title('Overall Performance')
 # plt.xlabel('Time')
 # plt.ylabel('Performance')
 # plt.legend()
+# plt.show()
 # plt.savefig("Hierarchy_s_overall_performance.jpg")
 # plt.clf()
 #

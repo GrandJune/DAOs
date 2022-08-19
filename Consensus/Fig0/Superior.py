@@ -11,7 +11,15 @@ from Reality import Reality
 
 
 class Superior:
-    def __init__(self, m=None, s=None, t=None, n=None, reality=None, confirm=True):
+    def __init__(self, m=None, s=None, t=None, n=None, reality=None, authority=0.8):
+        """
+        :param m: problem space
+        :param s: the first complexity
+        :param t: the second complexity
+        :param n: the number of agents
+        :param reality: to provide feedback
+        :param confirm: the extent to which agents confirm to their superior
+        """
         self.m = m  # state length
         self.s = s  # lower-level interdependency
         self.t = t  # upper-level interdependency
@@ -20,10 +28,11 @@ class Superior:
         self.policy = np.random.choice([-1, 1], self.policy_num, p=[0.5, 0.5])
         self.individuals = []
         self.beliefs = []
+        self.authority = authority
         for _ in range(self.n):
             individual = Individual(m=self.m, s=self.s, t=self.t, reality=reality)
-            if confirm:
-                individual.confirm_to_supervision(policy=self.policy)
+            if authority:
+                individual.confirm_to_supervision(policy=self.policy, authority=authority)
             self.individuals.append(individual)
             self.beliefs.append(individual.belief)
         self.reality = reality
@@ -31,7 +40,7 @@ class Superior:
 
     def local_search(self):
         """
-        Superior can do a free local search
+        Superior can do a free local search, and then agents adjust accordingly.
         """
         focal_index = np.random.randint(0, self.policy_num)
         next_policy = self.policy.copy()
@@ -44,13 +53,13 @@ class Superior:
             self.policy = next_policy
             self.payoff = next_payoff
             for individual in self.individuals:
-                individual.constrained_local_search(focal_policy=self.policy[focal_index], focal_policy_index=focal_index)
+                individual.constrained_local_search(focal_policy=self.policy[focal_index], focal_policy_index=focal_index, authority=self.authority)
 
     def get_diversity(self):
         belief_pool = [individual.belief for individual in self.individuals]
         diversity = 0
         for index, individual in enumerate(self.individuals):
-            selected_pool = belief_pool[index::]
+            selected_pool = belief_pool[index+1::]
             one_pair_diversity = [self.get_distance(individual.belief, belief) for belief in selected_pool]
             diversity += sum(one_pair_diversity)
         return diversity / self.m / (self.n - 1) / self.n * 2
@@ -58,7 +67,7 @@ class Superior:
     def get_distance(self, a=None, b=None):
         acc = 0
         for i in range(self.m):
-            if a[i] * b[i] == -1:
+            if a[i] != b[i]:
                 acc += 1
         return acc
 

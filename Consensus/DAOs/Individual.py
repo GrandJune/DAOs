@@ -21,7 +21,7 @@ class Individual:
         self.payoff = self.reality.get_hierarchy_payoff_rushed(belief=self.belief, policy=self.policy)
         self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
-    def constrained_local_search(self, focal_policy=None, focal_policy_index=None, version="Rushed"):
+    def constrained_local_search_under_consensus(self, focal_policy=None, focal_policy_index=None, version="Rushed"):
         """
         The local search should confirm to the policy constraint
         :param focal_policy: 1 or -1
@@ -31,21 +31,90 @@ class Individual:
         if focal_policy == 0:
             self.free_local_search(scope=range(focal_policy_index*self.s, (focal_policy_index+1)*self.s), version=version)
             return
-        next_belief = self.belief.copy()
+        next_belief_under_consensus, next_belief_under_autonomy = self.belief.copy(), self.belief.copy()
+        # Under consensus
         alternatives = [focal_policy] * math.ceil(self.s / 2) + [-1*focal_policy] * (self.s - math.ceil(self.s / 2))
         alternatives = list(set(permutations(alternatives, self.s)))
         alternatives.append([focal_policy] * self.s)
         # print("alternatives: ", alternatives)
         # print("focal_policy_index: ", focal_policy_index)
         next_belief_pieces = alternatives[np.random.choice(len(alternatives))]
-        next_belief[focal_policy_index*self.s:(focal_policy_index+1)*self.s] = next_belief_pieces
-        next_policy = self.reality.belief_2_policy(belief=next_belief)
-        # next_payoff = self.reality.get_hierarchy_payoff_rushed(policy=self.policy, belief=next_belief, version=version)
-        next_payoff = self.reality.get_belief_payoff(belief=next_belief, version=version)
-        if next_payoff > self.payoff:
-            self.belief = next_belief
-            self.policy = next_policy
-            self.payoff = next_payoff
+        next_belief_under_consensus[focal_policy_index*self.s:(focal_policy_index+1)*self.s] = next_belief_pieces
+        next_policy_under_consensus = self.reality.belief_2_policy(belief=next_belief_under_consensus)
+        next_payoff_under_consensus = self.reality.get_belief_payoff(belief=next_belief_under_consensus, version=version)
+
+        # Under autonomy
+        focal_index = np.random.choice(range(focal_policy_index*self.s, (focal_policy_index+1)*self.s))
+        if next_belief_under_autonomy[focal_index] != 0:
+            next_belief_under_autonomy[focal_index] *= -1
+        else:
+            next_belief_under_autonomy[focal_index] = np.random.choice([-1, 1])
+        next_policy_under_autonomy = self.reality.belief_2_policy(belief=next_belief_under_autonomy)
+        next_payoff_under_autonomy = self.reality.get_belief_payoff(belief=next_belief_under_autonomy, version=version)
+
+        max_payoff = max(next_payoff_under_autonomy, next_payoff_under_consensus, self.payoff)
+
+        if self.payoff == max_payoff:
+            return
+        elif next_payoff_under_autonomy == max_payoff:
+            self.belief = next_belief_under_autonomy
+            self.policy = next_policy_under_autonomy
+            self.payoff = next_payoff_under_autonomy
+            self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
+        else:
+            self.belief = next_belief_under_consensus
+            self.policy = next_policy_under_consensus
+            self.payoff = next_payoff_under_consensus
+            self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
+
+    def constrained_local_search_under_authority(self, focal_policy=None, focal_policy_index=None, version="Rushed", authority=None):
+        """
+        The local search should confirm to the policy constraint
+        :param focal_policy: 1 or -1
+        :param focal_policy_index: the index of the policy (0, self.m/self.s)
+        :return:
+        """
+        if focal_policy == 0:
+            self.free_local_search(scope=range(focal_policy_index*self.s, (focal_policy_index+1)*self.s), version=version)
+            return
+        next_belief_under_authority, next_belief_under_autonomy = self.belief.copy(), self.belief.copy()
+        # Under Authority
+        if np.random.uniform(0, 1) <= authority:
+            alternatives = [focal_policy] * math.ceil(self.s / 2) + [-1*focal_policy] * (self.s - math.ceil(self.s / 2))
+            alternatives = list(set(permutations(alternatives, self.s)))
+            alternatives.append([focal_policy] * self.s)
+            # print("alternatives: ", alternatives)
+            # print("focal_policy_index: ", focal_policy_index)
+            next_belief_pieces = alternatives[np.random.choice(len(alternatives))]
+            next_belief_under_authority[focal_policy_index*self.s:(focal_policy_index+1)*self.s] = next_belief_pieces
+            next_policy_under_authority = self.reality.belief_2_policy(belief=next_belief_under_authority)
+            next_payoff_under_authority = self.reality.get_belief_payoff(belief=next_belief_under_authority, version=version)
+        else:
+            next_payoff_under_authority = -1000  # Never consider
+            next_policy_under_authority = self.policy.copy()
+
+        # Under autonomy
+        focal_index = np.random.choice(range(focal_policy_index*self.s, (focal_policy_index+1)*self.s))
+        if next_belief_under_autonomy[focal_index] != 0:
+            next_belief_under_autonomy[focal_index] *= -1
+        else:
+            next_belief_under_autonomy[focal_index] = np.random.choice([-1, 1])
+        next_policy_under_autonomy = self.reality.belief_2_policy(belief=next_belief_under_autonomy)
+        next_payoff_under_autonomy = self.reality.get_belief_payoff(belief=next_belief_under_autonomy, version=version)
+
+        # Choose the maximal payoff
+        max_payoff = max(next_payoff_under_autonomy, next_belief_under_authority, self.payoff)
+        if self.payoff == max_payoff:
+            return
+        elif next_payoff_under_autonomy == max_payoff:
+            self.belief = next_belief_under_autonomy
+            self.policy = next_policy_under_autonomy
+            self.payoff = next_payoff_under_autonomy
+            self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
+        else:
+            self.belief = next_belief_under_authority
+            self.policy = next_policy_under_authority
+            self.payoff = next_payoff_under_authority
             self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
     def free_local_search(self, scope=None, version="Rushed"):
@@ -67,21 +136,25 @@ class Individual:
             self.policy = next_policy
             self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
-    def confirm_to_supervision(self, policy=None):
+    def confirm_to_supervision(self, policy=None, authority=None):
         """
-        NO search, just an initialization for the blinding between superior and manager
-        :param policy:
-        :return:
+        No search effect, just determine whether to confirm or not for each domain
+        :param policy: The policy constraint to which agents need to confirm
+        :param confirm: The authority degree; To what extend the agents need to confirm to superiors' policy directives
+        :return: A confirmation situation under the authority degree of confirm
         """
         for index, value in enumerate(policy):
             if value == 0:
                 continue
-            elif value != self.policy[index]:  # Only confirm the conflicting beliefs
-                alternatives = [value] * math.ceil(self.s / 2) + [-1 * value] * (self.s - math.ceil(self.s / 2))
-                alternatives = list(set(permutations(alternatives)))
-                alternatives.append([value] * self.s)
-                belief_pieces = alternatives[np.random.choice(len(alternatives))]
-                self.belief[index*self.s:(index+1)*self.s] = belief_pieces
+            if value == self.policy[index]:
+                continue
+            else:
+                if np.random.uniform(0, 1) <= authority:
+                    alternatives = [value] * math.ceil(self.s / 2) + [-1 * value] * (self.s - math.ceil(self.s / 2))
+                    alternatives = list(set(permutations(alternatives)))
+                    alternatives.append([value] * self.s)
+                    belief_pieces = alternatives[np.random.choice(len(alternatives))]
+                    self.belief[index*self.s:(index+1)*self.s] = belief_pieces
         self.policy = self.reality.belief_2_policy(belief=self.belief)
         self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
