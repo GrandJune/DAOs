@@ -15,7 +15,7 @@ import time
 
 
 t0 = time.time()
-m = 120  # Christina's paper: 100
+m = 120  # 120 对应DAO 600轮 才收敛
 s = 3
 t = 2
 n = 500  # Christina's paper: 280

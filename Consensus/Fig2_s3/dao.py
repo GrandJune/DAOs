@@ -17,11 +17,10 @@ import numpy as np
 t0 = time.time()
 m = 60
 s = 3
-t = 1
-n = 100
-search_round = 50
-repetition_round = 1
-
+t = 2
+n = 500
+search_round = 300
+repetition_round = 100
 version = "Rushed"
 diversity_across_repeat = []
 for _ in range(repetition_round):  # repetation
@@ -37,7 +36,7 @@ for _ in range(repetition_round):  # repetation
             next_policy = consensus[next_index]
             individual.constrained_local_search_under_consensus(focal_policy=next_policy, focal_policy_index=next_index)
         # print("After: ", superior.get_diversity())
-        print(consensus)
+        # print(consensus)
         # form the consensus
         consensus = []
         for i in range(m//s):

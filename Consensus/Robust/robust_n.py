@@ -19,7 +19,7 @@ m = 60  # Christina's paper: 100
 s = 3
 t = 2
 n_list = [10, 50, 100, 200, 300, 400, 500]  # Christina's paper: 280
-search_round = 600
+search_round = 300
 repetition_round = 50  # Christina's paper
 data_across_para = []
 version = "Rushed"
@@ -28,13 +28,13 @@ for n in n_list:  # parameter
     for _ in range(repetition_round):  # repetation
         reality = Reality(m=m, s=s, t=t)
         consensus = [0] * (m // s)
-        superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=False)
+        superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=False)
         performance_across_time = []
         for _ in range(search_round):
             for individual in superior.individuals:
                 next_index = np.random.choice(len(consensus))
                 next_policy = consensus[next_index]
-                individual.constrained_local_search(focal_policy=next_policy, focal_policy_index=next_index)
+                individual.constrained_local_search_under_consensus(focal_policy=next_policy, focal_policy_index=next_index)
                 # form the consensus
                 consensus = []
                 for i in range(m//s):
