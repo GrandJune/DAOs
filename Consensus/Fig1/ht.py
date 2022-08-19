@@ -23,6 +23,7 @@ repetition_round = 50  # Christina's paper
 d_across_para = []
 h_across_para = []
 version = "Rushed"
+authority = 0.8
 for t in t_list:  # parameter
     m = 60
     if m % (s * t) != 0:
@@ -30,7 +31,7 @@ for t in t_list:  # parameter
     performance_across_repeat = []
     for _ in range(repetition_round):  # repetation
         reality = Reality(m=m, s=s, t=t)
-        superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=True)
+        superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
         performance_across_time = []
         for _ in range(search_round):  # free search loop
             superior.local_search()

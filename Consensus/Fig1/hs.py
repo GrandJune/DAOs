@@ -21,7 +21,7 @@ n = 100  # Christina's paper: 280
 search_round = 600
 repetition_round = 50  # Christina's paper
 data_across_para = []
-
+authority = 0.8
 for s in s_list:  # parameter
     m = 60
     if m % (s * t) != 0:
@@ -29,7 +29,7 @@ for s in s_list:  # parameter
     performance_across_repeat = []
     for _ in range(repetition_round):  # repetation
         reality = Reality(m=m, s=s, t=t)
-        superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=True)
+        superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
         performance_across_time = []
         for _ in range(search_round):  # free search loop
             superior.local_search()

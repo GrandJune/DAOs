@@ -22,10 +22,11 @@ search_round = 1
 repetition_round = 1
 confirm = 0.8
 version = "Rushed"
+authority = 0.8
 diversity_across_repeat = []
 for _ in range(repetition_round):  # repetition
     reality = Reality(m=m, s=s, t=t)
-    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=confirm)
+    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
     diversity_across_time = []
     for _ in range(search_round):  # free search loop
         diversity_across_time.append(superior.get_diversity())

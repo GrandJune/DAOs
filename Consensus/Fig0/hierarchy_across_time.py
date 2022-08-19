@@ -22,11 +22,11 @@ search_round = 1000
 repetition_round = 200  # Christina's paper
 d_across_para = []
 h_across_para = []
-
+authority = 0.8
 manager_payoff_across_repeat = []
 for _ in range(repetition_round):  # repetation
     reality = Reality(m=m, s=s, t=t)
-    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=True)
+    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
     manager_payoff_across_time = []
     for _ in range(search_round):  # free search loop
         superior.local_search()

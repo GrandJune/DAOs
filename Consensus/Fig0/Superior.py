@@ -53,7 +53,7 @@ class Superior:
             self.policy = next_policy
             self.payoff = next_payoff
             for individual in self.individuals:
-                individual.constrained_local_search(focal_policy=self.policy[focal_index], focal_policy_index=focal_index, authority=self.authority)
+                individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index], focal_policy_index=focal_index, authority=self.authority)
 
     def get_diversity(self):
         belief_pool = [individual.belief for individual in self.individuals]

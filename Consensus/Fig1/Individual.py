@@ -103,7 +103,7 @@ class Individual:
         next_payoff_under_autonomy = self.reality.get_belief_payoff(belief=next_belief_under_autonomy, version=version)
 
         # Choose the maximal payoff
-        max_payoff = max(next_payoff_under_autonomy, next_belief_under_authority, self.payoff)
+        max_payoff = max(next_payoff_under_autonomy, next_payoff_under_authority, self.payoff)
         if self.payoff == max_payoff:
             return
         elif next_payoff_under_autonomy == max_payoff:
@@ -170,6 +170,6 @@ if __name__ == '__main__':
     print("individual.belief: ", individual.belief, individual.payoff)
     policy_list = [1, -1, 1, -1, 1, -1, 1, -1, 1]
     for index, policy in enumerate(policy_list):
-        individual.constrained_local_search(focal_policy=policy, focal_policy_index=index, version="Rushed")
+        individual.constrained_local_search_under_authority(focal_policy=policy, focal_policy_index=index, version="Rushed")
     print(individual.belief, individual.payoff)
 

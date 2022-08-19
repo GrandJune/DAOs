@@ -31,7 +31,7 @@ for t in t_list:  # parameter
     for _ in range(repetition_round):  # repetation
         reality = Reality(m=m, s=s, t=t)
         consensus = [0] * (m // s)
-        superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=False)
+        superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=False)
         performance_across_time = []
         for _ in range(search_round):
             for individual in superior.individuals:

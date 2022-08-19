@@ -31,13 +31,13 @@ for t in t_list:  # parameter
     for _ in range(repetition_round):  # repetation
         reality = Reality(m=m, s=s, t=t)
         consensus = [0] * (m // s)
-        superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=False)
+        superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=False)
         performance_across_time = []
         for _ in range(search_round):
             for individual in superior.individuals:
                 next_index = np.random.choice(len(consensus))
                 next_policy = consensus[next_index]
-                individual.constrained_local_search(focal_policy=next_policy, focal_policy_index=next_index)
+                individual.constrained_local_search_under_consensus(focal_policy=next_policy, focal_policy_index=next_index)
                 # form the consensus
                 consensus = []
                 for i in range(m//s):

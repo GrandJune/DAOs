@@ -78,44 +78,35 @@ class Individual:
             self.free_local_search(scope=range(focal_policy_index*self.s, (focal_policy_index+1)*self.s), version=version)
             return
         next_belief_under_authority, next_belief_under_autonomy = self.belief.copy(), self.belief.copy()
-        # Under Authority
         if np.random.uniform(0, 1) <= authority:
+            # Under Authority
             alternatives = [focal_policy] * math.ceil(self.s / 2) + [-1*focal_policy] * (self.s - math.ceil(self.s / 2))
             alternatives = list(set(permutations(alternatives, self.s)))
             alternatives.append([focal_policy] * self.s)
-            # print("alternatives: ", alternatives)
-            # print("focal_policy_index: ", focal_policy_index)
             next_belief_pieces = alternatives[np.random.choice(len(alternatives))]
             next_belief_under_authority[focal_policy_index*self.s:(focal_policy_index+1)*self.s] = next_belief_pieces
             next_policy_under_authority = self.reality.belief_2_policy(belief=next_belief_under_authority)
             next_payoff_under_authority = self.reality.get_belief_payoff(belief=next_belief_under_authority, version=version)
+            if next_payoff_under_authority > self.payoff:
+                self.belief = next_belief_under_authority
+                self.policy = next_policy_under_authority
+                self.payoff = next_payoff_under_authority
+                self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
         else:
-            next_payoff_under_authority = -1000  # Never consider
-            next_policy_under_authority = self.policy.copy()
-
-        # Under autonomy
-        focal_index = np.random.choice(range(focal_policy_index*self.s, (focal_policy_index+1)*self.s))
-        if next_belief_under_autonomy[focal_index] != 0:
-            next_belief_under_autonomy[focal_index] *= -1
-        else:
-            next_belief_under_autonomy[focal_index] = np.random.choice([-1, 1])
-        next_policy_under_autonomy = self.reality.belief_2_policy(belief=next_belief_under_autonomy)
-        next_payoff_under_autonomy = self.reality.get_belief_payoff(belief=next_belief_under_autonomy, version=version)
-
-        # Choose the maximal payoff
-        max_payoff = max(next_payoff_under_autonomy, next_belief_under_authority, self.payoff)
-        if self.payoff == max_payoff:
-            return
-        elif next_payoff_under_autonomy == max_payoff:
-            self.belief = next_belief_under_autonomy
-            self.policy = next_policy_under_autonomy
-            self.payoff = next_payoff_under_autonomy
-            self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
-        else:
-            self.belief = next_belief_under_authority
-            self.policy = next_policy_under_authority
-            self.payoff = next_payoff_under_authority
-            self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
+            # Under autonomy
+            focal_index = np.random.choice(range(focal_policy_index * self.s, (focal_policy_index + 1) * self.s))
+            if next_belief_under_autonomy[focal_index] != 0:
+                next_belief_under_autonomy[focal_index] *= -1
+            else:
+                next_belief_under_autonomy[focal_index] = np.random.choice([-1, 1])
+            next_policy_under_autonomy = self.reality.belief_2_policy(belief=next_belief_under_autonomy)
+            next_payoff_under_autonomy = self.reality.get_belief_payoff(belief=next_belief_under_autonomy,
+                                                                        version=version)
+            if next_payoff_under_autonomy > self.payoff:
+                self.belief = next_belief_under_autonomy
+                self.policy = next_policy_under_autonomy
+                self.payoff = next_payoff_under_autonomy
+                self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
     def free_local_search(self, scope=None, version="Rushed"):
         if not scope:
@@ -170,6 +161,6 @@ if __name__ == '__main__':
     print("individual.belief: ", individual.belief, individual.payoff)
     policy_list = [1, -1, 1, -1, 1, -1, 1, -1, 1]
     for index, policy in enumerate(policy_list):
-        individual.constrained_local_search(focal_policy=policy, focal_policy_index=index, version="Rushed")
+        individual.constrained_local_search_under_authority(focal_policy=policy, focal_policy_index=index, version="Rushed")
     print(individual.belief, individual.payoff)
 
