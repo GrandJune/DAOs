@@ -21,7 +21,7 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None, vers
     for _ in range(search_round):  # free search loop
         # diversity_across_time.append(superior.get_diversity())
         for individual in superior.individuals:
-            individual.free_local_search(version=version)
+            individual.free_local_search()
         performance_list = [individual.payoff for individual in superior.individuals]
         performance_across_time.append(sum(performance_list) / len(performance_list))
     return_dict = performance_across_time

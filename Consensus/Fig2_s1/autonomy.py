@@ -30,7 +30,7 @@ for _ in range(repetition_round):  # repetation
     for _ in range(search_round):  # free search loop
         diversity_across_time.append(superior.get_diversity())
         for individual in superior.individuals:
-            individual.free_local_search(version=version)
+            individual.free_local_search()
     diversity_across_repeat.append(diversity_across_time)
 
 result_1 = []

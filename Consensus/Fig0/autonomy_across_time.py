@@ -31,7 +31,7 @@ for _ in range(repetition_round):  # repetation
     manager_payoff_across_time = []
     for _ in range(search_round):  # free search loop
         for individual in superior.individuals:
-            individual.free_local_search(version=version)
+            individual.free_local_search()
         manager_performance = [individual.payoff for individual in superior.individuals]
         manager_payoff_across_time.append(sum(manager_performance) / len(manager_performance))
     manager_payoff_across_repeat.append(manager_payoff_across_time)

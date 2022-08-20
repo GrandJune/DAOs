@@ -35,7 +35,7 @@ for t in t_list:  # parameter
         performance_across_time = []
         for _ in range(search_round):
             for individual in superior.individuals:
-                individual.free_local_search(version=version)
+                individual.free_local_search()
             manager_performance = [individual.payoff for individual in superior.individuals]
             performance_across_time.append(sum(manager_performance) / len(manager_performance))
         performance_across_repeat.append(performance_across_time)
