@@ -66,22 +66,6 @@ class Reality:
                 if flag:
                     ress += self.s
             return ress / self.m
-        elif version == "Penalty":
-            ress = 0
-            for i in range(self.cell_num_1):
-                acc = 0
-                for j in range(self.s):
-                    index = i * self.s + j
-                    # print(self.real_code, belief)
-                    if self.real_code[index] == belief[index]:
-                        acc += 1
-                    elif self.real_code[index] * belief[index] == -1:
-                        acc -= 1
-                    else:  # belief[index] == 0
-                        continue
-                    ress += acc
-            return ress / self.m
-
 
     def get_hierarchy_payoff_rushed(self, alpha=None, belief_list=None, belief=None, policy=None, version="Rushed"):
         """

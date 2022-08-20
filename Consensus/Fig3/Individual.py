@@ -11,7 +11,7 @@ from Reality import Reality
 
 
 class Individual:
-    def __init__(self, m=None, s=None, t=None, reality=None):
+    def __init__(self, m=None, s=None, t=None, reality=None, token=None):
         self.m = m
         self.s = s
         self.t = t
@@ -20,6 +20,7 @@ class Individual:
         self.policy = self.reality.belief_2_policy(belief=self.belief)  # a fake policy as a variable temp
         self.payoff = self.reality.get_hierarchy_payoff_rushed(belief=self.belief, policy=self.policy)
         self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
+        self.token = token
 
     def constrained_local_search_under_consensus(self, focal_policy=None, focal_policy_index=None, version="Rushed"):
         """
@@ -152,14 +153,14 @@ class Individual:
 
 if __name__ == '__main__':
     m = 27
-    s = 9
+    s = 3
     t = 3
     n = 4
-    authority = 0.8
-    reality = Reality(m=m, s=s, t=t)
+    alpha = 0.5
+    reality = Reality(m=m, s=s, t=t, alpha=alpha)
     individual = Individual(m=m, s=s, t=t, reality=reality)
     print("individual.belief: ", individual.belief, individual.payoff)
-    policy_list = [1, -1, 1]
+    policy_list = [1, -1, 1, -1, 1, -1, 1, -1, 1]
     for index, policy in enumerate(policy_list):
         individual.constrained_local_search_under_authority(focal_policy=policy, focal_policy_index=index, version="Rushed")
     print(individual.belief, individual.payoff)

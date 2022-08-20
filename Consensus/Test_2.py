@@ -1,18 +1,22 @@
 from multiprocessing import Pool
 import time
+import multiprocessing as mp
 
-# t0 = time.time()
-# m = 120
-# s = 7
-# t = 2
-# if m % (s * t) != 0:
-#     m = s * t * (m // s // t)
-# # print(m)
-# t1 = time.time()
-# run_time = t1-t0
-# run_time = time.strftime("%H:%M:%S", time.gmtime(run_time))
-# print(run_time)
 
-x = range(10)
-x_1 = x[5::]
-print(x_1)
+def worker(s, return_dict):
+    print(str(s) + " represent!")
+    return_dict[s] = range(s)
+
+
+if __name__ == "__main__":
+    manager = mp.Manager()
+    return_dict = manager.dict()
+    jobs = []
+    for i in range(5):
+        p = mp.Process(target=worker, args=(i, return_dict))
+        jobs.append(p)
+        p.start()
+
+    for proc in jobs:
+        proc.join()
+    print(return_dict.values())

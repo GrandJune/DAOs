@@ -17,7 +17,7 @@ import numpy as np
 t0 = time.time()
 m = 60  # Christina's paper: 100
 s_list = [7, 9]
-t = 2
+t = 1
 n = 100  # Christina's paper: 280
 search_round = 600
 repetition_round = 50  # Christina's paper

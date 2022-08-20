@@ -153,14 +153,15 @@ class Individual:
 if __name__ == '__main__':
     m = 27
     s = 9
-    t = 3
+    t = 1
     n = 4
-    authority = 0.8
-    reality = Reality(m=m, s=s, t=t)
+    alpha = 0.5
+    reality = Reality(m=m, s=s, t=t, alpha=alpha)
     individual = Individual(m=m, s=s, t=t, reality=reality)
     print("individual.belief: ", individual.belief, individual.payoff)
     policy_list = [1, -1, 1]
     for index, policy in enumerate(policy_list):
-        individual.constrained_local_search_under_authority(focal_policy=policy, focal_policy_index=index, version="Rushed")
+        individual.constrained_local_search_under_consensus(focal_policy=policy, focal_policy_index=index, version="Rushed")
     print(individual.belief, individual.payoff)
+    print("Completed")
 
