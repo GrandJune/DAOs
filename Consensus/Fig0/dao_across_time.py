@@ -21,7 +21,7 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
     consensus = [0] * (m // s)
     performance_across_time = []
-    for loop in range(search_round):
+    for _ in range(search_round):
         for individual in superior.individuals:
             next_index = np.random.choice(len(consensus))
             next_policy = consensus[next_index]
@@ -42,9 +42,9 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 63
+    m = 66
     s = 3
-    t = 3
+    t = 2
     n = 200
     search_round = 500
     repetition_round = 100

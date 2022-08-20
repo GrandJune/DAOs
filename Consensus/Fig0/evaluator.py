@@ -7,10 +7,10 @@
 import matplotlib.pyplot as plt
 import pickle
 
-folder = r"C:\Python_Workplace\dao-0820\Consensus"
-dao_performance_across_time = folder + r"\Fig0\DAO_performance_across_time"
-autonomy_performance_across_time = folder + r"\Fig0\Autonomy_performance_across_time"
-hierarchy_performance_across_time = folder + r"\Fig0\Hierarchy_performance_across_time"
+folder = r"C:\Python_Workplace\dao-0820\Consensus\Fig0"
+dao_performance_across_time = folder + r"\DAO_performance_across_time"
+autonomy_performance_across_time = folder + r"\Autonomy_performance_across_time"
+hierarchy_performance_across_time = folder + r"\Hierarchy_performance_across_time"
 with open(dao_performance_across_time, 'rb') as in_file:
     data_dao = pickle.load(in_file)
 with open(autonomy_performance_across_time, 'rb') as in_file:
@@ -42,4 +42,5 @@ plt.xlabel('Iteration', fontweight='bold', fontsize=10)
 plt.ylabel('Performance', fontweight='bold', fontsize=10)
 plt.legend(frameon=False, ncol=1)
 plt.savefig("HAD_comparison.png", transparent=True, dpi=1200)
+plt.savefig(folder + r"\HAD_comparison.png", transparent=True, dpi=1200)
 plt.show()

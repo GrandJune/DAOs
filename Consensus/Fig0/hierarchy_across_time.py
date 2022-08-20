@@ -19,7 +19,7 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
     reality = Reality(m=m, s=s, t=t, version=version)
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
     performance_across_time = []
-    for loop in range(search_round):
+    for _ in range(search_round):
         superior.local_search()
         performance_list = [individual.payoff for individual in superior.individuals]
         performance_across_time.append(sum(performance_list) / len(performance_list))
@@ -28,14 +28,14 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 63
+    m = 66
     s = 3
-    t = 3
+    t = 2
     n = 200
     search_round = 500
     repetition_round = 100
     version = "Rushed"
-    authority = 0.8  # Need the authority for Hierarchy!!
+    authority = 1.0  # Need the authority for Hierarchy!!
     manager = mp.Manager()
     return_dict = manager.dict()
     jobs = []

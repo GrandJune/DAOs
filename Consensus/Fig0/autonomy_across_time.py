@@ -19,7 +19,7 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
     reality = Reality(m=m, s=s, t=t, version=version)
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
     performance_across_time = []
-    for loop in range(search_round):  # free search loop
+    for _ in range(search_round):  # free search loop
         # diversity_across_time.append(superior.get_diversity())
         for individual in superior.individuals:
             individual.free_local_search()
@@ -30,9 +30,9 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 63
+    m = 66
     s = 3
-    t = 3
+    t = 2
     n = 200
     search_round = 500
     repetition_round = 100
