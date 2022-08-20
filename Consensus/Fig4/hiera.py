@@ -18,11 +18,10 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
          version="Rushed", change_freq=None, change_prop=None, return_dict=None):
     reality = Reality(m=m, s=s, t=t, version=version)
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
+    consensus = [0] * (m // s)
     performance_across_time = []
-    for loop in range(search_round):  # free search loop
-        # diversity_across_time.append(superior.get_diversity())
-        for individual in superior.individuals:
-            individual.free_local_search()
+    for loop in range(search_round):
+        superior.local_search()
         performance_list = [individual.payoff for individual in superior.individuals]
         performance_across_time.append(sum(performance_list) / len(performance_list))
         if loop % change_freq == 0:
@@ -41,8 +40,7 @@ if __name__ == '__main__':
     change_freq = 10
     change_prop = 0.1
     version = "Rushed"
-    authority = False  # Without authority
-    diversity_across_para = []
+    authority = 0.8  # Need the authority for Hierarchy!!
     manager = mp.Manager()
     return_dict = manager.dict()
     jobs = []
@@ -60,7 +58,7 @@ if __name__ == '__main__':
         temp = [payoff_list[i] for payoff_list in diversity_across_repeat]
         result_1.append(sum(temp) / len(temp))
     # Save the original data for further analysis
-    with open("Autonomy_performance", 'wb') as out_file:
+    with open("dao_performance", 'wb') as out_file:
         pickle.dump(result_1, out_file)
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))

@@ -15,12 +15,13 @@ import numpy as np
 import multiprocessing as mp
 
 
-def func(m=None, s=None, t=None, authority=None, n=None, search_round=None, version="Rushed", return_dict=None):
+def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
+         version="Rushed", change_freq=None, change_prop=None, return_dict=None):
     reality = Reality(m=m, s=s, t=t, version=version)
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
     consensus = [0] * (m // s)
     performance_across_time = []
-    for _ in range(search_round):
+    for loop in range(search_round):
         for individual in superior.individuals:
             next_index = np.random.choice(len(consensus))
             next_policy = consensus[next_index]
@@ -36,6 +37,8 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None, vers
                 consensus.append(0)
         performance_list = [individual.payoff for individual in superior.individuals]
         performance_across_time.append(sum(performance_list) / len(performance_list))
+        if loop % change_freq == 0:
+            reality.change(reality_change_rate=change_prop)
     return_dict = performance_across_time
 
 
@@ -47,15 +50,15 @@ if __name__ == '__main__':
     n = 200
     search_round = 500
     repetition_round = 100
-    turbulence_freq = 10
-    change_proportion_list = 0.1
+    change_freq = 10
+    change_prop = 0.1
     version = "Rushed"
-    authority = False
+    authority = False  # Without authority
     manager = mp.Manager()
     return_dict = manager.dict()
     jobs = []
     for i in range(repetition_round):
-        p = mp.Process(target=func, args=(m, s, t, authority, n, search_round, version, return_dict))
+        p = mp.Process(target=func, args=(m, s, t, authority, n, search_round, version, change_freq, change_prop, return_dict))
         jobs.append(p)
         p.start()
 
