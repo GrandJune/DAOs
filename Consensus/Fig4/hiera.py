@@ -58,7 +58,7 @@ if __name__ == '__main__':
         temp = [payoff_list[i] for payoff_list in diversity_across_repeat]
         result_1.append(sum(temp) / len(temp))
     # Save the original data for further analysis
-    with open("dao_performance", 'wb') as out_file:
+    with open("hierarchy_performance", 'wb') as out_file:
         pickle.dump(result_1, out_file)
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))

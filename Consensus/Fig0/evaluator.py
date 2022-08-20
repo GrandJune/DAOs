@@ -7,7 +7,7 @@
 import matplotlib.pyplot as plt
 import pickle
 
-folder = r"C:\Python_Workplace\dao-0815\DAO"
+folder = r"C:\Python_Workplace\dao-0820\Consensus"
 dao_performance_across_time = folder + r"\Fig0\DAO_performance_across_time"
 autonomy_performance_across_time = folder + r"\Fig0\Autonomy_performance_across_time"
 hierarchy_performance_across_time = folder + r"\Fig0\Hierarchy_performance_across_time"
@@ -36,6 +36,8 @@ plt.plot(x, data_dao, "r-", label="DAO")
 plt.plot(x, data_hierarchy, "b-", label="Hierarchy")
 plt.plot(x, data_autonomy, "y-", label="Autonomy")
 # plt.title('Performance across Iterations')
+# plt.xlim((0, 1))
+# plt.ylim((0, 0.4))
 plt.xlabel('Iteration', fontweight='bold', fontsize=10)
 plt.ylabel('Performance', fontweight='bold', fontsize=10)
 plt.legend(frameon=False, ncol=1)

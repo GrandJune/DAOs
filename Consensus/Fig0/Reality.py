@@ -15,8 +15,6 @@ class Reality:
         self.t = t  # the upper-level of interdependency (policy interdependency)
         if self.m % (self.s * self.t) != 0:
             raise ValueError("m must be a multiple of (s * t)")
-        if self.s % 2 == 0:
-            raise ValueError("s must be an odd number")
         if self.s < 1:
             raise ValueError("The number of complexity should be greater than 0")
         if self.s > self.m:

@@ -84,6 +84,7 @@ class Individual:
             alternatives = list(set(permutations(alternatives, self.s)))
             alternatives.append([focal_policy] * self.s)
             next_belief_pieces = alternatives[np.random.choice(len(alternatives))]
+            # print("alternatives: ", alternatives, focal_policy)
             next_belief_under_authority[focal_policy_index*self.s:(focal_policy_index+1)*self.s] = next_belief_pieces
             next_policy_under_authority = self.reality.belief_2_policy(belief=next_belief_under_authority)
             next_payoff_under_authority = self.reality.get_belief_payoff(belief=next_belief_under_authority)
@@ -149,8 +150,8 @@ class Individual:
 
 
 if __name__ == '__main__':
-    m = 27
-    s = 3
+    m = 30
+    s = 2
     t = 3
     n = 4
     version = "Rushed"
@@ -159,8 +160,8 @@ if __name__ == '__main__':
     print("individual.belief: ", individual.belief, individual.payoff)
     # policy_list = [1, -1, 1, -1, 1, -1, 1, -1, 1]
     policy_list = reality.real_policy
-    for _ in range(100):
+    for _ in range(10):
         for index, policy in enumerate(policy_list):
-            individual.constrained_local_search_under_authority(focal_policy=policy, focal_policy_index=index, authority=False)
+            individual.constrained_local_search_under_authority(focal_policy=policy, focal_policy_index=index, authority=0.8)
             print(individual.belief, individual.payoff)
 

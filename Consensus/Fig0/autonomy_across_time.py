@@ -11,6 +11,7 @@ from Reality import Reality
 # import matplotlib.pyplot as plt
 import pickle
 import time
+import multiprocessing as mp
 
 
 t0 = time.time()
@@ -25,6 +26,7 @@ h_across_para = []
 version = "Rushed"
 
 manager_payoff_across_repeat = []
+
 for _ in range(repetition_round):  # repetation
     reality = Reality(m=m, s=s, t=t, version=version)
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=False)
