@@ -9,7 +9,7 @@ import math
 
 
 class Reality:
-    def __init__(self, m=None, s=None, t=None, alpha=0.5):
+    def __init__(self, m=None, s=None, t=None, version="Rushed"):
         self.m = m  # the total length of the reality code
         self.s = s  # the lower-level of interdependency (staff interdependency)
         self.t = t  # the upper-level of interdependency (policy interdependency)
@@ -21,11 +21,9 @@ class Reality:
             raise ValueError("The number of complexity should be greater than 0")
         if self.s > self.m:
             raise ValueError("The number of complexity should be less than the number of reality")
-        if not alpha:
-            raise ValueError("alpha is absent for Reality class")
+        self.version = version
         self.cell_num_1 = math.ceil(m / s)
         self.cell_num_2 = math.ceil(m / s / t)
-        self.alpha = alpha
         self.real_code = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
         self.real_policy = self.belief_2_policy(belief=self.real_code)
 
@@ -34,8 +32,8 @@ class Reality:
         print("Reality Code: ", self.real_code)
         print("*"*10)
 
-    def get_belief_payoff(self, belief=None, version="Rushed"):
-        if version == "Smooth":
+    def get_belief_payoff(self, belief=None):
+        if self.version == "Smooth":
             ress = 0
             for i in range(self.cell_num_1):
                 correct_num = 0
@@ -51,7 +49,7 @@ class Reality:
                 else:
                     ress += np.random.choice([0, correct_num], p=[1-correct_num / self.s, correct_num / self.s])
             return ress / self.m
-        elif version == "Rushed":
+        elif self.version == "Rushed":
             ress = 0
             for i in range(self.cell_num_1):
                 flag = False
@@ -66,7 +64,7 @@ class Reality:
                 if flag:
                     ress += self.s
             return ress / self.m
-        elif version == "Penalty":
+        elif self.version == "Penalty":
             ress = 0
             for i in range(self.cell_num_1):
                 acc = 0
@@ -82,34 +80,9 @@ class Reality:
                     ress += acc
             return ress / self.m
 
-
-    def get_hierarchy_payoff_rushed(self, alpha=None, belief_list=None, belief=None, policy=None, version="Rushed"):
-        """
-
-        :param alpha: can borrowed from reality
-        :param belief_list: if it's superior, there is a group of managers
-        :param belief: if it's manager, there is only one belief
-        :param policy: could be superior's or manager's belief
-        :param version: "Rushed" or "Smooth"
-        :return: integrated payoff
-        """
-        if alpha:
-            self.alpha = alpha
-        # lower-level payoff
-        if len(belief):
-            lower_payoff = self.get_belief_payoff(belief, version)
-        elif len(belief_list):
-            lower_payoff = [self.get_belief_payoff(belief, version) for belief in belief_list]
-            lower_payoff = sum(lower_payoff) / len(lower_payoff)
-        else:
-            raise ValueError("Either belief or beliefs is needed!")
-        # upper-level payoff
-        upper_payoff = self.get_policy_payoff(policy=policy, version=version)
-        return self.alpha * lower_payoff + (1 - self.alpha) * upper_payoff
-
-    def get_policy_payoff(self, policy=None, version="Rushed"):
+    def get_policy_payoff(self, policy=None):
         ress_upper = 0
-        if version == "Rushed":
+        if self.version == "Rushed":
             for i in range(self.cell_num_2):
                 flag = False
                 for j in range(self.t):
@@ -122,7 +95,8 @@ class Reality:
                 if flag:
                     ress_upper += self.t
             return ress_upper / self.cell_num_1
-        elif version == "Smooth":
+
+        elif self.version == "Smooth":
             for i in range(self.cell_num_2):
                 correct_num = 0
                 for j in range(self.t):
@@ -136,6 +110,21 @@ class Reality:
                     continue
                 else:
                     ress_upper += np.random.choice([0, correct_num], p=[1-correct_num / self.cell_num_1, correct_num / self.cell_num_1])
+            return ress_upper / self.cell_num_1
+        elif self.version == "Penalty":
+            for i in range(self.cell_num_2):
+                correct_num = 0
+                for j in range(self.t):
+                    index = i * self.t + j
+                    if index >= self.cell_num_1:
+                        break
+                    if self.real_policy[index] == policy[index]:
+                        correct_num += 1
+                    elif self.real_policy[index] * policy[index] == -1:
+                        correct_num -= 1
+                    else:  # policy[index] == 0
+                        continue
+                    ress_upper += correct_num
             return ress_upper / self.cell_num_1
 
     def change(self, reality_change_rate=None):
@@ -162,5 +151,5 @@ if __name__ == '__main__':
     m = 18
     s = 3
     t = 3
-    alpha = 0.5
-    reality = Reality(m, s, t, alpha)
+    version = "Rushed"
+    reality = Reality(m, s, t, version=version)
