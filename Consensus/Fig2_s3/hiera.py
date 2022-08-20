@@ -24,7 +24,7 @@ version = "Rushed"
 authority = 0.8
 diversity_across_repeat = []
 for _ in range(repetition_round):  # repetition
-    reality = Reality(m=m, s=s, t=t)
+    reality = Reality(m=m, s=s, t=t, version=version)
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
     diversity_across_time = []
     for _ in range(search_round):  # free search loop

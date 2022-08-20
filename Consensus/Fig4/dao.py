@@ -16,7 +16,7 @@ import multiprocessing as mp
 
 
 def func(m=None, s=None, t=None, authority=None, n=None, search_round=None, version="Rushed", return_dict=None):
-    reality = Reality(m=m, s=s, t=t)
+    reality = Reality(m=m, s=s, t=t, version=version)
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
     consensus = [0] * (m // s)
     performance_across_time = []

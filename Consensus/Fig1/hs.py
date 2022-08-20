@@ -22,13 +22,14 @@ search_round = 600
 repetition_round = 50  # Christina's paper
 data_across_para = []
 authority = 0.8
+version = "Rushed"
 for s in s_list:  # parameter
     m = 60
     if m % (s * t) != 0:
         m = s * t * (m // s // t)  # deal with the cell number issue
     performance_across_repeat = []
     for _ in range(repetition_round):  # repetation
-        reality = Reality(m=m, s=s, t=t)
+        reality = Reality(m=m, s=s, t=t, version=version)
         superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
         performance_across_time = []
         for _ in range(search_round):  # free search loop

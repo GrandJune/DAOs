@@ -64,7 +64,7 @@ class Reality:
                 if flag:
                     ress += self.s
             return ress / self.m
-        elif version == "Penalty":
+        elif self.version == "Penalty":
             ress = 0
             for i in range(self.cell_num_1):
                 acc = 0
@@ -111,7 +111,7 @@ class Reality:
                 else:
                     ress_upper += np.random.choice([0, correct_num], p=[1-correct_num / self.cell_num_1, correct_num / self.cell_num_1])
             return ress_upper / self.cell_num_1
-        elif version == "Penalty":
+        elif self.version == "Penalty":
             for i in range(self.cell_num_2):
                 correct_num = 0
                 for j in range(self.t):

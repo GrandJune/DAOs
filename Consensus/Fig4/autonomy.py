@@ -14,8 +14,8 @@ import time
 import multiprocessing as mp
 
 
-def func(m=None, s=None, t=None, authority=None, n=None, search_round=None, version="Rushed", return_dict=None):
-    reality = Reality(m=m, s=s, t=t)
+def func(m=None, s=None, t=None, authority=None, n=None, search_round=None, version=None, return_dict=None):
+    reality = Reality(m=m, s=s, t=t, version=version)
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
     performance_across_time = []
     for _ in range(search_round):  # free search loop

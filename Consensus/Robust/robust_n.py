@@ -26,7 +26,7 @@ version = "Rushed"
 for n in n_list:  # parameter
     performance_across_repeat = []
     for _ in range(repetition_round):  # repetation
-        reality = Reality(m=m, s=s, t=t)
+        reality = Reality(m=m, s=s, t=t, version=version)
         consensus = [0] * (m // s)
         superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=False)
         performance_across_time = []

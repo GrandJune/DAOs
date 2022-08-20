@@ -108,7 +108,7 @@ class Individual:
                 self.payoff = next_payoff_under_autonomy
                 self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
-    def free_local_search(self, scope=None, version="Rushed"):
+    def free_local_search(self, scope=None):
         if not scope:
             scope = range(self.m)
         next_belief = self.belief.copy()
@@ -120,7 +120,7 @@ class Individual:
             next_belief[focal_index] *= -1
         next_policy = self.reality.belief_2_policy(belief=next_belief)
         # next_payoff = self.reality.get_hierarchy_payoff_rushed(belief=next_belief, policy=next_policy, version=version)
-        next_payoff = self.reality.get_belief_payoff(belief=next_belief, version=version)
+        next_payoff = self.reality.get_belief_payoff(belief=next_belief)
         if next_payoff > self.payoff:
             self.belief = next_belief
             self.payoff = next_payoff

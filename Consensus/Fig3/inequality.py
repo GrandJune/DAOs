@@ -27,7 +27,7 @@ asymmetry_list = [1, 2, 4, 8]  # small asymmetry is associated with high wealth 
 data_across_para = []
 for asymmetry in asymmetry_list:
     for _ in range(repetition_round):  # repetition
-        reality = Reality(m=m, s=s, t=t)
+        reality = Reality(m=m, s=s, t=t, version=version)
         superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=False)
         for individual in superior.individuals:
             individual.token = np.random.pareto(a=asymmetry)

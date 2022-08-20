@@ -30,7 +30,7 @@ for t in t_list:  # parameter
         m = s * t * (m // s // t)  # deal with the cell number issue
     performance_across_repeat = []
     for _ in range(repetition_round):  # repetation
-        reality = Reality(m=m, s=s, t=t)
+        reality = Reality(m=m, s=s, t=t, version=version)
         superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
         performance_across_time = []
         for _ in range(search_round):  # free search loop
