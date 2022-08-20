@@ -150,18 +150,21 @@ class Individual:
 
 
 if __name__ == '__main__':
-    m = 30
+    m = 10
     s = 2
-    t = 3
+    t = 1
     n = 4
     version = "Rushed"
     reality = Reality(m=m, s=s, t=t, version=version)
     individual = Individual(m=m, s=s, t=t, reality=reality)
-    print("individual.belief: ", individual.belief, individual.payoff)
-    # policy_list = [1, -1, 1, -1, 1, -1, 1, -1, 1]
-    policy_list = reality.real_policy
     for _ in range(10):
-        for index, policy in enumerate(policy_list):
-            individual.constrained_local_search_under_authority(focal_policy=policy, focal_policy_index=index, authority=0.8)
-            print(individual.belief, individual.payoff)
+        print(individual.belief, individual.payoff)
+        individual.free_local_search()
+    # print("individual.belief: ", individual.belief, individual.payoff)
+    # # policy_list = [1, -1, 1, -1, 1, -1, 1, -1, 1]
+    # policy_list = reality.real_policy
+    # for _ in range(10):
+    #     for index, policy in enumerate(policy_list):
+    #         individual.constrained_local_search_under_authority(focal_policy=policy, focal_policy_index=index, authority=0.8)
+    #         print(individual.belief, individual.payoff)
 

@@ -146,8 +146,15 @@ class Reality:
 
 
 if __name__ == '__main__':
-    m = 18
-    s = 3
-    t = 3
+    m = 6
+    s = 2
+    t = 1
     version = "Rushed"
     reality = Reality(m, s, t, version=version)
+    # belief = [1] * 6
+    belief = reality.real_code.copy()
+    belief[-1] *= -1
+    payoff = reality.get_belief_payoff(belief=belief)
+    print(reality.real_code)
+    print(belief)
+    print(payoff)

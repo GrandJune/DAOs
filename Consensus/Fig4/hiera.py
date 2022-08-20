@@ -15,10 +15,9 @@ import multiprocessing as mp
 
 
 def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
-         version="Rushed", change_freq=None, change_prop=None, return_dict=None):
+         version="Rushed", change_freq=None, change_prop=None, loop=None, return_dict=None):
     reality = Reality(m=m, s=s, t=t, version=version)
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
-    consensus = [0] * (m // s)
     performance_across_time = []
     for loop in range(search_round):
         superior.local_search()
@@ -26,7 +25,7 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
         performance_across_time.append(sum(performance_list) / len(performance_list))
         if loop % change_freq == 0:
             reality.change(reality_change_rate=change_prop)
-    return_dict = performance_across_time
+    return_dict[loop] = performance_across_time
 
 
 if __name__ == '__main__':
@@ -44,8 +43,8 @@ if __name__ == '__main__':
     manager = mp.Manager()
     return_dict = manager.dict()
     jobs = []
-    for i in range(repetition_round):
-        p = mp.Process(target=func, args=(m, s, t, authority, n, search_round, version, change_freq, change_prop, return_dict))
+    for loop in range(repetition_round):
+        p = mp.Process(target=func, args=(m, s, t, authority, n, search_round, version, change_freq, change_prop, loop, return_dict))
         jobs.append(p)
         p.start()
 
