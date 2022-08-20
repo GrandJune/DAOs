@@ -157,8 +157,10 @@ if __name__ == '__main__':
     reality = Reality(m=m, s=s, t=t, version=version)
     individual = Individual(m=m, s=s, t=t, reality=reality)
     print("individual.belief: ", individual.belief, individual.payoff)
-    policy_list = [1, -1, 1, -1, 1, -1, 1, -1, 1]
-    for index, policy in enumerate(policy_list):
-        individual.constrained_local_search_under_authority(focal_policy=policy, focal_policy_index=index)
-    print(individual.belief, individual.payoff)
+    # policy_list = [1, -1, 1, -1, 1, -1, 1, -1, 1]
+    policy_list = reality.real_policy
+    for _ in range(100):
+        for index, policy in enumerate(policy_list):
+            individual.constrained_local_search_under_authority(focal_policy=policy, focal_policy_index=index, authority=False)
+            print(individual.belief, individual.payoff)
 

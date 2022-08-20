@@ -90,9 +90,9 @@ if __name__ == '__main__':
     s = 1
     t = 3
     n = 4
-    alpha = 0.5
+    authority = 0.8
     reality = Reality(m=m, s=s, t=t)
-    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=True)
+    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
     for _ in range(100):
         superior.local_search()
         print(superior.payoff)
