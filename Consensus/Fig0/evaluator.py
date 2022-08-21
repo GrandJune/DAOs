@@ -7,7 +7,7 @@
 import matplotlib.pyplot as plt
 import pickle
 
-folder = r"C:\Python_Workplace\dao-0820\Consensus\Fig0"
+folder = r"C:\Python_Workplace\dao-0820\Fig0_pre"
 dao_performance_across_time = folder + r"\DAO_performance_across_time"
 autonomy_performance_across_time = folder + r"\Autonomy_performance_across_time"
 hierarchy_performance_across_time = folder + r"\Hierarchy_performance_across_time"
