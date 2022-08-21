@@ -11,7 +11,7 @@ from Reality import Reality
 
 
 class Superior:
-    def __init__(self, m=None, s=None, t=None, n=None, reality=None, authority=0.8):
+    def __init__(self, m=None, s=None, t=None, n=None, reality=None, authority=None):
         """
         :param m: problem space
         :param s: the first complexity
@@ -31,7 +31,7 @@ class Superior:
         self.authority = authority
         for _ in range(self.n):
             individual = Individual(m=self.m, s=self.s, t=self.t, reality=reality)
-            if authority:
+            if self.authority:
                 individual.confirm_to_supervision(policy=self.policy, authority=authority)
             self.individuals.append(individual)
             self.beliefs.append(individual.belief)
@@ -52,8 +52,9 @@ class Superior:
         if next_payoff > self.payoff:
             self.policy = next_policy
             self.payoff = next_payoff
-            for individual in self.individuals:
-                individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index], focal_policy_index=focal_index, authority=self.authority)
+        for individual in self.individuals:
+            individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index],
+                                                                focal_policy_index=focal_index, authority=self.authority)
 
     def random_guess(self):
         focal_index = np.random.randint(0, self.policy_num)
@@ -87,15 +88,15 @@ class Superior:
 
 if __name__ == '__main__':
     m = 27
-    s = 1
-    t = 3
-    n = 4
+    s = 3
+    t = 1
+    n = 10
     authority = 0.8
     reality = Reality(m=m, s=s, t=t)
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
-    for _ in range(100):
-        superior.local_search()
-        print(superior.payoff)
+    # for _ in range(100):
+    #     superior.local_search()
+    #     print(superior.payoff)
         # print("*"*10)
     # superior.describe()
     # truth_payoff = reality.get_policy_payoff(policy=reality.real_policy)

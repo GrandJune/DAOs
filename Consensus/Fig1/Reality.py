@@ -15,8 +15,6 @@ class Reality:
         self.t = t  # the upper-level of interdependency (policy interdependency)
         if self.m % (self.s * self.t) != 0:
             raise ValueError("m must be a multiple of (s * t)")
-        if self.s % 2 == 0:
-            raise ValueError("s must be an odd number")
         if self.s < 1:
             raise ValueError("The number of complexity should be greater than 0")
         if self.s > self.m:
@@ -148,8 +146,15 @@ class Reality:
 
 
 if __name__ == '__main__':
-    m = 18
-    s = 3
-    t = 3
+    m = 6
+    s = 2
+    t = 1
     version = "Rushed"
     reality = Reality(m, s, t, version=version)
+    # belief = [1] * 6
+    belief = reality.real_code.copy()
+    belief[-1] *= -1
+    payoff = reality.get_belief_payoff(belief=belief)
+    print(reality.real_code)
+    print(belief)
+    print(payoff)
