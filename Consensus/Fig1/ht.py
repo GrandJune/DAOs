@@ -33,11 +33,14 @@ if __name__ == '__main__':
     t_list = [1, 2, 3, 4, 5]
     n = 200
     search_round = 600
-    repetition_round = 100
+    repetition_round = 300
     version = "Rushed"
     authority = 1.0  # !!!!!!!!!!!!!!!! With authority !!!!!!!!!!!!!!!!!!
     data_across_para = []
     for t in t_list:
+        m = 90
+        if m % (s * t) != 0:
+            m = s * t * (m // (s * t))
         manager = mp.Manager()
         return_dict = manager.dict()
         jobs = []

@@ -52,9 +52,9 @@ class Superior:
         if next_payoff > self.payoff:
             self.policy = next_policy
             self.payoff = next_payoff
-        for individual in self.individuals:
-            individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index],
-                                                                focal_policy_index=focal_index, authority=self.authority)
+            for individual in self.individuals:
+                individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index],
+                                                                    focal_policy_index=focal_index, authority=self.authority)
 
 
 

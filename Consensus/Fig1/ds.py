@@ -47,7 +47,7 @@ if __name__ == '__main__':
     t = 1
     n = 200
     search_round = 600
-    repetition_round = 100
+    repetition_round = 300
     version = "Rushed"
     authority = False  # !!!!!!!!!!!!!!!! Without authority !!!!!!!!!!!!!!!!!!
     data_across_para = []
