@@ -28,12 +28,12 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 120  # Christina's paper: 100
+    m = 63  # Christina's paper: 100
     s = 3
-    t = 2
+    t = 3
     n = 500  # Christina's paper: 280
-    search_round = 500
-    repetition_round = 200  # Christina's paper
+    search_round = 600
+    repetition_round = 100  # Christina's paper
     version = "Rushed"
     authority = 1.0  # Need the authority for Hierarchy!!
     manager = mp.Manager()

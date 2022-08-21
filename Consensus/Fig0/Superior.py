@@ -90,15 +90,15 @@ class Superior:
 
 if __name__ == '__main__':
     m = 27
-    s = 1
+    s = 3
     t = 1
-    n = 4
+    n = 10
     authority = 0.8
     reality = Reality(m=m, s=s, t=t)
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
-    for _ in range(100):
-        superior.local_search()
-        print(superior.payoff)
+    # for _ in range(100):
+    #     superior.local_search()
+    #     print(superior.payoff)
         # print("*"*10)
     # superior.describe()
     # truth_payoff = reality.get_policy_payoff(policy=reality.real_policy)
