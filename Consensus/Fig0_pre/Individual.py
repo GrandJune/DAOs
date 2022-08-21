@@ -18,7 +18,7 @@ class Individual:
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
         self.reality = reality
         self.policy = self.reality.belief_2_policy(belief=self.belief)  # a fake policy as a variable temp
-        self.payoff = self.reality.get_hierarchy_payoff_rushed(belief=self.belief, policy=self.policy)
+        self.payoff = self.reality.get_belief_payoff(belief=self.belief)
         self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
     def constrained_local_search(self, focal_policy=None, focal_policy_index=None, version="Rushed"):

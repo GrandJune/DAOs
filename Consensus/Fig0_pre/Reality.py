@@ -9,7 +9,7 @@ import math
 
 
 class Reality:
-    def __init__(self, m=None, s=None, t=None, alpha=0.5):
+    def __init__(self, m=None, s=None, t=None, alpha=0.5, version="Rushed"):
         self.m = m  # the total length of the reality code
         self.s = s  # the lower-level of interdependency (staff interdependency)
         self.t = t  # the upper-level of interdependency (policy interdependency)
@@ -25,7 +25,7 @@ class Reality:
             raise ValueError("alpha is absent for Reality class")
         self.cell_num_1 = math.ceil(m / s)
         self.cell_num_2 = math.ceil(m / s / t)
-        self.alpha = alpha
+        self.version = version
         self.real_code = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
         self.real_policy = self.belief_2_policy(belief=self.real_code)
 
