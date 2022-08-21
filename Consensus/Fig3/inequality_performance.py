@@ -45,8 +45,8 @@ if __name__ == '__main__':
     m = 60
     s = 3
     t = 1
-    n = 500
-    search_round = 600
+    n = 100
+    search_round = 500
     repetition_round = 100
     version = "Rushed"
     authority = False  # !!!!!!!!!!!!!!!! Without authority !!!!!!!!!!!!!!!!!!
