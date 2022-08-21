@@ -11,15 +11,7 @@ from Reality import Reality
 
 
 class Superior:
-    def __init__(self, m=None, s=None, t=None, n=None, reality=None, authority=1.0):
-        """
-        :param m: problem space
-        :param s: the first complexity
-        :param t: the second complexity
-        :param n: the number of agents
-        :param reality: to provide feedback
-        :param confirm: the extent to which agents confirm to their superior
-        """
+    def __init__(self, m=None, s=None, t=None, n=None, reality=None, confirm=True):
         self.m = m  # state length
         self.s = s  # lower-level interdependency
         self.t = t  # upper-level interdependency
@@ -28,11 +20,10 @@ class Superior:
         self.policy = np.random.choice([-1, 1], self.policy_num, p=[0.5, 0.5])
         self.individuals = []
         self.beliefs = []
-        self.authority = authority
-        for _ in range(self.n):
+        for i in range(self.n):
             individual = Individual(m=self.m, s=self.s, t=self.t, reality=reality)
-            if self.authority:
-                individual.confirm_to_supervision(policy=self.policy, authority=authority)
+            if confirm:
+                individual.confirm_to_supervision(policy=self.policy)
             self.individuals.append(individual)
             self.beliefs.append(individual.belief)
         self.reality = reality
@@ -40,7 +31,7 @@ class Superior:
 
     def local_search(self):
         """
-        Superior can do a free local search, and then agents adjust accordingly.
+        Superior can do a free local search
         """
         focal_index = np.random.randint(0, self.policy_num)
         next_policy = self.policy.copy()
@@ -52,38 +43,21 @@ class Superior:
         if next_payoff > self.payoff:
             self.policy = next_policy
             self.payoff = next_payoff
-        for individual in self.individuals:
-            individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index],
-                                                                focal_policy_index=focal_index, authority=self.authority)
-
-
-
-    def random_guess(self):
-        focal_index = np.random.randint(0, self.policy_num)
-        next_policy = self.policy.copy()
-        if next_policy[focal_index] == 0:
-            next_policy[focal_index] = np.random.choice([-1, 1])
-        else:
-            next_policy[focal_index] *= -1
-        next_payoff = self.reality.get_policy_payoff(policy=next_policy)
-        self.policy = next_policy
-        self.payoff = next_payoff
-        for individual in self.individuals:
-            individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index], focal_policy_index=focal_index, authority=self.authority)
+            for individual in self.individuals:
+                individual.constrained_local_search(focal_policy=self.policy[focal_index], focal_policy_index=focal_index)
 
     def get_diversity(self):
         belief_pool = [individual.belief for individual in self.individuals]
         diversity = 0
-        for index, individual in enumerate(self.individuals):
-            selected_pool = belief_pool[index+1::]
-            one_pair_diversity = [self.get_distance(individual.belief, belief) for belief in selected_pool]
-            diversity += sum(one_pair_diversity)
-        return diversity / self.m / (self.n - 1) / self.n * 2
+        for individual in self.individuals:
+            one_pair_diversity = [self.get_distance(individual.belief, belief_b) for belief_b in belief_pool]
+            diversity += sum(one_pair_diversity) / self.m
+        return diversity / self.n
 
     def get_distance(self, a=None, b=None):
         acc = 0
         for i in range(self.m):
-            if a[i] != b[i]:
+            if a[i] == b[i]:
                 acc += 1
         return acc
 
@@ -91,11 +65,11 @@ class Superior:
 if __name__ == '__main__':
     m = 27
     s = 1
-    t = 1
+    t = 3
     n = 4
-    authority = 0.8
+    alpha = 0.5
     reality = Reality(m=m, s=s, t=t)
-    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
+    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=True)
     for _ in range(100):
         superior.local_search()
         print(superior.payoff)
