@@ -17,7 +17,7 @@ import multiprocessing as mp
 def func(m=None, s=None, t=None, n=None, search_round=None,
          loop=None, return_dict=None):
     reality = Reality(m=m, s=s, t=t)
-    superior = Superior(m=m, s=s, t=t, n=n, reality=reality,confirm=False)
+    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, confirm=False)
     performance_across_time = []
     for _ in range(search_round):  # free search loop
         # diversity_across_time.append(superior.get_diversity())

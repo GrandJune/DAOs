@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time     : 8/5/2022 20:22
 # @Author   : Junyi
-# @FileName: as.py
+# @FileName: hs.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 from Superior import Superior
@@ -19,10 +19,9 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
     reality = Reality(m=m, s=s, t=t, version=version)
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
     diversity_across_time = []
-    for _ in range(search_round):  # free search loop
+    for _ in range(search_round):
         diversity_across_time.append(superior.get_diversity())
-        for individual in superior.individuals:
-            individual.free_local_search()
+        superior.local_search()
     return_dict[loop] = diversity_across_time
 
 
@@ -35,7 +34,7 @@ if __name__ == '__main__':
     search_round = 600
     repetition_round = 100
     version = "Rushed"
-    authority = False  # !!!!!!!!!!!!!!!! Without authority !!!!!!!!!!!!!!!!!!
+    authority = 1.0  # !!!!!!!!!!!!!!!! With authority !!!!!!!!!!!!!!!!!!
     data_across_para = []
     for s in s_list:
         manager = mp.Manager()
@@ -48,7 +47,7 @@ if __name__ == '__main__':
 
         for proc in jobs:
             proc.join()
-        diversity_across_repetition = return_dict.values()  # Don't need dict index, since it is repetition.
+        diversity_across_repetition = return_dict.values()
 
         result_1 = []
         for i in range(search_round):
@@ -56,7 +55,7 @@ if __name__ == '__main__':
             result_1.append(sum(temp) / len(temp))
         data_across_para.append(result_1)
     # Save the original data for further analysis
-    with open("Autonomy_diversity_across_s", 'wb') as out_file:
+    with open("hierarchy_diversity_across_s", 'wb') as out_file:
         pickle.dump(data_across_para, out_file)
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))

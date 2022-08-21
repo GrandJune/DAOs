@@ -12,33 +12,21 @@ from Reality import Reality
 import pickle
 import time
 import numpy as np
+import multiprocessing as mp
 
 
-t0 = time.time()
-m = 60
-s = 1
-t = 2
-n = 500
-search_round = 300
-repetition_round = 100
-
-version = "Rushed"
-diversity_across_repeat = []
-for _ in range(repetition_round):  # repetation
+def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
+         version="Rushed", loop=None, return_dict=None):
     reality = Reality(m=m, s=s, t=t, version=version)
-    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=False)
-    diversity_across_time = []
+    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
     consensus = [0] * (m // s)
-    for _ in range(search_round):  # free search loop
-        diversity_across_time.append(superior.get_diversity())
-        # print("Before: ", superior.get_diversity())
+    diversity_across_time = []
+    for _ in range(search_round):
         for individual in superior.individuals:
+            diversity_across_time.append(superior.get_diversity())
             next_index = np.random.choice(len(consensus))
             next_policy = consensus[next_index]
             individual.constrained_local_search_under_consensus(focal_policy=next_policy, focal_policy_index=next_index)
-        # print("After: ", superior.get_diversity())
-        # print(consensus)
-        # form the consensus
         consensus = []
         for i in range(m//s):
             temp = sum(individual.policy[i] for individual in superior.individuals)
@@ -48,28 +36,40 @@ for _ in range(repetition_round):  # repetation
                 consensus.append(1)
             else:
                 consensus.append(0)
-    diversity_across_repeat.append(diversity_across_time)
-
-result_1 = []
-for index in range(search_round):
-    temp = [diversity_list[index] for diversity_list in diversity_across_repeat]
-    result_1.append(sum(temp) / len(temp))
-
-# Save the original data for further analysis
-with open("DAO_diversity", 'wb') as out_file:
-    pickle.dump(result_1, out_file)
-
-t1 = time.time()
-print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
+    return_dict[loop] = diversity_across_time
 
 
-# x = range(search_round)
-# plt.plot(x, result_1, "k-", label="DAO")
-# plt.plot(x, overall_across_para[2], "k:", label="s=5")
-# plt.title('Diversity Decrease')
-# plt.xlabel('Time')
-# plt.ylabel('Diversity')
-# plt.legend()
-# plt.savefig("DAO_diversity.jpg")
-# plt.show()
-# plt.savefig("DAO_diversity.jpg")
+if __name__ == '__main__':
+    t0 = time.time()
+    m = 60
+    s_list = [1, 2, 3, 4, 5, 6]
+    t = 1
+    n = 200
+    search_round = 600
+    repetition_round = 100
+    version = "Rushed"
+    authority = False  # !!!!!!!!!!!!!!!! Without authority !!!!!!!!!!!!!!!!!!
+    data_across_para = []
+    for s in s_list:
+        manager = mp.Manager()
+        return_dict = manager.dict()
+        jobs = []
+        for loop in range(repetition_round):
+            p = mp.Process(target=func, args=(m, s, t, authority, n, search_round, version, loop, return_dict))
+            jobs.append(p)
+            p.start()
+
+        for proc in jobs:
+            proc.join()
+        diversity_across_repetition = return_dict.values()
+
+        result_1 = []
+        for i in range(search_round):
+            temp = [diversity_list[i] for diversity_list in diversity_across_repetition]
+            result_1.append(sum(temp) / len(temp))
+        data_across_para.append(result_1)
+    # Save the original data for further analysis
+    with open("dao_performance_across_s", 'wb') as out_file:
+        pickle.dump(data_across_para, out_file)
+    t1 = time.time()
+    print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
