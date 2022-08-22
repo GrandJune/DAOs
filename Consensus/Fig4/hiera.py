@@ -35,11 +35,11 @@ if __name__ == '__main__':
     t = 2
     n = 200
     search_round = 500
-    repetition_round = 100
+    repetition_round = 400
     change_freq = 10
     change_prop = 0.1
     version = "Rushed"
-    authority = 0.8  # Need the authority for Hierarchy!!
+    authority = 1.0  # Need the authority for Hierarchy!!
     manager = mp.Manager()
     return_dict = manager.dict()
     jobs = []
@@ -57,7 +57,7 @@ if __name__ == '__main__':
         temp = [payoff_list[i] for payoff_list in diversity_across_repeat]
         result_1.append(sum(temp) / len(temp))
     # Save the original data for further analysis
-    with open("hierarchy_performance", 'wb') as out_file:
+    with open("hierarchy_performance_under_turbulence", 'wb') as out_file:
         pickle.dump(result_1, out_file)
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))

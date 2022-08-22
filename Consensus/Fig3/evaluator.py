@@ -8,47 +8,39 @@ import matplotlib.pyplot as plt
 import pickle
 
 
-data_folder = r"C:\Python_Workplace\dao-0815\Fig2_s=3"
-file_name_1 = data_folder + r"\DAO_diversity"
-with open(file_name_1, 'rb') as in_file:
-    data_1 = pickle.load(in_file)
-file_name_2 = data_folder + r"\Hierarchy_diversity"
-with open(file_name_2, 'rb') as in_file:
-    data_2 = pickle.load(in_file)
-file_name_3 = data_folder + r"\Autonomy_diversity"
-with open(file_name_3, 'rb') as in_file:
-    data_3 = pickle.load(in_file)
-x = range(len(data_1))
-plt.plot(x, data_1, "r-", label="DAO")
-plt.plot(x, data_2, "b-", label="Hierarchy")
-plt.plot(x, data_3, "k-", label="Autonomy")
+folder = r"C:\Python_Workplace\dao-0820\Consensus\Fig3"
+diversity_file = folder + r"\dao_diversity_across_asymmetry"
+with open(diversity_file, 'rb') as in_file:
+    diversity_data = pickle.load(in_file)
+performance_file = folder + r"\dao_performance_across_asymmetry"
+with open(performance_file, 'rb') as in_file:
+    performance_data = pickle.load(in_file)
+
+x = range(len(performance_data[0]))
+plt.plot(x, performance_data[0], "r-", label="a=1")
+plt.plot(x, performance_data[1], "b-", label="a=2")
+plt.plot(x, performance_data[2], "g-", label="a=4")
+plt.plot(x, performance_data[3], "y-", label="a=8")
 # plt.title('Diversity Decrease')
 plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-plt.ylabel('Diversity', fontweight='bold', fontsize=10)
-plt.legend(frameon=False, ncol=3, fontsize=10)
-plt.savefig("Diversity_Comparison_s3.png", transparent=True, dpi=1200)
+plt.ylabel('Performance', fontweight='bold', fontsize=10)
+plt.legend(frameon=False, ncol=2, fontsize=10)
+plt.savefig("Performance_across_a.png", transparent=True, dpi=1200)
+plt.savefig(folder + "\Performance_across_a.png", transparent=True, dpi=1200)
 plt.show()
 # plt.clf()
 # plt.close()
 
-#  S = 1
-data_folder = r"C:\Python_Workplace\dao-0815\Fig2_s=1"
-file_name_1 = data_folder + r"\DAO_diversity"
-with open(file_name_1, 'rb') as in_file:
-    data_1 = pickle.load(in_file)
-file_name_2 = data_folder + r"\Hierarchy_diversity"
-with open(file_name_2, 'rb') as in_file:
-    data_2 = pickle.load(in_file)
-file_name_3 = data_folder + r"\Autonomy_diversity"
-with open(file_name_3, 'rb') as in_file:
-    data_3 = pickle.load(in_file)
-x = range(len(data_1))
-plt.plot(x, data_1, "r-", label="DAO")
-plt.plot(x, data_2, "b-", label="Hierarchy")
-plt.plot(x, data_3, "k-", label="Autonomy")
+
+x = range(len(diversity_data[0]))
+plt.plot(x, diversity_data[0], "r-", label="a=1")
+plt.plot(x, diversity_data[1], "b-", label="a=2")
+plt.plot(x, diversity_data[2], "g-", label="a=4")
+plt.plot(x, diversity_data[3], "y-", label="a=8")
 # plt.title('Diversity Decrease')
 plt.xlabel('Iteration', fontweight='bold', fontsize=10)
 plt.ylabel('Diversity', fontweight='bold', fontsize=10)
-plt.legend(frameon=False, ncol=3, fontsize=10)
-plt.savefig("Diversity_Comparison_s1.png", transparent=True, dpi=1200)
+plt.legend(frameon=False, ncol=2, fontsize=10)
+plt.savefig("Diversity_across_a.png", transparent=True, dpi=1200)
+plt.savefig(folder + "\Diversity_across_a.png", transparent=True, dpi=1200)
 plt.show()

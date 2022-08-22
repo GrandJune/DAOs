@@ -11,7 +11,7 @@ from Reality import Reality
 
 
 class Superior:
-    def __init__(self, m=None, s=None, t=None, n=None, reality=None, authority=None):
+    def __init__(self, m=None, s=None, t=None, n=None, reality=None, authority=1.0):
         """
         :param m: problem space
         :param s: the first complexity

@@ -166,6 +166,7 @@ class Individual:
                     alternatives.append([value] * self.s)
                     belief_pieces = alternatives[np.random.choice(len(alternatives))]
                     self.belief[index*self.s:(index+1)*self.s] = belief_pieces
+        self.payoff = self.reality.get_belief_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)
         self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import pickle
 
 
-data_folder = r"C:\Python_Workplace\dao-0815\Fig2_s=3"
+data_folder = r"C:\Python_Workplace\dao-0820\Consensus\Fig3"
 file_name_1 = data_folder + r"\DAO_diversity"
 with open(file_name_1, 'rb') as in_file:
     data_1 = pickle.load(in_file)

@@ -46,8 +46,8 @@ if __name__ == '__main__':
     s = 3
     t = 1
     n = 100
-    search_round = 500
-    repetition_round = 100
+    search_round = 600
+    repetition_round = 200
     version = "Rushed"
     authority = False  # !!!!!!!!!!!!!!!! Without authority !!!!!!!!!!!!!!!!!!
     asymmetry_list = [1, 2, 4, 8]  # small asymmetry is associated with high wealth inequality

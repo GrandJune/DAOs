@@ -33,7 +33,7 @@ if __name__ == '__main__':
     t = 1
     n = 500  # Christina's paper: 280
     search_round = 600
-    repetition_round = 1000  # Christina's paper
+    repetition_round = 600  # Christina's paper
     version = "Rushed"
     authority = 1.0  # Need the authority for Hierarchy!!
     manager = mp.Manager()

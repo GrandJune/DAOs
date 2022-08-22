@@ -49,7 +49,7 @@ if __name__ == '__main__':
     t = 2
     n = 200
     search_round = 500
-    repetition_round = 100
+    repetition_round = 200
     change_freq = 10
     change_prop = 0.1
     version = "Rushed"
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         temp = [payoff_list[i] for payoff_list in diversity_across_repeat]
         result_1.append(sum(temp) / len(temp))
     # Save the original data for further analysis
-    with open("dao_performance", 'wb') as out_file:
+    with open("dao_performance_under_turbulence", 'wb') as out_file:
         pickle.dump(result_1, out_file)
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))

@@ -28,16 +28,18 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
+    m = 120
     s_list = [1, 2, 3, 4, 5]
     t = 1
-    n = 100
-    search_round = 500
-    repetition_round = 100
+    n = 500
+    search_round = 600
+    repetition_round = 400
     version = "Rushed"
     authority = False  # !!!!!!!!!!!!!!!! Without authority !!!!!!!!!!!!!!!!!!
     data_across_para = []
     for s in s_list:
+        m = 120
+        m = s * t * (m // (s * t))
         manager = mp.Manager()
         return_dict = manager.dict()
         jobs = []
