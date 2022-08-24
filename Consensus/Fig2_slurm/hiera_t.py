@@ -27,17 +27,17 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 120
-    s_list = [1, 2, 3, 4, 5]
-    t = 1
-    n = 500
-    search_round = 600
-    repetition_round = 500
+    m = 90
+    s = 3
+    t_list = [1, 2, 3, 4, 5]
+    n = 100
+    search_round = 400
+    repetition_round = 100
     version = "Rushed"
     authority = 1.0  # !!!!!!!!!!!!!!!! With authority !!!!!!!!!!!!!!!!!!
     data_across_para = []
-    for s in s_list:
-        m = 120
+    for t in t_list:
+        m = 90
         m = s * t * (m // (s * t))
         manager = mp.Manager()
         return_dict = manager.dict()
@@ -57,7 +57,7 @@ if __name__ == '__main__':
             result_1.append(sum(temp) / len(temp))
         data_across_para.append(result_1)
     # Save the original data for further analysis
-    with open("hierarchy_diversity_across_s", 'wb') as out_file:
+    with open("hierarchy_diversity_across_t", 'wb') as out_file:
         pickle.dump(data_across_para, out_file)
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
