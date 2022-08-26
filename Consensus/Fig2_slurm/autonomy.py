@@ -69,15 +69,14 @@ import multiprocessing as mp
 if __name__ == '__main__':
     t0 = time.time()
     m = 60
-    s_list = [1, 2, 3, 4, 5]
+    s_list = [2, 3, 4, 5, 6]
     t = 1
     n = 100
     search_round = 300
-    repetition_round = 100
+    repetition_round = 200
     version = "Rushed"
     authority = False  # !!!!!!!!!!!!!!!! Without authority !!!!!!!!!!!!!!!!!!
     data_across_para = []
-
     for s in s_list:
         m = 60
         m = s * t * (m // (s * t))

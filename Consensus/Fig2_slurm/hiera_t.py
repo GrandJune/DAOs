@@ -27,11 +27,11 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 90
+    m = 60
     s = 3
     t_list = [1, 2, 3, 4, 5]
     n = 100
-    search_round = 400
+    search_round = 300
     repetition_round = 100
     version = "Rushed"
     authority = 1.0  # !!!!!!!!!!!!!!!! With authority !!!!!!!!!!!!!!!!!!

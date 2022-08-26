@@ -11,9 +11,6 @@ def worker(s, ):
 
 
 if __name__ == "__main__":
-    manager = mp.Manager()
-
-    return_dict_2 = manager.dict()
     cpu_num = mp.cpu_count()
     print("cpu_num: ", cpu_num)
     pool = Pool(cpu_num)
