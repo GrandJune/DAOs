@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Using numpy.random.pareto() method
-token_list = np.random.pareto(12, 500)
+token_list = np.random.pareto(8, 1000)
 print(sum(token_list))
 # print(gfg[:10]/sum(gfg))
 # gfg = np.random.pareto(10, 1000)

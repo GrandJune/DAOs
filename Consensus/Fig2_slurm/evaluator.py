@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import pickle
 
 
-data_folder = r"C:\Python_Workplace\dao-0815\Fig2_s=3"
+data_folder = r"C:\Python_Workplace\dao-0815\Fig2_s=1"
 file_name_1 = data_folder + r"\DAO_diversity"
 with open(file_name_1, 'rb') as in_file:
     data_1 = pickle.load(in_file)
@@ -32,7 +32,7 @@ plt.show()
 # plt.close()
 
 #  S = 1
-data_folder = r"C:\Python_Workplace\dao-0815\Fig2_s=1"
+data_folder = r"C:\Python_Workplace\dao-0810\Fig2"
 file_name_1 = data_folder + r"\DAO_diversity"
 with open(file_name_1, 'rb') as in_file:
     data_1 = pickle.load(in_file)
@@ -45,10 +45,11 @@ with open(file_name_3, 'rb') as in_file:
 x = range(len(data_1))
 plt.plot(x, data_1, "r-", label="DAO")
 plt.plot(x, data_2, "b-", label="Hierarchy")
-plt.plot(x, data_3, "k-", label="Autonomy")
+plt.plot(x, data_3, "k:", label="Autonomy")
 # plt.title('Diversity Decrease')
 plt.xlabel('Iteration', fontweight='bold', fontsize=10)
 plt.ylabel('Diversity', fontweight='bold', fontsize=10)
-plt.legend(frameon=False, ncol=3, fontsize=10)
-plt.savefig("Diversity_Comparison_s1.png", transparent=True, dpi=1200)
+plt.legend(frameon=False, ncol=1, fontsize=10)
+plt.savefig(data_folder + r"\Diversity_Dynamics_s1.png", transparent=True, dpi=1200, bbox_inches='tight', pad_inches=0.1,)
+plt.savefig(r"Diversity_Dynamics_s1.png", transparent=True, dpi=1200, bbox_inches='tight', pad_inches=0.1,)
 plt.show()
