@@ -13,10 +13,11 @@ import pickle
 import time
 import numpy as np
 import multiprocessing as mp
+from multiprocessing import Pool
 
 
 def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
-         version="Rushed", loop=None, return_dict=None):
+         version="Rushed"):
     reality = Reality(m=m, s=s, t=t, version=version)
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
     consensus = [0] * (m // s)
@@ -37,7 +38,7 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
                 consensus.append(0)
         performance_list = [individual.payoff for individual in superior.individuals]
         performance_across_time.append(sum(performance_list) / len(performance_list))
-    return_dict[loop] = performance_across_time
+    return performance_across_time
 
 
 if __name__ == '__main__':
@@ -52,26 +53,21 @@ if __name__ == '__main__':
     authority = False  # !!!!!!!!!!!!!!!! Without authority !!!!!!!!!!!!!!!!!!
     data_across_para = []
     for n in n_list:
-        m = s * t * (m // (s * t))
-        manager = mp.Manager()
-        return_dict = manager.dict()
-        jobs = []
-        for loop in range(repetition_round):
-            p = mp.Process(target=func, args=(m, s, t, authority, n, search_round, version, loop, return_dict))
-            jobs.append(p)
-            p.start()
-
-        for proc in jobs:
-            proc.join()
-        diversity_across_repetition = return_dict.values()
-
+        cpu_num = mp.cpu_count()
+        pool = Pool(cpu_num)
+        data_across_repetition = []
+        for i in range(repetition_round):
+            data_across_repetition.append(
+                pool.apply_async(func=func,
+                                 args=(
+                                     (m, s, t, authority, n, search_round, version))).get())
         result_1 = []
         for i in range(search_round):
-            temp = [diversity_list[i] for diversity_list in diversity_across_repetition]
+            temp = [data_list[i] for data_list in data_across_repetition]
             result_1.append(sum(temp) / len(temp))
         data_across_para.append(result_1)
     # Save the original data for further analysis
-    with open("robust_across_m", 'wb') as out_file:
+    with open("robust_performance_across_n", 'wb') as out_file:
         pickle.dump(data_across_para, out_file)
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))

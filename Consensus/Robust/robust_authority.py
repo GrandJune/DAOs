@@ -40,22 +40,23 @@ if __name__ == '__main__':
     change_freq = 50
     change_prop = 0.2
     version = "Rushed"
-    authority = 1.0  # Need the authority for Hierarchy!!
+    authority_list = [0.2, 0.5, 1.0]  # Need the authority for Hierarchy!!
     data_across_para = []
     cpu_num = mp.cpu_count()
     pool = Pool(cpu_num)
-    data_across_repetition = []
-    for i in range(repetition_round):
-        data_across_repetition.append(
-            pool.apply_async(func=func,
-                             args=((m, s, t, authority, n, search_round, version, change_freq, change_prop))).get())
-    result_1 = []
-    for i in range(search_round):
-        temp = [data_list[i] for data_list in data_across_repetition]
-        result_1.append(sum(temp) / len(temp))
-    data_across_para.append(result_1)
+    for authority in authority_list:
+        data_across_repetition = []
+        for i in range(repetition_round):
+            data_across_repetition.append(
+                pool.apply_async(func=func,
+                                 args=((m, s, t, authority, n, search_round, version, change_freq, change_prop))).get())
+        result_1 = []
+        for i in range(search_round):
+            temp = [data_list[i] for data_list in data_across_repetition]
+            result_1.append(sum(temp) / len(temp))
+        data_across_para.append(result_1)
     # Save the original data for further analysis
-    with open("hierarchy_performance_under_turbulence", 'wb') as out_file:
-        pickle.dump(result_1, out_file)
+    with open("hierarchy_performance_across_authority", 'wb') as out_file:
+        pickle.dump(data_across_para, out_file)
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))

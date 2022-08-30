@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --time=12:00:00
-#SBATCH --job-name=hs
+#SBATCH --job-name=ht
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
 #SBATCH --mem=20gb
 #SBATCH --partition=long
-python hs.py
+python ht.py

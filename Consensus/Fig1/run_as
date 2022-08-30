@@ -3,6 +3,6 @@
 #SBATCH --job-name=as
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=40gb
+#SBATCH --mem=20gb
 #SBATCH --partition=long
 python as.py

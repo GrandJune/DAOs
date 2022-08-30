@@ -13,10 +13,11 @@ import pickle
 import time
 import numpy as np
 import multiprocessing as mp
+from multiprocessing import Pool
 
 
 def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
-         version="Rushed", change_freq=None, change_prop=None, loop=None, return_dict=None):
+         version="Rushed", change_freq=None, change_prop=None):
     reality = Reality(m=m, s=s, t=t, version=version)
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
     consensus = [0] * (m // s)
@@ -39,37 +40,34 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
         performance_across_time.append(sum(performance_list) / len(performance_list))
         if loop % change_freq == 0:
             reality.change(reality_change_rate=change_prop)
-    return_dict[loop] = performance_across_time
+    return performance_across_time
 
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
-    s = 1
-    t = 2
-    n = 200
-    search_round = 500
-    repetition_round = 200
-    change_freq = 10
-    change_prop = 0.1
+    m = 90
+    s = 3
+    t = 3
+    n = 500
+    search_round = 600
+    repetition_round = 300
+    change_freq = 50
+    change_prop = 0.2
     version = "Rushed"
     authority = False  # Without authority
-    manager = mp.Manager()
-    return_dict = manager.dict()
-    jobs = []
-    for loop in range(repetition_round):
-        p = mp.Process(target=func, args=(m, s, t, authority, n, search_round, version, change_freq, change_prop, loop, return_dict))
-        jobs.append(p)
-        p.start()
-
-    for proc in jobs:
-        proc.join()
-    diversity_across_repeat = return_dict.values()
-
+    data_across_para = []
+    cpu_num = mp.cpu_count()
+    pool = Pool(cpu_num)
+    data_across_repetition = []
+    for i in range(repetition_round):
+        data_across_repetition.append(
+            pool.apply_async(func=func,
+                             args=((m, s, t, authority, n, search_round, version, change_freq, change_prop))).get())
     result_1 = []
     for i in range(search_round):
-        temp = [payoff_list[i] for payoff_list in diversity_across_repeat]
+        temp = [data_list[i] for data_list in data_across_repetition]
         result_1.append(sum(temp) / len(temp))
+    data_across_para.append(result_1)
     # Save the original data for further analysis
     with open("dao_performance_under_turbulence", 'wb') as out_file:
         pickle.dump(result_1, out_file)

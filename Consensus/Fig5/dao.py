@@ -11,6 +11,7 @@ from Reality import Reality
 # import matplotlib.pyplot as plt
 import pickle
 import time
+import numpy as np
 import multiprocessing as mp
 from multiprocessing import Pool
 
@@ -19,9 +20,22 @@ def func(m=None, s=None, t=None, authority=None, n=None, search_round=None,
          version="Rushed", change_freq=None, change_prop=None):
     reality = Reality(m=m, s=s, t=t, version=version)
     superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
+    consensus = [0] * (m // s)
     performance_across_time = []
     for loop in range(search_round):
-        superior.local_search()
+        for individual in superior.individuals:
+            next_index = np.random.choice(len(consensus))
+            next_policy = consensus[next_index]
+            individual.constrained_local_search_under_consensus(focal_policy=next_policy, focal_policy_index=next_index)
+        consensus = []
+        for i in range(m//s):
+            temp = sum(individual.policy[i] for individual in superior.individuals)
+            if temp < 0:
+                consensus.append(-1)
+            elif temp > 0:
+                consensus.append(1)
+            else:
+                consensus.append(0)
         performance_list = [individual.payoff for individual in superior.individuals]
         performance_across_time.append(sum(performance_list) / len(performance_list))
         if loop % change_freq == 0:
@@ -33,14 +47,15 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     s = 3
-    t = 3
+    t = 1
     n = 500
     search_round = 600
     repetition_round = 300
     change_freq = 50
     change_prop = 0.2
+    turnover_threshold_list = [0.1, 0.5, 1.0]
     version = "Rushed"
-    authority = 1.0  # Need the authority for Hierarchy!!
+    authority = False  # Without authority
     data_across_para = []
     cpu_num = mp.cpu_count()
     pool = Pool(cpu_num)
@@ -55,7 +70,7 @@ if __name__ == '__main__':
         result_1.append(sum(temp) / len(temp))
     data_across_para.append(result_1)
     # Save the original data for further analysis
-    with open("hierarchy_performance_under_turbulence", 'wb') as out_file:
+    with open("dao_performance_under_turnover", 'wb') as out_file:
         pickle.dump(result_1, out_file)
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
