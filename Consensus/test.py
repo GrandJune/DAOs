@@ -22,7 +22,7 @@ for alpha in alpha_list:
     manager_payoff_across_repeat = []
     superior_payoff_across_repeat = []
     for _ in range(500):
-        reality = Reality(m=m, s=s, t=t, alpha=alpha)
+        reality = Reality(m=m, s=s, t=t)
         superior = Superior(m=m, s=s, t=t, n=n, reality=reality)
         superior.policy = []  # remove the policy
         overall_payoff_across_time = []

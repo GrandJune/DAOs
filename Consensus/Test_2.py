@@ -23,9 +23,23 @@ from multiprocessing import pool
 # import dirichlet
 import numpy as np
 import matplotlib.pyplot as plt
+weight_list = []
+for _ in range(100):
+    weight = np.random.normal(1, 0.1)
+    weight_list.append(weight)
 
-# Using dirichlet() method
-gfg = np.random.dirichlet((3, 1, 1), size=1000)
+# plt.hist(weight_list)
+# plt.show()
 
-count, bins, ignored = plt.hist(gfg, 30, density=True)
+
+n, bins, patches = plt.hist(weight_list, 50, density=True, facecolor='g', alpha=0.75)
+
+
+plt.xlabel('Smarts')
+plt.ylabel('Probability')
+plt.title('Histogram of IQ')
+plt.text(60, .025, r'$\mu=100,\ \sigma=15$')
+plt.xlim(40, 160)
+plt.ylim(0, 0.03)
+plt.grid(True)
 plt.show()

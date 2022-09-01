@@ -4,6 +4,8 @@
 # @FileName: Reality.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
+import time
+
 import numpy as np
 import math
 
@@ -32,113 +34,29 @@ class Reality:
         print("Reality Code: ", self.real_code)
         print("*"*10)
 
-    def get_belief_payoff(self, belief=None):
-        if self.version == "Smooth":
-            ress = 0
-            for i in range(self.cell_num_1):
-                correct_num = 0
-                for j in range(self.s):
-                    index = i * self.s + j
-                    if index >= self.m:
-                        break
-                    else:
-                        if self.real_code[index] * belief[index] == 1:
-                            correct_num += 1
-                if correct_num == 0:
-                    continue
-                else:
-                    ress += np.random.choice([0, correct_num], p=[1-correct_num / self.s, correct_num / self.s])
-            return ress / self.m
-        elif self.version == "Rushed":
-            ress = 0
-            for i in range(self.cell_num_1):
-                flag = False
-                for j in range(self.s):
-                    index = i * self.s + j
-                    # print(self.real_code, belief)
-                    if self.real_code[index] == belief[index]:
-                        flag = True
-                    else:
-                        flag = False
-                        break
-                if flag:
-                    ress += self.s
-            return ress / self.m
-        elif self.version == "Penalty":
-            ress = 0
-            for i in range(self.cell_num_1):
-                acc = 0
-                for j in range(self.s):
-                    index = i * self.s + j
-                    # print(self.real_code, belief)
-                    if self.real_code[index] == belief[index]:
-                        acc += 1
-                    elif self.real_code[index] * belief[index] == -1:
-                        acc -= 1
-                    else:  # belief[index] == 0
-                        continue
-                    ress += acc
-            return ress / self.m
-
-    def get_policy_payoff(self, policy=None):
-        ress_upper = 0
+    def get_payoff(self, belief=None):
+        if len(belief) == self.m:
+            reference = self.real_code
+            cell_num = math.ceil(self.m / self.s)
+            complexity = self.s
+        else:
+            reference = self.real_policy
+            cell_num = math.ceil(self.m / self.s / self.t)
+            complexity = self.t
+        ress = 0
         if self.version == "Rushed":
-            for i in range(self.cell_num_2):
-                flag = False
-                for j in range(self.t):
-                    index = i * self.t + j
-                    if self.real_policy[index] != policy[index]:
-                        flag = False
-                        break
-                    else:
-                        flag = True
-                if flag:
-                    ress_upper += self.t
-            return ress_upper / self.cell_num_1
-
-        elif self.version == "Smooth":
-            for i in range(self.cell_num_2):
-                correct_num = 0
-                for j in range(self.t):
-                    index = i * self.t + j
-                    if index >= self.cell_num_1:
-                        break
-                    else:
-                        if self.real_policy[index] * policy[index] == 1:
-                            correct_num += 1
-                if correct_num == 0:
-                    continue
-                else:
-                    ress_upper += np.random.choice([0, correct_num], p=[1-correct_num / self.cell_num_1, correct_num / self.cell_num_1])
-            return ress_upper / self.cell_num_1
+            for i in range(cell_num):
+                if np.array_equiv(belief[i*complexity: (i+1)*complexity], reference[i*complexity: (i+1)*complexity]):
+                    ress += complexity
         elif self.version == "Penalty":
-            for i in range(self.cell_num_2):
-                correct_num = 0
-                for j in range(self.t):
-                    index = i * self.t + j
-                    if index >= self.cell_num_1:
-                        break
-                    if self.real_policy[index] == policy[index]:
-                        correct_num += 1
-                    elif self.real_policy[index] * policy[index] == -1:
-                        correct_num -= 1
-                    else:  # policy[index] == 0
-                        continue
-                    ress_upper += correct_num
-            return ress_upper / self.cell_num_1
+            for i in range(len(belief)):
+                ress += belief[i] * reference[i]
+            ress *= complexity
         elif self.version == "Weighted":
-            # assign different weights for domains or specialization
-            for i in range(self.cell_num_2):
-                flag = False
-                for j in range(self.t):
-                    index = i * self.t + j
-                    if self.real_policy[index] != policy[index]:
-                        flag = False
-                        break
-                    else:
-                        flag = True
-                if flag:
-                    ress_upper += self.t * self.weight_list[i]
+            for i in range(cell_num):
+                if belief[i*complexity: (i+1)*complexity] == reference[i*complexity: (i+1)*complexity]:
+                    ress += self.weight_list[i]
+        return ress
 
     def strategic_change(self, reality_change_rate=None):
         pass
@@ -172,21 +90,29 @@ class Reality:
         # model this through a strategy prominence distribution for every strategic domain
         # in which strategic salience differ across all domains and sum up to one.
         weight_list = []
-        for i in range(self.cell_num_1):
+        for i in range(math.ceil(self.m / self.s)):
             weight_list.append(np.random.normal(loc=1, scale=1))
-
+        min_weight = min(weight_list)
+        weight_list = [each-min_weight for each in weight_list]
+        weight_list = [each/sum(weight_list) for each in weight_list]
+        return weight_list
 
 
 if __name__ == '__main__':
     m = 6
-    s = 2
+    s = 3
     t = 1
     version = "Rushed"
     reality = Reality(m, s, t, version=version)
     # belief = [1] * 6
     belief = reality.real_code.copy()
     belief[-1] *= -1
-    payoff = reality.get_belief_payoff(belief=belief)
-    print(reality.real_code)
-    print(belief)
-    print(payoff)
+    t0 = time.time()
+    for _ in range(1000000):
+        payoff = reality.get_payoff(belief=belief)
+    # print(reality.real_code)
+    # print(belief)
+    # print(payoff)
+    t1 = time.time()
+    print(t1-t0)
+    print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
