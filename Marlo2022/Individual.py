@@ -13,12 +13,11 @@ class Individual:
         self.skills = []
         for _ in range(skill_num):
             skill = np.random.normal(skill_mean, skill_sigma)
-            self.skills.append(skill)
+            self.skills.append(abs(skill))
             # if (skill > skill_mean - 3 * skill_sigma) and (skill < skill_mean + 3 * skill_sigma):
             #     self.skills.append(skill)
         self.skills = [i/sum(self.skills) for i in self.skills]  # normalize
-        self.skill_gap = max(self.skills) - min(self.skills)
-
+        self.skill_gap = (max(self.skills) - min(self.skills)) / min(self.skills)
 
 
 if __name__ == '__main__':

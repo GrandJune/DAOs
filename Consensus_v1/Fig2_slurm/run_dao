@@ -1,0 +1,8 @@
+#!/bin/bash
+#SBATCH --time=24:00:00
+#SBATCH --job-name=dao_Fig2
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=junyili@u.nus.edu
+#SBATCH --mem=20gb
+#SBATCH --partition=long
+python dao.py

@@ -9,7 +9,7 @@ import math
 
 
 class Reality:
-    def __init__(self, m=None, s=None, t=None, version="Rushed", alpha=None):
+    def __init__(self, m=None, s=None, t=None, version="Rushed"):
         self.m = m  # the total length of the reality code
         self.s = s  # the lower-level of interdependency (staff interdependency)
         self.t = t  # the upper-level of interdependency (policy interdependency)
@@ -19,10 +19,9 @@ class Reality:
             raise ValueError("The number of complexity should be greater than 0")
         if self.s > self.m:
             raise ValueError("The number of complexity should be less than the number of reality")
-        self.weight_list = self.get_payoff_weights()
         self.version = version
         self.cell_num_1 = math.ceil(m / s)
-        self.cell_num_2 = math.ceil(self.cell_num_1 / t)
+        self.cell_num_2 = math.ceil(m / s / t)
         self.real_code = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
         self.real_policy = self.belief_2_policy(belief=self.real_code)
 
@@ -125,30 +124,13 @@ class Reality:
                         continue
                     ress_upper += correct_num
             return ress_upper / self.cell_num_1
-        elif self.version == "Weighted":
-            # assign different weights for domains or specialization
-            for i in range(self.cell_num_2):
-                flag = False
-                for j in range(self.t):
-                    index = i * self.t + j
-                    if self.real_policy[index] != policy[index]:
-                        flag = False
-                        break
-                    else:
-                        flag = True
-                if flag:
-                    ress_upper += self.t * self.weight_list[i]
 
-    def strategic_change(self, reality_change_rate=None):
-        pass
-
-    def operational_change(self, reality_change_rate=None):
+    def change(self, reality_change_rate=None):
         if reality_change_rate:
             for index in range(self.m):
                 if np.random.uniform(0, 1) < reality_change_rate:
                     self.real_code[index] *= -1
             self.real_policy = self.belief_2_policy(belief=self.real_code)
-
 
     def belief_2_policy(self, belief):
         policy = []
@@ -161,18 +143,6 @@ class Reality:
             else:
                 policy.append(0)
         return policy
-
-    def get_payoff_weights(self):
-        # follow labor division paper: # specialization vs generalization
-        # using sigma to control the narrow specialization of payoff
-        # But what is the intuition? what does it represent the real business world.
-        # Can consensus identify the change in strategical structure change
-        # In labor division, it represents the skill specialization
-        # model this through a strategy prominence distribution for every strategic domain
-        # in which strategic salience differ across all domains and sum up to one.
-
-
-
 
 
 if __name__ == '__main__':
