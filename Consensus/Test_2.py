@@ -20,26 +20,13 @@ from multiprocessing import pool
 #         print("********")
 #     print(result_list)
 
-# import dirichlet
 import numpy as np
+import math
 import matplotlib.pyplot as plt
+
 weight_list = []
-for _ in range(100):
-    weight = np.random.normal(1, 0.1)
-    weight_list.append(weight)
-
-# plt.hist(weight_list)
-# plt.show()
-
-
-n, bins, patches = plt.hist(weight_list, 50, density=True, facecolor='g', alpha=0.75)
-
-
-plt.xlabel('Smarts')
-plt.ylabel('Probability')
-plt.title('Histogram of IQ')
-plt.text(60, .025, r'$\mu=100,\ \sigma=15$')
-plt.xlim(40, 160)
-plt.ylim(0, 0.03)
-plt.grid(True)
+for i in range(1000):
+    weight_list.append(np.random.normal(loc=0, scale=0.4))
+# weight_list = [abs(each) for each in weight_list]
+count, bins, ignored = plt.hist(weight_list)
 plt.show()

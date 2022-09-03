@@ -43,31 +43,37 @@ class Reality:
             reference = self.real_policy
             cell_num = math.ceil(self.m / self.s / self.t)
             complexity = self.t
-        ress = 0
+        ress = 0  # normalized payoff: the highest payoff is one
         if self.version == "Rushed":
             for i in range(cell_num):
                 if np.array_equiv(belief[i*complexity: (i+1)*complexity], reference[i*complexity: (i+1)*complexity]):
-                    ress += complexity
+                    ress += 1
+            ress *= (complexity / len(belief))
         elif self.version == "Penalty":
             for i in range(len(belief)):
                 ress += belief[i] * reference[i]
-            ress *= complexity
+            ress *= (complexity / len(belief))  # equal weight of s / m, or t/(m //s)
         elif self.version == "Weighted":
-            for i in range(cell_num):
-                if belief[i*complexity: (i+1)*complexity] == reference[i*complexity: (i+1)*complexity]:
-                    ress += self.weight_list[i]
+            if len(belief) == self.m:  # Belief
+                for i in range(cell_num):
+                    if np.array_equiv(belief[i*complexity: (i+1)*complexity], reference[i*complexity: (i+1)*complexity]):
+                        ress += self.weight_list[i]
+            else:  # Policy
+                for i in range(cell_num):
+                    if np.array_equiv(belief[i * complexity: (i + 1) * complexity],
+                                      reference[i * complexity: (i + 1) * complexity]):
+                        ress += sum(self.weight_list[i * complexity: (i + 1) * complexity])
         return ress
 
-    def strategic_change(self, reality_change_rate=None):
-        pass
+    def structural_change(self):
+        self.weight_list = self.get_payoff_weights()
 
-    def operational_change(self, reality_change_rate=None):
+    def frictional_change(self, reality_change_rate=None):
         if reality_change_rate:
             for index in range(self.m):
                 if np.random.uniform(0, 1) < reality_change_rate:
                     self.real_code[index] *= -1
             self.real_policy = self.belief_2_policy(belief=self.real_code)
-
 
     def belief_2_policy(self, belief):
         policy = []
@@ -82,37 +88,30 @@ class Reality:
         return policy
 
     def get_payoff_weights(self):
-        # follow labor division paper: # specialization vs generalization
-        # using sigma to control the narrow specialization of payoff
-        # But what is the intuition? what does it represent the real business world.
-        # Can consensus identify the change in strategical structure change
-        # In labor division, it represents the skill specialization
-        # model this through a strategy prominence distribution for every strategic domain
-        # in which strategic salience differ across all domains and sum up to one.
         weight_list = []
         for i in range(math.ceil(self.m / self.s)):
-            weight_list.append(np.random.normal(loc=1, scale=1))
-        min_weight = min(weight_list)
-        weight_list = [each-min_weight for each in weight_list]
-        weight_list = [each/sum(weight_list) for each in weight_list]
+            weight_list.append(np.random.normal(loc=0, scale=0.4))
+        weight_list = [abs(each) for each in weight_list]
+        weight_list = [each / sum(weight_list) for each in weight_list]
         return weight_list
 
 
 if __name__ == '__main__':
-    m = 6
-    s = 3
+    m = 20
+    s = 2
     t = 1
-    version = "Rushed"
+    version = "Weighted"
     reality = Reality(m, s, t, version=version)
     # belief = [1] * 6
     belief = reality.real_code.copy()
     belief[-1] *= -1
     t0 = time.time()
-    for _ in range(1000000):
+    for _ in range(100):
         payoff = reality.get_payoff(belief=belief)
-    # print(reality.real_code)
-    # print(belief)
-    # print(payoff)
+        print(reality.real_code)
+        print(belief)
+        print(payoff)
     t1 = time.time()
-    print(t1-t0)
-    print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
+    # print(t1-t0)
+    # print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
+

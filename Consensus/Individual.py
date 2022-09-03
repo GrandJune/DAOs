@@ -17,9 +17,8 @@ class Individual:
         self.t = t
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
         self.reality = reality
-        self.policy = self.reality.belief_2_policy(belief=self.belief)  # a fake policy as a variable temp
-        self.payoff = self.reality.get_belief_payoff(belief=self.belief)
-        self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
+        self.policy = self.reality.belief_2_policy(belief=self.belief)  # a fake policy for voting
+        self.payoff = self.reality.get_payoff(belief=self.belief)
 
     def constrained_local_search_under_consensus(self, focal_policy=None, focal_policy_index=None):
         """
@@ -40,15 +39,13 @@ class Individual:
         next_belief_pieces = alternatives[np.random.choice(len(alternatives))]
         next_belief[focal_policy_index*self.s:(focal_policy_index+1)*self.s] = next_belief_pieces
         next_policy = self.reality.belief_2_policy(belief=next_belief)
-        next_payoff = self.reality.get_belief_payoff(belief=next_belief)
+        next_payoff = self.reality.get_payoff(belief=next_belief)
         if next_payoff > self.payoff:
             self.belief = next_belief
             self.policy = next_policy
             self.payoff = next_payoff
-            self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
         # Another version of DAO, with autonomy possibility
-
         # if focal_policy == 0:
         #     self.free_local_search(scope=range(focal_policy_index*self.s, (focal_policy_index+1)*self.s))
         #     return
@@ -81,12 +78,10 @@ class Individual:
         #     self.belief = next_belief_under_autonomy
         #     self.policy = next_policy_under_autonomy
         #     self.payoff = next_payoff_under_autonomy
-        #     self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
         # else:
         #     self.belief = next_belief_under_consensus
         #     self.policy = next_policy_under_consensus
         #     self.payoff = next_payoff_under_consensus
-        #     self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
     def constrained_local_search_under_authority(self, focal_policy=None, focal_policy_index=None, authority=None):
         """
@@ -108,12 +103,11 @@ class Individual:
             # print("alternatives: ", alternatives, focal_policy)
             next_belief_under_authority[focal_policy_index*self.s:(focal_policy_index+1)*self.s] = next_belief_pieces
             next_policy_under_authority = self.reality.belief_2_policy(belief=next_belief_under_authority)
-            next_payoff_under_authority = self.reality.get_belief_payoff(belief=next_belief_under_authority)
+            next_payoff_under_authority = self.reality.get_payoff(belief=next_belief_under_authority)
             if next_payoff_under_authority > self.payoff:
                 self.belief = next_belief_under_authority
                 self.policy = next_policy_under_authority
                 self.payoff = next_payoff_under_authority
-                self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
         else:
             # Under autonomy
             focal_index = np.random.choice(range(focal_policy_index * self.s, (focal_policy_index + 1) * self.s))
@@ -122,12 +116,11 @@ class Individual:
             else:
                 next_belief_under_autonomy[focal_index] = np.random.choice([-1, 1])
             next_policy_under_autonomy = self.reality.belief_2_policy(belief=next_belief_under_autonomy)
-            next_payoff_under_autonomy = self.reality.get_belief_payoff(belief=next_belief_under_autonomy)
+            next_payoff_under_autonomy = self.reality.get_payoff(belief=next_belief_under_autonomy)
             if next_payoff_under_autonomy > self.payoff:
                 self.belief = next_belief_under_autonomy
                 self.policy = next_policy_under_autonomy
                 self.payoff = next_payoff_under_autonomy
-                self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
     def free_local_search(self, scope=None):
         if not scope:
@@ -140,12 +133,11 @@ class Individual:
         else:
             next_belief[focal_index] *= -1
         next_policy = self.reality.belief_2_policy(belief=next_belief)
-        next_payoff = self.reality.get_belief_payoff(belief=next_belief)
+        next_payoff = self.reality.get_payoff(belief=next_belief)
         if next_payoff > self.payoff:
             self.belief = next_belief
             self.payoff = next_payoff
             self.policy = next_policy
-            self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
     def confirm_to_supervision(self, policy=None, authority=None):
         """
@@ -166,9 +158,8 @@ class Individual:
                     alternatives.append([value] * self.s)
                     belief_pieces = alternatives[np.random.choice(len(alternatives))]
                     self.belief[index*self.s:(index+1)*self.s] = belief_pieces
-        self.payoff = self.reality.get_belief_payoff(belief=self.belief)
+        self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)
-        self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
 
 if __name__ == '__main__':
@@ -176,12 +167,19 @@ if __name__ == '__main__':
     s = 2
     t = 1
     n = 4
-    version = "Rushed"
+    version = "Weighted"
     reality = Reality(m=m, s=s, t=t, version=version)
     individual = Individual(m=m, s=s, t=t, reality=reality)
-    for _ in range(10):
-        print(individual.belief, individual.payoff)
-        individual.free_local_search()
+    # for _ in range(100):
+    #     individual.free_local_search()
+    #     print(individual.belief)
+    #     print(individual.payoff)
+    #     print("-------------")
+    belief_test = reality.real_code.copy()
+    belief_test[-1] = -1 * belief_test[-1]
+    print(belief_test)
+    payoff_test = reality.get_payoff(belief_test)
+    print(payoff_test)
     # print("individual.belief: ", individual.belief, individual.payoff)
     # # policy_list = [1, -1, 1, -1, 1, -1, 1, -1, 1]
     # policy_list = reality.real_policy
