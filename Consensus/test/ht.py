@@ -12,16 +12,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
-m = 24
-s = 3
-t_list = [1, 2, 4]
+m = 30
+s_list = [3, 5]
+t = 2
 n = 100
 data_across_para = []
 version = "Weighted"
 repetition_round = 100
 search_round = 200
 t0 = time.time()
-for t in t_list:
+for s in s_list:
     data_across_repetition = []
     for _ in range(repetition_round):
         reality = Reality(m=m, s=s, t=t, version=version)
@@ -48,3 +48,6 @@ plt.xlabel('Iteration')
 plt.ylabel('Performance')
 plt.legend()
 plt.savefig("Hierarchy_across_t.png")
+
+t1 = time.time()
+print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))

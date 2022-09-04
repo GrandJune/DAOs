@@ -5,7 +5,6 @@
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import time
-
 import numpy as np
 import math
 

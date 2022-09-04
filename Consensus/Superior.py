@@ -25,7 +25,7 @@ class Superior:
         self.t = t  # upper-level interdependency
         self.n = n  # the number of subunits under this superior
         self.policy_num = self.m // self.s
-        self.policy = np.random.choice([-1, 1], self.policy_num, p=[0.5, 0.5])
+        self.policy = np.random.choice([-1, 0, 1], self.policy_num, p=[1/3, 1/3, 1/3])
         self.individuals = []
         self.beliefs = []
         self.authority = authority

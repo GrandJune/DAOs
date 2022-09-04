@@ -84,46 +84,4 @@ import pickle
 # plt.show()
 
 
-# Random Guess
-# folder = r"C:\Python_Workplace\dao-0824\Consensus\Robust"
-# file_name_1 = folder + r"\robust_performance_random_guess"
-# with open(file_name_1, 'rb') as in_file:
-#     data_1 = pickle.load(in_file)
-# # print(data)
-# # [10, 50, 100, 150, 200]
-# # data_1 = [each[-1] for each in data_1]
-# # x = [30, 60, 90]
-#
-# x = range(len(data_1[0]))
-# plt.plot(x, data_1[0], "b-", label="Hierarchy")
-# plt.plot(x, data_1[1], "r-", label="Random Guess")
-#
-# plt.title('Poor Superior vs Random Guess')
-# plt.xlabel('Iteration', fontweight='bold', fontsize=12)
-# plt.ylabel('Performance', fontweight='bold', fontsize=12)
-# plt.legend(frameon=False, ncol=1)
-# plt.savefig("Performance_random_guess.png", transparent=True, dpi=1200)
-# plt.savefig(folder + r"\Performance_random_guess.png", transparent=True, dpi=1200)
-# plt.show()
-
-
-
-# Authority Degree
-folder = r"C:\Python_Workplace\dao-0824\Consensus\Robust"
-file_name_1 = folder + r"\hierarchy_performance_across_authority"
-with open(file_name_1, 'rb') as in_file:
-    data_1 = pickle.load(in_file)
-
-# x = [0.2, 0.5, 1.0]
-
-x = range(len(data_1[0]))
-plt.plot(x, data_1[0], "g-", label="0.2")
-plt.plot(x, data_1[1], "y-", label="0.5")
-plt.plot(x, data_1[2], "r-", label="1.0")
-plt.title('Authority Degree')
-plt.xlabel('Iteration', fontweight='bold', fontsize=12)
-plt.ylabel('Performance', fontweight='bold', fontsize=12)
-plt.legend(frameon=False, ncol=1)
-plt.savefig("Performance_authority.png", transparent=True, dpi=1200)
-plt.savefig(folder + r"\Performance_authority.png", transparent=True, dpi=1200)
-plt.show()
+# T-test
