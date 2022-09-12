@@ -52,8 +52,8 @@ class Superior:
         if next_payoff > self.payoff:
             self.policy = next_policy
             self.payoff = next_payoff
-            for individual in self.individuals:
-                individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index],
+        for individual in self.individuals:
+            individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index],
                                                                 focal_policy_index=focal_index, authority=self.authority)
 
     def weighted_local_search(self):
@@ -81,11 +81,11 @@ class Superior:
             next_policy[focal_index] = np.random.choice([-1, 1])
         else:
             next_policy[focal_index] *= -1
-        next_payoff = self.reality.get_policy_payoff(policy=next_policy)
+        next_payoff = self.reality.get_payoff(belief=next_policy)
         self.policy = next_policy
         self.payoff = next_payoff
         for individual in self.individuals:
-            individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index], focal_policy_index=focal_index, authority=self.authority)
+            individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index], focal_policy_index=focal_index, authority=self.authority, must_jump=True)
 
     def get_diversity(self):
         belief_pool = [individual.belief for individual in self.individuals]

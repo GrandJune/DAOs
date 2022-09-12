@@ -62,6 +62,30 @@ class Reality:
                     if np.array_equiv(belief[i * complexity: (i + 1) * complexity],
                                       reference[i * complexity: (i + 1) * complexity]):
                         ress += sum(self.weight_list[i * complexity: (i + 1) * complexity])
+        elif self.version == "DualWeighted":
+            if len(belief) == self.m:  # Belief
+                for i in range(cell_num):
+                    if np.array_equiv(belief[i*complexity: (i+1)*complexity], reference[i*complexity: (i+1)*complexity]):
+                        ress += self.weight_list[i]
+            else:  # Policy
+                for i in range(cell_num):
+                    if np.array_equiv(belief[i * complexity: (i + 1) * complexity],
+                                      reference[i * complexity: (i + 1) * complexity]):
+                        ress += sum(self.weight_list[i * complexity: (i + 1) * complexity])
+
+            for i in range(self.cell_num_2):
+                correct_num = 0
+                for j in range(self.t):
+                    index = i * self.t + j
+                    if index >= self.cell_num_1:
+                        break
+                    else:
+                        if self.real_policy[index] * policy[index] == 1:
+                            correct_num += 1
+                if correct_num == 0:
+                    continue
+                else:
+                    ress += np.random.choice([0, correct_num], p=[1-correct_num / self.cell_num_1, correct_num / self.cell_num_1])
         return ress
 
     def structural_change(self):

@@ -10,7 +10,7 @@ import numpy as np
 from Reality import Reality
 
 
-class Superior:
+class Superior_2:
     def __init__(self, m=None, s=None, t=None, n=None, reality=None, authority=1.0):
         """
         :param m: problem space
@@ -81,7 +81,7 @@ class Superior:
             next_policy[focal_index] = np.random.choice([-1, 1])
         else:
             next_policy[focal_index] *= -1
-        next_payoff = self.reality.get_policy_payoff(policy=next_policy)
+        next_payoff = self.reality.get_payoff(belief=next_policy)
         self.policy = next_policy
         self.payoff = next_payoff
         for individual in self.individuals:

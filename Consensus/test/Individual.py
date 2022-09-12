@@ -84,7 +84,7 @@ class Individual:
         #     self.policy = next_policy_under_consensus
         #     self.payoff = next_payoff_under_consensus
 
-    def constrained_local_search_under_authority(self, focal_policy=None, focal_policy_index=None, authority=None):
+    def constrained_local_search_under_authority(self, focal_policy=None, focal_policy_index=None, authority=None, must_jump=False):
         """
         The local search should confirm to the policy constraint
         :param focal_policy: 1 or -1
@@ -109,6 +109,11 @@ class Individual:
                 self.belief = next_belief_under_authority
                 self.policy = next_policy_under_authority
                 self.payoff = next_payoff_under_authority
+            else:
+                if must_jump:
+                    self.belief = next_belief_under_authority
+                    self.policy = next_policy_under_authority
+                    self.payoff = next_payoff_under_authority
         else:
             # Under autonomy
             focal_index = np.random.choice(range(focal_policy_index * self.s, (focal_policy_index + 1) * self.s))
