@@ -51,21 +51,13 @@ class Reality:
 
 
 if __name__ == '__main__':
-    m = 20
-    s = 2
-    t = 1
+    m = 21
+    s = 3
     version = "Rushed"
-    reality = Reality(m, s, t, version=version)
-    # belief = [1] * 6
+    reality = Reality(m=m, s=s, version=version)
     belief = reality.real_code.copy()
     belief[-1] *= -1
-    t0 = time.time()
-    for _ in range(100):
-        payoff = reality.get_payoff(belief=belief)
-        print(reality.real_code)
-        print(belief)
-        print(payoff)
-    t1 = time.time()
-    # print(t1-t0)
-    # print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
+    payoff = reality.get_payoff(belief=belief)
+    print(payoff)
+    print(reality.cell_num)
 
