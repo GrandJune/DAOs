@@ -22,36 +22,39 @@ class Superior:
         """
         self.m = m  # state length
         self.s = s  # lower-level interdependency
-        self.t = t  # upper-level interdependency
         self.n = n  # the number of subunits under this superior
         self.policy_num = self.m // self.s
-        self.policy = np.random.choice([-1, 0, 1], self.policy_num, p=[1/3, 1/3, 1/3])
         self.individuals = []
-        self.beliefs = []
+        self.belief_list = []
+        self.belief = np.random.choice([-1, 0, 1], self.policy_num, p=[1/3, 1/3, 1/3])
+        self.reality = reality
+        self.policy = self.reality.belief_2_policy(belief=self.belief)
         self.authority = authority
         for _ in range(self.n):
-            individual = Individual(m=self.m, s=self.s, t=self.t, reality=reality)
+            individual = Individual(m=self.m, s=self.s, reality=reality)
             if self.authority:
                 individual.confirm_to_supervision(policy=self.policy, authority=authority)
             self.individuals.append(individual)
-            self.beliefs.append(individual.belief)
-        self.reality = reality
+            self.belief_list.append(individual.belief)
         self.payoff = self.reality.get_payoff(self.policy)
 
     def local_search(self):
         """
         Superior can do a free local search, and then agents adjust accordingly.
         """
-        focal_index = np.random.randint(0, self.policy_num)
-        next_policy = self.policy.copy()
-        if next_policy[focal_index] == 0:
-            next_policy[focal_index] = np.random.choice([-1, 1])
+        next_belief = self.belief.copy()
+        focal_index = np.random.choice(self.m)
+        if next_belief[focal_index] == 0:
+            next_belief[focal_index] = np.random.choice([-1, 1])  # Another way is to make the knowledge scope fixed
+            # return
         else:
-            next_policy[focal_index] *= -1
-        next_payoff = self.reality.get_policy_payoff(policy=next_policy)
+            next_belief[focal_index] *= -1
+        next_policy = self.reality.belief_2_policy(belief=next_belief)
+        next_payoff = self.reality.get_payoff(belief=next_belief)
         if next_payoff > self.payoff:
-            self.policy = next_policy
+            self.belief = next_belief
             self.payoff = next_payoff
+            self.policy = next_policy
         for individual in self.individuals:
             individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index],
                                                                 focal_policy_index=focal_index, authority=self.authority)

@@ -11,10 +11,10 @@ from Reality import Reality
 
 
 class Individual:
-    def __init__(self, m=None, s=None, t=None, reality=None):
+    def __init__(self, m=None, s=None, t=None, reality=None, lr=None):
         self.m = m
         self.s = s
-        self.t = t
+        self.lr = lr  # learning rate, learning from consensus
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
         self.reality = reality
         self.policy = self.reality.belief_2_policy(belief=self.belief)  # a fake policy for voting
