@@ -4,15 +4,13 @@
 # @FileName: Superior.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
-import math
 from Individual import Individual
-from Superior import Superior
 import numpy as np
 from Reality import Reality
 
 
-class Organization:
-    def __init__(self, m=None, s=None, n=None, reality=None, authority=1.0):
+class Autonomy:
+    def __init__(self, m=None, s=None, n=None, reality=None, subgroup_size=None, lr=None):
         """
         :param m: problem space
         :param s: the first complexity
@@ -23,36 +21,54 @@ class Organization:
         self.m = m  # state length
         self.s = s  # lower-level interdependency
         self.n = n  # the number of subunits under this superior
+        self.subgroup_size = subgroup_size
+        if self.n % self.subgroup_size != 0:
+            raise ValueError("N must be divisible by subgroup size")
+        self.group_num = self.s // self.subgroup_size
         self.policy_num = self.m // self.s
         self.individuals = []
-        self.belief_list = []
         self.reality = reality
-        self.consensus = [0] * (m // s)
-        for _ in range(self.n):
+        for i in range(self.n):
             individual = Individual(m=self.m, s=self.s, reality=self.reality)
+            individual.connections = list(range((i // self.subgroup_size) * self.subgroup_size, ((i // self.subgroup_size) + 1) * self.subgroup_size))
             self.individuals.append(individual)
-            self.belief_list.append(individual.belief)
+
+        self.lr = lr  # learning from code
         self.performance_across_time = []
         self.diversity_across_time = []
 
+
     def search(self):
+        # For autonomy, only learn from an isolated subgroup, according to Fang (2010)'s paper
         for individual in self.individuals:
-            next_index = np.random.choice(len(self.consensus))
-            next_policy = self.consensus[next_index]
-            individual.constrained_local_search_under_consensus(focal_policy=next_policy, focal_policy_index=next_index)
-        consensus = []
-        for i in range(m//s):
-            temp = sum(individual.policy[i] for individual in self.individuals)
-            if temp < 0:
-                consensus.append(-1)
-            elif temp > 0:
-                consensus.append(1)
-            else:
-                consensus.append(0)
-        self.consensus = consensus.copy()
+            connected_group = [self.individuals[i] for i in individual.connections]
+            superior_belief = []
+            for each in connected_group:
+                if each.payoff > individual.payoff:
+                    superior_belief.append(each.belief)
+            if len(superior_belief) != 0:
+                majority_view = self.get_majority_view(superior_belief)
+                for i in range(self.m):
+                    if np.random.uniform(0, 1) < self.lr:
+                        individual.belief[i] = majority_view[i]
+                individual.payoff = self.reality.get_payoff(belief=individual.belief)
+            # else:
+            #     print(individual.payoff)
         performance_list = [individual.payoff for individual in self.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.diversity_across_time.append(self.get_diversity())
+
+    def get_majority_view(self, superior_belief=None):
+        majority_view = []
+        for i in range(self.m):
+            temp = [belief[i] for belief in superior_belief]
+            if sum(temp) > 0:
+                majority_view.append(1)
+            elif sum(temp) < 0:
+                majority_view.append(-1)
+            else:
+                majority_view.append(0)
+        return majority_view
 
     def get_diversity(self):
         belief_pool = [individual.belief for individual in self.individuals]
@@ -74,15 +90,16 @@ class Organization:
 if __name__ == '__main__':
     m = 27
     s = 3
-    t = 1
-    n = 50
-    reality = Reality(m=m, s=s, t=t)
-    organization = Organization(m=m, s=s, n=n, reality=reality)
-    for _ in range(300):
+    n = 200
+    group_size = 20
+    lr = 0.3
+    reality = Reality(m=m, s=s)
+    organization = Autonomy(m=m, s=s, n=n, subgroup_size=group_size, reality=reality, lr=lr)
+    for _ in range(100):
         organization.search()
     import matplotlib.pyplot as plt
-    x = range(300)
-    plt.plot(x, organization.performance_across_time, "k-", label="DAO")
+    x = range(100)
+    plt.plot(x, organization.performance_across_time, "k-", label="Autonomy")
     # plt.title('Diversity Decrease')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)

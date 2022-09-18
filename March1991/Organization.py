@@ -14,8 +14,8 @@ class Organization:
         self.m = m
         self.n = n
         self.code =[0] * self.m
-        self.p1 = p1  # learning from code
-        self.p2 = p2  # learning from beliefs
+        self.p1 = p1  # belief learning from code
+        self.p2 = p2  # code learning from beliefs
         self.reality = reality
         self.payoff = 0
         self.individuals = []
