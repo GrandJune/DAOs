@@ -24,19 +24,19 @@ class Autonomy:
         self.subgroup_size = subgroup_size
         if self.n % self.subgroup_size != 0:
             raise ValueError("N must be divisible by subgroup size")
+        if self.m % self.s != 0:
+            raise ValueError("m is not dividable by s")
         self.group_num = self.s // self.subgroup_size
         self.policy_num = self.m // self.s
         self.individuals = []
         self.reality = reality
+        self.lr = lr  # learning from code
         for i in range(self.n):
-            individual = Individual(m=self.m, s=self.s, reality=self.reality)
+            individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
             individual.connections = list(range((i // self.subgroup_size) * self.subgroup_size, ((i // self.subgroup_size) + 1) * self.subgroup_size))
             self.individuals.append(individual)
-
-        self.lr = lr  # learning from code
         self.performance_across_time = []
         self.diversity_across_time = []
-
 
     def search(self):
         # For autonomy, only learn from an isolated subgroup, according to Fang (2010)'s paper
@@ -88,11 +88,12 @@ class Autonomy:
 
 
 if __name__ == '__main__':
-    m = 27
+    m = 120
     s = 3
-    n = 200
-    group_size = 20
-    lr = 0.3
+    n = 210
+    group_size = 70  # the smallest group size in Fang's model: 7
+    # according to the practice, such a subdivision of an organization, such a size of autonomous team cannot be large.
+    lr = 0.3  # p2 in March's model; p1 = 1 (implied in this model)
     reality = Reality(m=m, s=s)
     organization = Autonomy(m=m, s=s, n=n, subgroup_size=group_size, reality=reality, lr=lr)
     for _ in range(100):

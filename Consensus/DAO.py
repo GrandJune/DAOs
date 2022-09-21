@@ -4,15 +4,12 @@
 # @FileName: Superior.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
-import math
 from Individual import Individual
-from Superior import Superior
-import numpy as np
 from Reality import Reality
 
 
 class DAO:
-    def __init__(self, m=None, s=None, n=None, reality=None, authority=1.0):
+    def __init__(self, m=None, s=None, n=None, reality=None, lr=0.3):
         """
         :param m: problem space
         :param s: the first complexity
@@ -23,33 +20,32 @@ class DAO:
         self.m = m  # state length
         self.s = s  # lower-level interdependency
         self.n = n  # the number of subunits under this superior
+        if self.m % self.s != 0:
+            raise ValueError("m is not dividable by s")
         self.policy_num = self.m // self.s
         self.individuals = []
-        self.belief_list = []
         self.reality = reality
+        self.lr = lr
         self.consensus = [0] * (m // s)
         for _ in range(self.n):
-            individual = Individual(m=self.m, s=self.s, reality=self.reality)
+            individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
             self.individuals.append(individual)
-            self.belief_list.append(individual.belief)
         self.performance_across_time = []
         self.diversity_across_time = []
 
     def search(self):
         for individual in self.individuals:
-            next_index = np.random.choice(len(self.consensus))
-            next_policy = self.consensus[next_index]
-            individual.constrained_local_search_under_consensus(focal_policy=next_policy, focal_policy_index=next_index)
-        consensus = []
+            individual.learning_from_consensus(consensus=self.consensus)
+        new_consensus = []
         for i in range(m//s):
             temp = sum(individual.policy[i] for individual in self.individuals)
             if temp < 0:
-                consensus.append(-1)
+                new_consensus.append(-1)
             elif temp > 0:
-                consensus.append(1)
+                new_consensus.append(1)
             else:
-                consensus.append(0)
-        self.consensus = consensus.copy()
+                new_consensus.append(0)
+        self.consensus = new_consensus.copy()
         performance_list = [individual.payoff for individual in self.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.diversity_across_time.append(self.get_diversity())
@@ -74,10 +70,10 @@ class DAO:
 if __name__ == '__main__':
     m = 27
     s = 3
-    t = 1
-    n = 50
-    reality = Reality(m=m, s=s, t=t)
-    organization = DAO(m=m, s=s, n=n, reality=reality)
+    n = 200
+    lr = 0.3
+    reality = Reality(m=m, s=s)
+    organization = DAO(m=m, s=s, n=n, reality=reality, lr=lr)
     for _ in range(300):
         organization.search()
     import matplotlib.pyplot as plt

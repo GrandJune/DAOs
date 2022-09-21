@@ -94,7 +94,7 @@ class Organization:
     def calculate_k(self, superior_group):
         """
         The payoff function here
-        Compare the organization code and the superior goup's belief
+        Compare the organization code and the superior group's belief
         SO what's k? -> the organizational knowledge
         :param superior_group: have a better similarity than the organizational code
         :return:

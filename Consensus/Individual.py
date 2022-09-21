@@ -11,7 +11,7 @@ from Reality import Reality
 
 
 class Individual:
-    def __init__(self, m=None, s=None, t=None, reality=None, lr=None):
+    def __init__(self, m=None, s=None, reality=None, lr=None):
         self.m = m
         self.s = s
         self.lr = lr  # learning rate, learning from consensus
@@ -25,7 +25,7 @@ class Individual:
     def learning_from_consensus(self, consensus=None):
         for index in range(self.m):
             if np.random.uniform(0, 1) < self.lr:
-                self.belief[index] = consensus[index]
+                self.belief[index] = self.reality.policy_2_belief(policy=consensus[index])
         self.payoff = self.reality.get_payoff(belief=self.belief)
 
 

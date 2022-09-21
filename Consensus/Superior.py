@@ -4,122 +4,93 @@
 # @FileName: Superior.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
-import math
-from Individual import Individual
 import numpy as np
 from Reality import Reality
 
 
 class Superior:
-    def __init__(self, m=None, s=None, t=None, n=None, reality=None, authority=1.0):
+    def __init__(self, m=None, n=None, reality=None, p1=0.9, p2=0.1):
         """
-        :param m: problem space
-        :param s: the first complexity
-        :param t: the second complexity
-        :param n: the number of agents
-        :param reality: to provide feedback
-        :param confirm: the extent to which agents confirm to their superior
+        March's model to model how the traditional organizational cognition is formed.
+        :param m: problem dimension (the length of policy directives, i.e., m // s)
+        :param n: group size, 50 in March's model
+        :param reality: policy reality
+        :param p1: code learning from belief
+        :param p2: belief learning from code
         """
-        self.m = m  # state length
-        self.s = s  # lower-level interdependency
+        self.m = m  # policy length
         self.n = n  # the number of subunits under this superior
-        self.policy_num = self.m // self.s
-        self.individuals = []
-        self.belief_list = []
-        self.belief = np.random.choice([-1, 0, 1], self.policy_num, p=[1/3, 1/3, 1/3])
+        self.p1 = p1  # code learning from belief, 0.9
+        self.p2 = p2  # belief learning from code, 0.1
         self.reality = reality
-        self.policy = self.reality.belief_2_policy(belief=self.belief)
-        self.authority = authority
+        self.managers = []
         for _ in range(self.n):
-            individual = Individual(m=self.m, s=self.s, reality=reality)
-            if self.authority:
-                individual.confirm_to_supervision(policy=self.policy, authority=authority)
-            self.individuals.append(individual)
-            self.belief_list.append(individual.belief)
-        self.payoff = self.reality.get_payoff(self.policy)
+            manager = Manager(m=self.m, reality=self.reality)
+            self.managers.append(manager)
+        self.policy = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
+        self.payoff = self.reality.get_policy_payoff(policy=self.policy)
 
-    def local_search(self):
-        """
-        Superior can do a free local search, and then agents adjust accordingly.
-        """
-        next_belief = self.belief.copy()
-        focal_index = np.random.choice(self.m)
-        if next_belief[focal_index] == 0:
-            next_belief[focal_index] = np.random.choice([-1, 1])  # Another way is to make the knowledge scope fixed
-            # return
-        else:
-            next_belief[focal_index] *= -1
-        next_policy = self.reality.belief_2_policy(belief=next_belief)
-        next_payoff = self.reality.get_payoff(belief=next_belief)
-        if next_payoff > self.payoff:
-            self.belief = next_belief
-            self.payoff = next_payoff
-            self.policy = next_policy
-        for individual in self.individuals:
-            individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index],
-                                                                focal_policy_index=focal_index, authority=self.authority)
+    def search(self):
+        superior_policy = []
+        for manager in self.managers:
+            if manager.payoff > self.payoff:
+                superior_policy.append(manager.policy)
+        if len(superior_policy) != 0:
+            majority_policy = self.get_majority_view(superior_policy=superior_policy)
+            # socialization effectiveness
+            for index in range(self.m):
+                if self.policy[index] != majority_policy[index]:
+                    if np.random.uniform(0, 1) < self.p1:
+                        self.policy[index] = majority_policy[index]
+        self.payoff = self.reality.get_policy_payoff(policy=self.policy)
+        # learning effectiveness
+        for manager in self.managers:
+            for index in range(self.m):
+                if manager.policy[index] != self.policy[index]:
+                    if np.random.uniform(0, 1) < self.p2:
+                        manager.policy[index] = self.policy[index]
+            manager.payoff = self.reality.get_policy_payoff(policy=manager.policy)
 
-    def weighted_local_search(self):
-        """
-        The strategic local search is based on weights across difference domains.
-        """
-        focal_index = np.random.choice(range(self.policy_num), p=self.reality.weight_list)
-        next_policy = self.policy.copy()
-        if next_policy[focal_index] == 0:
-            next_policy[focal_index] = np.random.choice([-1, 1])
-        else:
-            next_policy[focal_index] *= -1
-        next_payoff = self.reality.get_payoff(next_policy)
-        if next_payoff > self.payoff:
-            self.policy = next_policy
-            self.payoff = next_payoff
-        for individual in self.individuals:
-            individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index],
-                                                            focal_policy_index=focal_index, authority=self.authority)
-
-    def random_guess(self):
-        focal_index = np.random.randint(0, self.policy_num)
-        next_policy = self.policy.copy()
-        if next_policy[focal_index] == 0:
-            next_policy[focal_index] = np.random.choice([-1, 1])
-        else:
-            next_policy[focal_index] *= -1
-        next_payoff = self.reality.get_policy_payoff(policy=next_policy)
-        self.policy = next_policy
-        self.payoff = next_payoff
-        for individual in self.individuals:
-            individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index], focal_policy_index=focal_index, authority=self.authority)
-
-    def get_diversity(self):
-        belief_pool = [individual.belief for individual in self.individuals]
-        diversity = 0
-        for index, individual in enumerate(self.individuals):
-            selected_pool = belief_pool[index+1::]
-            one_pair_diversity = [self.get_distance(individual.belief, belief) for belief in selected_pool]
-            diversity += sum(one_pair_diversity)
-        return diversity / self.m / (self.n - 1) / self.n * 2
-
-    def get_distance(self, a=None, b=None):
-        acc = 0
+    def get_majority_view(self, superior_policy=None):
+        majority_view = []
         for i in range(self.m):
-            if a[i] != b[i]:
-                acc += 1
-        return acc
+            temp = [policy[i] for policy in superior_policy]
+            if sum(temp) > 0:
+                majority_view.append(1)
+            elif sum(temp) < 0:
+                majority_view.append(-1)
+            else:
+                majority_view.append(0)
+        return majority_view
+
+
+class Manager:
+    def __init__(self, m=None, reality=None, ):
+        self.m = m
+        self.reality = reality
+        self.policy = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
+        self.payoff = self.reality.get_policy_payoff(policy=self.policy)
 
 
 if __name__ == '__main__':
-    m = 27
+    m = 120
     s = 3
-    t = 1
-    n = 10
-    authority = 0.8
-    reality = Reality(m=m, s=s, t=t)
-    superior = Superior(m=m, s=s, t=t, n=n, reality=reality, authority=authority)
-    # for _ in range(100):
-    #     superior.local_search()
-    #     print(superior.payoff)
-        # print("*"*10)
-    # superior.describe()
-    # truth_payoff = reality.get_policy_payoff(policy=reality.real_policy)
-    # truth_payoff = reality.get_policy_payoff(policy=reality.real_policy)
-    # print("The truth payoff is: ", truth_payoff)
+    n = 200
+    p1 = 0.5
+    p2 = 0.1
+    reality = Reality(m=m, s=s)
+    superior = Superior(m=m//s, n=n, reality=reality, p1=p1, p2=p2)
+    performance_list = []
+    for _ in range(300):
+        superior.search()
+        # print(superior.payoff)
+        performance_list.append(superior.payoff)
+    import matplotlib.pyplot as plt
+    x = range(300)
+    plt.plot(x, performance_list, "k-", label="Hierarchy")
+    # plt.title('Diversity Decrease')+
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Performance', fontweight='bold', fontsize=10)
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    # plt.savefig("Diversity_Comparison_s3.png", transparent=True, dpi=1200)
+    plt.show()

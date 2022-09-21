@@ -23,10 +23,16 @@ from multiprocessing import pool
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+from itertools import product
 
-weight_list = []
-for i in range(1000):
-    weight_list.append(np.random.normal(loc=0, scale=0.4))
-# weight_list = [abs(each) for each in weight_list]
-count, bins, ignored = plt.hist(weight_list)
-plt.show()
+# weight_list = []
+# for i in range(1000):
+#     weight_list.append(np.random.normal(loc=0, scale=0.4))
+# # weight_list = [abs(each) for each in weight_list]
+# count, bins, ignored = plt.hist(weight_list)
+# plt.show()
+test = [1, -1]
+s = list(product(test, repeat=3))
+# s = [each for each in s if sum(each) > 0]
+print(s)
+
