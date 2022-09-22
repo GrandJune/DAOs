@@ -1,8 +1,0 @@
-#!/bin/bash
-#SBATCH --time=10:00:00
-#SBATCH --job-name=a_time
-#SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=20gb
-#SBATCH --partition=long
-python autonomy_across_time.py
