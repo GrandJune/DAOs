@@ -7,13 +7,15 @@
 from Individual import Individual
 import numpy as np
 from Reality import Reality
+from Superior import Superior
 
 
-class Autonomy:
-    def __init__(self, m=None, s=None, n=None, reality=None, subgroup_size=None, auto_lr=None):
+class Hierarchy:
+    def __init__(self, m=None, s=None, n=None, reality=None, lr=0.3):
         """
         :param m: problem space
         :param s: the first complexity
+        :param t: the second complexity
         :param n: the number of agents
         :param reality: to provide feedback
         :param confirm: the extent to which agents confirm to their superior
@@ -21,49 +23,28 @@ class Autonomy:
         self.m = m  # state length
         self.s = s  # lower-level interdependency
         self.n = n  # the number of subunits under this superior
-        self.subgroup_size = subgroup_size
-        if self.n % self.subgroup_size != 0:
-            raise ValueError("N must be divisible by subgroup size")
         if self.m % self.s != 0:
             raise ValueError("m is not dividable by s")
-        self.group_num = self.s // self.subgroup_size
         self.policy_num = self.m // self.s
-        self.individuals = []
+        self.lr = lr
         self.reality = reality
-        self.auto_lr = auto_lr  # learning from code (but refer to autonomous learning)
-        for i in range(self.n):
-            individual = Individual(m=self.m, s=self.s, reality=self.reality, auto_lr=self.auto_lr)
-            individual.connections = list(range((i // self.subgroup_size) * self.subgroup_size, ((i // self.subgroup_size) + 1) * self.subgroup_size))
+        self.superior = Superior(m=self.policy_num, reality=self.reality, n=50)
+        self.individuals = []
+        self.belief = np.random.choice([-1, 0, 1], self.policy_num, p=[1/3, 1/3, 1/3])
+        self.policy = self.reality.belief_2_policy(belief=self.belief)
+        for _ in range(self.n):
+            individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
             self.individuals.append(individual)
         self.performance_across_time = []
         self.diversity_across_time = []
 
     def search(self):
-        # For autonomy, only learn from an isolated subgroup, according to Fang (2010)'s paper
         for individual in self.individuals:
-            connected_group = [self.individuals[i] for i in individual.connections]
-            superior_belief = []
-            for each in connected_group:
-                if each.payoff > individual.payoff:
-                    superior_belief.append(each.belief)
-            if len(superior_belief) != 0:
-                majority_view = self.get_majority_view(superior_belief)
-                individual.learning_from_belief(belief=majority_view)  # using auto_lr
+            individual.learning_from_policy(policy=self.superior.policy)
+        self.superior.search()
         performance_list = [individual.payoff for individual in self.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.diversity_across_time.append(self.get_diversity())
-
-    def get_majority_view(self, superior_belief=None):
-        majority_view = []
-        for i in range(self.m):
-            temp = [belief[i] for belief in superior_belief]
-            if sum(temp) > 0:
-                majority_view.append(1)
-            elif sum(temp) < 0:
-                majority_view.append(-1)
-            else:
-                majority_view.append(0)
-        return majority_view
 
     def get_diversity(self):
         belief_pool = [individual.belief for individual in self.individuals]
@@ -86,19 +67,18 @@ if __name__ == '__main__':
     m = 120
     s = 1
     n = 210
-    auto_lr = 0.5
-    group_size = 7  # the smallest group size in Fang's model: 7
-    # according to the practice, such a subdivision of an organization, such a size of autonomous team cannot be large.
+    lr = 0.3
     reality = Reality(m=m, s=s)
-    autonomy = Autonomy(m=m, s=s, n=n, subgroup_size=group_size, reality=reality, auto_lr=auto_lr)
-    for _ in range(100):
-        autonomy.search()
+    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr)
+    for _ in range(300):
+        hierarchy.search()
     import matplotlib.pyplot as plt
-    x = range(100)
-    plt.plot(x, autonomy.performance_across_time, "k-", label="Autonomy")
+    x = range(300)
+    plt.plot(x, hierarchy.performance_across_time, "k-", label="Hierarchy")
+    plt.plot(x, hierarchy.superior.performance_across_time, "k--", label="Superior")
     # plt.title('Diversity Decrease')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Autonomy_performance.png", transparent=True, dpi=1200)
+    plt.savefig("Hierarchy_performance.png", transparent=True, dpi=1200)
     plt.show()
