@@ -10,7 +10,7 @@ import numpy as np
 
 
 class DAO:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, auto_lr=None):
+    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, auto_lr=None, subgroup_size=None):
         """
         :param m: problem space
         :param s: the first complexity
@@ -28,9 +28,11 @@ class DAO:
         self.reality = reality
         self.lr = lr  # learning from consensus
         self.auto_lr =auto_lr  # autonomous learning
+        self.subgroup_size = subgroup_size
         self.consensus = [0] * (m // s)
-        for _ in range(self.n):
+        for i in range(self.n):
             individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr, auto_lr=self.auto_lr)
+            individual.connections = list(range((i // self.subgroup_size) * self.subgroup_size, ((i // self.subgroup_size) + 1) * self.subgroup_size))
             self.individuals.append(individual)
         self.performance_across_time = []
         self.diversity_across_time = []
