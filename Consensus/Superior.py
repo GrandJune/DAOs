@@ -29,6 +29,8 @@ class Superior:
             self.managers.append(manager)
         self.policy = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
         self.payoff = self.reality.get_policy_payoff(policy=self.policy)
+        self.performance_across_time = []
+        self.diversity_across_time = []
 
     def search(self):
         superior_policy = []
@@ -50,6 +52,7 @@ class Superior:
                     if np.random.uniform(0, 1) < self.p2:
                         manager.policy[index] = self.policy[index]
             manager.payoff = self.reality.get_policy_payoff(policy=manager.policy)
+        self.performance_across_time.append(self.payoff)
 
     def get_majority_view(self, superior_policy=None):
         majority_view = []

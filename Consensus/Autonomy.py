@@ -89,11 +89,11 @@ class Autonomy:
 
 if __name__ == '__main__':
     m = 120
-    s = 3
+    s = 1
     n = 210
-    group_size = 70  # the smallest group size in Fang's model: 7
+    lr = 0.3
+    group_size = 7  # the smallest group size in Fang's model: 7
     # according to the practice, such a subdivision of an organization, such a size of autonomous team cannot be large.
-    lr = 0.3  # p2 in March's model; p1 = 1 (implied in this model)
     reality = Reality(m=m, s=s)
     organization = Autonomy(m=m, s=s, n=n, subgroup_size=group_size, reality=reality, lr=lr)
     for _ in range(100):
@@ -105,5 +105,5 @@ if __name__ == '__main__':
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    # plt.savefig("Diversity_Comparison_s3.png", transparent=True, dpi=1200)
+    plt.savefig("Autonomy_performance.png", transparent=True, dpi=1200)
     plt.show()

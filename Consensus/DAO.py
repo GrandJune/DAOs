@@ -6,6 +6,7 @@
 # Observing PEP 8 coding style
 from Individual import Individual
 from Reality import Reality
+import numpy as np
 
 
 class DAO:
@@ -32,12 +33,25 @@ class DAO:
             self.individuals.append(individual)
         self.performance_across_time = []
         self.diversity_across_time = []
+        self.consensus_performance_across_time = []
 
     def search(self):
+        # For DAO, we integrate the autonomous team together, and each of these autonomous teams are based on Fang's model
         for individual in self.individuals:
-            individual.learning_from_consensus(consensus=self.consensus)
+            connected_group = [self.individuals[i] for i in individual.connections]
+            superior_belief = []
+            for each in connected_group:
+                if each.payoff > individual.payoff:
+                    superior_belief.append(each.belief)
+            if len(superior_belief) != 0:
+                majority_view = self.get_majority_view(superior_belief)
+                for i in range(self.m):
+                    if np.random.uniform(0, 1) < self.lr:
+                        individual.belief[i] = majority_view[i]
+                individual.payoff = self.reality.get_payoff(belief=individual.belief)
+                individual.policy = self.reality.belief_2_policy(belief=individual.belief)
         new_consensus = []
-        for i in range(m//s):
+        for i in range(self.policy_num):
             temp = sum(individual.policy[i] for individual in self.individuals)
             if temp < 0:
                 new_consensus.append(-1)
@@ -46,9 +60,25 @@ class DAO:
             else:
                 new_consensus.append(0)
         self.consensus = new_consensus.copy()
+        for individual in self.individuals:
+            individual.learning_from_policy(policy=self.consensus)
         performance_list = [individual.payoff for individual in self.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.diversity_across_time.append(self.get_diversity())
+        # self.diversity_across_time.append(self.get_diversity())
+        self.consensus_performance_across_time.append(self.reality.get_policy_payoff(policy=self.consensus))
+
+    def get_majority_view(self, superior_belief=None):
+        majority_view = []
+        for i in range(self.m):
+            temp = [belief[i] for belief in superior_belief]
+            if sum(temp) > 0:
+                majority_view.append(1)
+            elif sum(temp) < 0:
+                majority_view.append(-1)
+            else:
+                majority_view.append(0)
+        return majority_view
 
     def get_diversity(self):
         belief_pool = [individual.belief for individual in self.individuals]
@@ -68,20 +98,22 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 27
+    m = 120
     s = 3
-    n = 200
+    n = 210
     lr = 0.3
+    group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s)
-    organization = DAO(m=m, s=s, n=n, reality=reality, lr=lr)
+    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr)
     for _ in range(300):
-        organization.search()
+        dao.search()
     import matplotlib.pyplot as plt
     x = range(300)
-    plt.plot(x, organization.performance_across_time, "k-", label="DAO")
+    plt.plot(x, dao.performance_across_time, "r-", label="DAO")
+    plt.plot(x, dao.consensus_performance_across_time, "b-", label="Consensus")
     # plt.title('Diversity Decrease')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    # plt.savefig("Diversity_Comparison_s3.png", transparent=True, dpi=1200)
+    plt.savefig("DAO_performance.png", transparent=True, dpi=1200)
     plt.show()

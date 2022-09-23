@@ -14,27 +14,29 @@ class Reality:
     def __init__(self, m=None, s=None, version="Rushed"):
         self.m = m
         self.s = s
+        if m % s != 0:
+            raise ValueError("m is not dividable by s")
         if self.s < 1:
             raise ValueError("The number of complexity should be greater than 0")
         if self.s > self.m:
             raise ValueError("The number of complexity should be less than the number of reality")
         self.version = version
-        self.cell_num = math.ceil(m / s)
+        self.policy_num = self.m // self.s
         self.real_code = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
         self.real_policy = self.belief_2_policy(belief=self.real_code)
 
     def get_payoff(self, belief=None):
         ress = 0
         if self.version == "Rushed":
-            for i in range(self.cell_num):
-                if np.array_equiv(belief[i*self.s: (i+1)*self.s], self.real_code[i*self.s: (i+1)*self.s]):
+            for i in range(self.policy_num):
+                if np.array_equiv(belief[i * self.s: (i + 1) * self.s], self.real_code[i * self.s: (i + 1) * self.s]):
                     ress += 1
             ress = ress * self.s / self.m
         elif self.version == "Penalty":
-            for i in range(self.cell_num):
+            for i in range(self.policy_num):
                 temp = 0
                 for j in range(self.s):
-                    temp += belief[i*self.s + j] * self.real_code[i*self.s + j]
+                    temp += belief[i * self.s + j] * self.real_code[i * self.s + j]
                 ress += temp
             ress /= self.m
         return ress
@@ -52,7 +54,7 @@ class Reality:
 
     def belief_2_policy(self, belief=None):
         policy = []
-        for i in range(self.cell_num):
+        for i in range(self.policy_num):
             temp = sum(belief[i * self.s:(i + 1) * self.s])
             if temp < 0:
                 policy.append(-1)
@@ -74,7 +76,7 @@ class Reality:
 
 if __name__ == '__main__':
     m = 20
-    s = 5
+    s = 2
     version = "Rushed"
     reality = Reality(m=m, s=s, version=version)
     # belief = reality.real_code.copy()
@@ -83,5 +85,8 @@ if __name__ == '__main__':
     # print(payoff)
     # print(reality.cell_num)
     belief = reality.policy_2_belief(policy=1)
-    print(belief)
+    print("real_code: ", reality.real_code)
+    test_belief = np.random.choice((1, -1), m, p=[0.5, 0.5])
+    print("test_belief: ", test_belief)
+    print(reality.get_payoff(belief=test_belief))
 

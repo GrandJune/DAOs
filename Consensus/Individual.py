@@ -4,8 +4,7 @@
 # @FileName: Individual.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
-import math
-from itertools import permutations
+import time
 import numpy as np
 from Reality import Reality
 
@@ -22,62 +21,30 @@ class Individual:
         self.policy = self.reality.belief_2_policy(belief=self.belief)  # a fake policy for voting
         self.payoff = self.reality.get_payoff(belief=self.belief)
 
-    def learning_from_consensus(self, consensus=None):
-        for index in range(self.m):
+    def learning_from_policy(self, policy=None):
+        for i in range(self.m // self.s):
             if np.random.uniform(0, 1) < self.lr:
-                self.belief[index] = self.reality.policy_2_belief(policy=consensus[index])
-        self.payoff = self.reality.get_payoff(belief=self.belief)
-
-
-    def learning_from_authority(self, policy=None, authority=None):
-        pass
-
-    def confirm_to_supervision(self, policy=None, authority=None):
-        """
-        No search effect, just determine whether to confirm or not for each domain
-        :param policy: The policy constraint to which agents need to confirm
-        :param confirm: The authority degree; To what extend the agents need to confirm to superiors' policy directives
-        :return: A confirmation situation under the authority degree of confirm
-        """
-        for index, value in enumerate(policy):
-            if value == 0:
-                continue
-            if value == self.policy[index]:
-                continue
-            else:
-                if np.random.uniform(0, 1) <= authority:
-                    alternatives = [value] * math.ceil(self.s / 2) + [-1 * value] * (self.s - math.ceil(self.s / 2))
-                    alternatives = list(set(permutations(alternatives)))
-                    alternatives.append([value] * self.s)
-                    belief_pieces = alternatives[np.random.choice(len(alternatives))]
-                    self.belief[index*self.s:(index+1)*self.s] = belief_pieces
+                self.belief[i * self.s: (i + 1) * self.s] = self.reality.policy_2_belief(policy=policy[i])
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)
 
 
 if __name__ == '__main__':
-    m = 10
+    m = 30
     s = 2
     t = 1
     n = 4
-    version = "Weighted"
+    lr = 0.3
+    version = "Rushed"
     reality = Reality(m=m, s=s, version=version)
-    individual = Individual(m=m, s=s, t=t, reality=reality)
-    # for _ in range(100):
-    #     individual.free_local_search()
-    #     print(individual.belief)
-    #     print(individual.payoff)
-    #     print("-------------")
-    belief_test = reality.real_code.copy()
-    belief_test[-1] = -1 * belief_test[-1]
-    print(belief_test)
-    payoff_test = reality.get_payoff(belief_test)
-    print(payoff_test)
-    # print("individual.belief: ", individual.belief, individual.payoff)
-    # # policy_list = [1, -1, 1, -1, 1, -1, 1, -1, 1]
-    # policy_list = reality.real_policy
-    # for _ in range(10):
-    #     for index, policy in enumerate(policy_list):
-    #         individual.constrained_local_search_under_authority(focal_policy=policy, focal_policy_index=index, authority=0.8)
-    #         print(individual.belief, individual.payoff)
-
+    individual = Individual(m=m, s=s, reality=reality, lr=0.3)
+    # belief_test = reality.real_code.copy()
+    # belief_test[-1] = -1 * belief_test[-1]
+    # print(belief_test)
+    # print(reality.real_code)
+    # payoff_test = reality.get_payoff(belief_test)
+    # print(payoff_test)
+    consensus = np.random.choice((-1, 1), m // s, p=[0.5, 0.5])
+    for _ in range(100):
+        individual.learning_from_policy(consensus)
+        print(individual.payoff)

@@ -32,41 +32,19 @@ class Hierarchy:
         self.individuals = []
         self.belief = np.random.choice([-1, 0, 1], self.policy_num, p=[1/3, 1/3, 1/3])
         self.policy = self.reality.belief_2_policy(belief=self.belief)
-        self.authority = authority  # agent learning from authority code/policy
         for _ in range(self.n):
             individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
             self.individuals.append(individual)
+        self.performance_across_time = []
+        self.diversity_across_time = []
 
     def search(self):
-        next_belief = self.belief.copy()
-        focal_index = np.random.choice(self.m)
-        if next_belief[focal_index] == 0:
-            next_belief[focal_index] = np.random.choice([-1, 1])  # Another way is to make the knowledge scope fixed
-            # return
-        else:
-            next_belief[focal_index] *= -1
-        next_policy = self.reality.belief_2_policy(belief=next_belief)
-        next_payoff = self.reality.get_payoff(belief=next_belief)
-        if next_payoff > self.payoff:
-            self.belief = next_belief
-            self.payoff = next_payoff
-            self.policy = next_policy
         for individual in self.individuals:
-            individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index],
-                                                                focal_policy_index=focal_index, authority=self.authority)
-
-    def random_supervision(self):
-        focal_index = np.random.randint(0, self.policy_num)
-        next_policy = self.policy.copy()
-        if next_policy[focal_index] == 0:
-            next_policy[focal_index] = np.random.choice([-1, 1])
-        else:
-            next_policy[focal_index] *= -1
-        next_payoff = self.reality.get_policy_payoff(policy=next_policy)
-        self.policy = next_policy
-        self.payoff = next_payoff
-        for individual in self.individuals:
-            individual.constrained_local_search_under_authority(focal_policy=self.policy[focal_index], focal_policy_index=focal_index, authority=self.authority)
+            individual.learning_from_policy(policy=self.superior.policy)
+        self.superior.search()
+        performance_list = [individual.payoff for individual in self.individuals]
+        self.performance_across_time.append(sum(performance_list) / len(performance_list))
+        self.diversity_across_time.append(self.get_diversity())
 
     def get_diversity(self):
         belief_pool = [individual.belief for individual in self.individuals]
@@ -86,19 +64,21 @@ class Hierarchy:
 
 
 if __name__ == '__main__':
-    m = 27
-    s = 3
-    t = 1
-    n = 10
-    lr = 0.3  # agent learning from code
-    authority = 0.8
+    m = 120
+    s = 1
+    n = 210
+    lr = 0.3
     reality = Reality(m=m, s=s)
-    superior = Hierarchy(m=m, s=s, n=n, reality=reality, authority=authority, lr=lr)
-    # for _ in range(100):
-    #     superior.local_search()
-    #     print(superior.payoff)
-        # print("*"*10)
-    # superior.describe()
-    # truth_payoff = reality.get_policy_payoff(policy=reality.real_policy)
-    # truth_payoff = reality.get_policy_payoff(policy=reality.real_policy)
-    # print("The truth payoff is: ", truth_payoff)
+    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr)
+    for _ in range(300):
+        hierarchy.search()
+    import matplotlib.pyplot as plt
+    x = range(300)
+    plt.plot(x, hierarchy.performance_across_time, "k-", label="Hierarchy")
+    plt.plot(x, hierarchy.superior.performance_across_time, "k--", label="Superior")
+    # plt.title('Diversity Decrease')
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Performance', fontweight='bold', fontsize=10)
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    plt.savefig("Hierarchy_performance.png", transparent=True, dpi=1200)
+    plt.show()
