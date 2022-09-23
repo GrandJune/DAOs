@@ -26,7 +26,6 @@ class Autonomy:
             raise ValueError("N must be divisible by subgroup size")
         if self.m % self.s != 0:
             raise ValueError("m is not dividable by s")
-        self.group_num = self.s // self.subgroup_size
         self.policy_num = self.m // self.s
         self.individuals = []
         self.reality = reality

@@ -23,11 +23,11 @@ group_size = 7
 search_loop = 300
 reality = Reality(m=m, s=s)
 
-dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, auto_lr=auto_lr)
+dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, auto_lr=auto_lr, subgroup_size=group_size)
 for _ in range(search_loop):
     dao.search()
 
-hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, auto_lr=auto_lr)
+hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, auto_lr=auto_lr, subgroup_size=group_size)
 for _ in range(search_loop):
     hierarchy.search()
 
