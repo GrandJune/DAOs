@@ -30,12 +30,12 @@ class Hierarchy:
         self.auto_lr = auto_lr  # autonomous learning
         self.subgroup_size = subgroup_size
         self.reality = reality
-        self.superior = Superior(m=self.policy_num, reality=self.reality, n=50)
+        self.superior = Superior(m=self.policy_num, reality=self.reality, n=50, p1=0.9, p2=0.1)
         self.individuals = []
         self.belief = np.random.choice([-1, 0, 1], self.policy_num, p=[1/3, 1/3, 1/3])
         self.policy = self.reality.belief_2_policy(belief=self.belief)
         for i in range(self.n):
-            individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
+            individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr, auto_lr=self.auto_lr)
             individual.connections = list(range((i // self.subgroup_size) * self.subgroup_size, ((i // self.subgroup_size) + 1) * self.subgroup_size))
             self.individuals.append(individual)
         self.performance_across_time = []

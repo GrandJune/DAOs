@@ -9,7 +9,7 @@ from Reality import Reality
 
 
 class Superior:
-    def __init__(self, m=None, n=None, reality=None, p1=0.9, p2=0.1):
+    def __init__(self, m=None, n=None, reality=None, p1=None, p2=None):
         """
         March's model to model how the traditional organizational cognition is formed.
         :param m: problem dimension (the length of policy directives, i.e., m // s)
