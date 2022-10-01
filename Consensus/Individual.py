@@ -19,15 +19,24 @@ class Individual:
         self.connections = []  # for autonomy, to seek for superior subgroup
         self.reality = reality
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
-        self.policy = self.reality.belief_2_policy(belief=self.belief)  # a fake policy for voting
         self.payoff = self.reality.get_payoff(belief=self.belief)
+        self.policy_num = self.m // 3
+        self.policy = self.reality.belief_2_policy(belief=self.belief)  # a fake policy for voting
+        self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
     def learning_from_policy(self, policy=None):
-        for i in range(self.m // self.s):
+        next_belief = self.belief.copy()
+        for i in range(self.policy_num):
             if np.random.uniform(0, 1) < self.lr:
-                self.belief[i * self.s: (i + 1) * self.s] = self.reality.policy_2_belief(policy=policy[i])
+                next_belief[i * 3: (i + 1) * 3] = self.reality.policy_2_belief(policy=policy[i])
+                next_payoff = self.reality.get_payoff(belief=next_belief)
+                if next_payoff > self.payoff:
+                    self.belief = next_belief.copy()  # update the belief
+                else:
+                    next_belief = self.belief.copy()  # temp goes back to the current belief
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)
+        self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
     def learning_from_belief(self, belief=None):
         if len(belief) != self.m:
@@ -37,6 +46,7 @@ class Individual:
                 self.belief[i] = belief[i]
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)
+        self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
 
 if __name__ == '__main__':
@@ -55,6 +65,6 @@ if __name__ == '__main__':
     # payoff_test = reality.get_payoff(belief_test)
     # print(payoff_test)
     consensus = np.random.choice((-1, 1), m // s, p=[0.5, 0.5])
-    for _ in range(100):
+    for _ in range(1000):
         individual.learning_from_policy(consensus)
         print(individual.payoff)

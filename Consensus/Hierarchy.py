@@ -25,7 +25,7 @@ class Hierarchy:
         self.n = n  # the number of subunits under this superior
         if self.m % self.s != 0:
             raise ValueError("m is not dividable by s")
-        self.policy_num = self.m // self.s
+        self.policy_num = self.m // 3
         self.lr = lr  # learning from policy
         self.auto_lr = auto_lr  # autonomous learning
         self.subgroup_size = subgroup_size
@@ -88,7 +88,7 @@ class Hierarchy:
 
 
 if __name__ == '__main__':
-    m = 120
+    m = 30
     s = 3
     n = 280
     lr = 0.3

@@ -82,18 +82,18 @@ class Autonomy:
 
 
 if __name__ == '__main__':
-    m = 120
+    m = 30
     s = 1
-    n = 210
+    n = 280
     auto_lr = 0.5
     group_size = 7  # the smallest group size in Fang's model: 7
     # according to the practice, such a subdivision of an organization, such a size of autonomous team cannot be large.
     reality = Reality(m=m, s=s)
     autonomy = Autonomy(m=m, s=s, n=n, subgroup_size=group_size, reality=reality, auto_lr=auto_lr)
-    for _ in range(100):
+    for _ in range(20):
         autonomy.search()
     import matplotlib.pyplot as plt
-    x = range(100)
+    x = range(20)
     plt.plot(x, autonomy.performance_across_time, "k-", label="Autonomy")
     # plt.title('Diversity Decrease')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)

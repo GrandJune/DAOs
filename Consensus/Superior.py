@@ -77,20 +77,20 @@ class Manager:
 
 if __name__ == '__main__':
     m = 120
-    s = 3
+    s = 5
     n = 200
-    p1 = 0.5
+    p1 = 0.9
     p2 = 0.1
     reality = Reality(m=m, s=s)
     superior = Superior(m=m//s, n=n, reality=reality, p1=p1, p2=p2)
     performance_list = []
-    for _ in range(300):
+    for _ in range(100):
         superior.search()
         # print(superior.payoff)
         performance_list.append(superior.payoff)
     import matplotlib.pyplot as plt
-    x = range(300)
-    plt.plot(x, performance_list, "k-", label="Hierarchy")
+    x = range(100)
+    plt.plot(x, performance_list, "k-", label="Superior")
     # plt.title('Diversity Decrease')+
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
