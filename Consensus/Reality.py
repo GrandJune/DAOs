@@ -30,7 +30,7 @@ class Reality:
     def get_payoff(self, belief=None):
         ress = 0
         if self.version == "Rushed":
-            for i in range(self.policy_num):
+            for i in range(self.m // self.s):
                 if np.array_equiv(belief[i * self.s: (i + 1) * self.s], self.real_code[i * self.s: (i + 1) * self.s]):
                     ress += 1
             ress = ress * self.s / self.m
@@ -76,10 +76,22 @@ class Reality:
             pass
         return temp[np.random.choice(len(temp))]
 
+    def get_majority_view(self, superior_belief=None):
+        majority_view = []
+        for i in range(self.m):
+            temp = [belief[i] for belief in superior_belief]
+            if sum(temp) > 0:
+                majority_view.append(1)
+            elif sum(temp) < 0:
+                majority_view.append(-1)
+            else:
+                majority_view.append(0)
+        return majority_view
+
 
 if __name__ == '__main__':
-    m = 30
-    s = 2
+    m = 12
+    s = 1
     version = "Rushed"
     reality = Reality(m=m, s=s, version=version)
     # belief = reality.real_code.copy()

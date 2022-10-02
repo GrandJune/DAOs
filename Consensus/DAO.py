@@ -33,43 +33,60 @@ class DAO:
         self.consensus = [0] * self.policy_num
         self.consensus_payoff = 0
         self.teams = []
-        team = Team(policy_num=self.policy_num)
+        self.individuals = []
+        # team = Team(policy_num=self.policy_num)
         for i in range(self.n):
             individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr, auto_lr=self.auto_lr)
-            team.individuals.append(individual)
-            if (i + 1) % self.subgroup_size == 0:
-                self.teams.append(team)
-                team = Team(policy_num=self.policy_num)
+            self.individuals.append(individual)
+        for i in range(self.n // self.subgroup_size):
+            team = Team(policy_num=self.policy_num)
+            team.individuals = self.individuals[i*self.subgroup_size:(i+1)*self.subgroup_size]
+            self.teams.append(team)
         self.performance_across_time = []
         self.diversity_across_time = []
         self.consensus_performance_across_time = []
 
     def search(self):
-        # For DAO, we integrate the autonomous team together, and each of these autonomous teams are based on Fang's model
-        # first make the autonomous team converge
-        for _ in range(20):
-            for team in self.teams:
-                for individual in team.individuals:
-                    superior_belief = [i.belief for i in team.individuals if i.payoff > individual.payoff]
-                    majority_view = self.get_majority_view(superior_belief=superior_belief)
-                    individual.learning_from_belief(belief=majority_view)
-        for team in self.teams:
-            team.form_policy()
+        # Consensus learning
         new_consensus = []
+        individual_pool = []
+        for team in self.teams:
+            individual_pool += team.individuals
+            payoff_list = [individual.payoff for individual in team.individuals]
+            team.gap = max(payoff_list) - min(payoff_list)
+            # print("Gap: ", team.gap)
+        thredhold = 1/3 * self.n
+        # thredhold = 0.05 * self.n
         for i in range(self.policy_num):
-            temp = sum([team.policy[i] for team in self.teams])
-            if temp > 0:
+            temp = sum([individual.policy[i] for individual in individual_pool])
+            if temp > thredhold:
                 new_consensus.append(1)
-            elif temp < 0:
+            elif temp < -thredhold:
                 new_consensus.append(-1)
             else:
                 new_consensus.append(0)
         self.consensus = new_consensus.copy()
         self.consensus_payoff = self.reality.get_policy_payoff(policy=self.consensus)
+        # print("consensus: ", self.consensus, self.consensus_payoff)
+        # Autonomous learning
         for team in self.teams:
             for individual in team.individuals:
-                # if self.consensus_payoff > individual.policy_payoff:
-                individual.learning_from_policy(policy=self.consensus)  # using lr
+                superior_belief_pool = [i.belief for i in team.individuals if i.payoff > individual.payoff]
+                if len(superior_belief_pool) == 0:
+                    majority_belief = individual.belief
+                else:
+                    majority_belief = self.get_majority_view(belief_pool=superior_belief_pool)
+                majority_policy = self.reality.belief_2_policy(belief=majority_belief)
+                for i in range(self.policy_num):
+                    if majority_policy[i] * self.consensus[i] == -1:
+                        majority_belief[i * 3: (i + 1) * 3] = self.reality.policy_2_belief(policy=self.consensus[i])
+                for j in range(self.m):
+                    if np.random.uniform(0,1) < individual.lr:
+                        individual.belief[j] = majority_belief[j]
+                individual.payoff = self.reality.get_payoff(belief=individual.belief)
+                individual.policy = self.reality.belief_2_policy(belief=individual.belief)
+                individual.policy_payoff = self.reality.get_policy_payoff(policy=individual.policy)
+
         performance_list = []
         for team in self.teams:
             performance_list += [individual.payoff for individual in team.individuals]
@@ -77,10 +94,10 @@ class DAO:
         # self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
 
-    def get_majority_view(self, superior_belief=None):
+    def get_majority_view(self, belief_pool=None):
         majority_view = []
         for i in range(self.m):
-            temp = [belief[i] for belief in superior_belief]
+            temp = [belief[i] for belief in belief_pool]
             if sum(temp) > 0:
                 majority_view.append(1)
             elif sum(temp) < 0:
@@ -90,9 +107,12 @@ class DAO:
         return majority_view
 
     def get_diversity(self):
-        belief_pool = [individual.belief for individual in self.individuals]
+        individual_pool = []
+        for team in self.teams:
+            individual_pool += team.individuals
         diversity = 0
-        for index, individual in enumerate(self.individuals):
+        belief_pool = [individual.belief for individual in individual_pool]
+        for index, individual in enumerate(individual_pool):
             selected_pool = belief_pool[index+1::]
             one_pair_diversity = [self.get_distance(individual.belief, belief) for belief in selected_pool]
             diversity += sum(one_pair_diversity)
@@ -106,39 +126,30 @@ class DAO:
         return acc
 
 
-class Team:
-    def __init__(self, policy_num=None):
-        self.individuals = []
-        self.policy = []
-        self.policy_num = policy_num
-
-    def form_policy(self):
-        policy = []
-        for i in range(self.policy_num):
-            temp = [individual.policy[i] for individual in self.individuals]
-            if sum(temp) > 0:
-                policy.append(1)
-            elif sum(temp) < 0:
-                policy.append(-1)
-            else:
-                policy.append(0)
-        self.policy = policy
-
-
 
 if __name__ == '__main__':
     m = 30
     s = 1
-    n = 200
-    lr = 0.9
-    auto_lr = 0.5
-    group_size = 10  # the smallest group size in Fang's model: 7
+    n = 1000
+    lr = 0.3
+    auto_lr = 0.3
+    group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size, auto_lr=auto_lr)
-    for _ in range(20):
+    # dao.teams[0].individuals[0].belief = reality.real_code.copy()
+    # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
+    # print(dao.teams[0].individuals[0].belief)
+    # print(dao.teams[0].individuals[0].payoff)
+    for _ in range(50):
         dao.search()
+        max_list =[]
+        for team in dao.teams:
+            max_  = max([individual.payoff for individual in dao.teams[0].individuals])
+            max_list.append(max_)
+        print(max_list)
+        # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].payoff)
     import matplotlib.pyplot as plt
-    x = range(20)
+    x = range(50)
     plt.plot(x, dao.performance_across_time, "r-", label="DAO")
     plt.plot(x, dao.consensus_performance_across_time, "b-", label="Consensus")
     # plt.title('Diversity Decrease')
