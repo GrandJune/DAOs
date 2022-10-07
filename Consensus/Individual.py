@@ -24,8 +24,7 @@ class Individual:
         self.policy_num = self.m // 3
         self.policy = self.reality.belief_2_policy(belief=self.belief)  # a fake policy for voting
         self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
-        self.superior_belief = None
-        self.superior_payoff = None
+        self.superior_majority_view = None
 
     def learning_from_policy(self, policy=None):
         next_belief = self.belief.copy()

@@ -100,11 +100,12 @@ if __name__ == '__main__':
     # print(payoff)
     # print(reality.cell_num)
     belief = reality.policy_2_belief(policy=1)
-    print("real_code: ", reality.real_code)
-    test_belief = np.random.choice((1, -1), m, p=[0.5, 0.5])
-    print("test_belief: ", test_belief)
-    print(reality.get_payoff(belief=test_belief))
-    test_policy = reality.belief_2_policy(belief=test_belief)
-    print("test_policy: ", test_policy)
+    print(belief)
+    # print("real_code: ", reality.real_code)
+    # test_belief = np.random.choice((1, -1), m, p=[0.5, 0.5])
+    # print("test_belief: ", test_belief)
+    # print(reality.get_payoff(belief=test_belief))
+    # test_policy = reality.belief_2_policy(belief=test_belief)
+    # print("test_policy: ", test_policy)
 
 
