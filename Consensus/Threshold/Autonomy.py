@@ -41,12 +41,12 @@ class Autonomy:
         # For autonomy, only learn from an isolated subgroup, according to Fang (2010)'s paper
         for individual in self.individuals:
             connected_group = [self.individuals[i] for i in individual.connections]
-            superior_belief = []
+            superior_belief_pool = []
             for each in connected_group:
                 if each.payoff > individual.payoff:
-                    superior_belief.append(each.belief)
-            if len(superior_belief) != 0:
-                majority_view = self.get_majority_view(superior_belief)
+                    superior_belief_pool.append(each.belief)
+            if len(superior_belief_pool) != 0:
+                majority_view = self.get_majority_view(superior_belief_pool)
                 individual.learning_from_belief(belief=majority_view)  # using auto_lr
         performance_list = [individual.payoff for individual in self.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
@@ -82,18 +82,18 @@ class Autonomy:
 
 
 if __name__ == '__main__':
-    m = 120
+    m = 30
     s = 1
-    n = 210
-    auto_lr = 0.5
+    n = 280
+    auto_lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     # according to the practice, such a subdivision of an organization, such a size of autonomous team cannot be large.
     reality = Reality(m=m, s=s)
     autonomy = Autonomy(m=m, s=s, n=n, subgroup_size=group_size, reality=reality, auto_lr=auto_lr)
-    for _ in range(100):
+    for _ in range(50):
         autonomy.search()
     import matplotlib.pyplot as plt
-    x = range(100)
+    x = range(50)
     plt.plot(x, autonomy.performance_across_time, "k-", label="Autonomy")
     # plt.title('Diversity Decrease')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)

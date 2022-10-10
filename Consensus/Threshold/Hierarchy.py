@@ -5,15 +5,17 @@
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 from Individual import Individual
-from Reality import Reality
 import numpy as np
+from Reality import Reality
+from Superior import Superior
 
 
-class DAO:
+class Hierarchy:
     def __init__(self, m=None, s=None, n=None, reality=None, lr=None, auto_lr=None, subgroup_size=None):
         """
         :param m: problem space
         :param s: the first complexity
+        :param t: the second complexity
         :param n: the number of agents
         :param reality: to provide feedback
         :param confirm: the extent to which agents confirm to their superior
@@ -23,23 +25,23 @@ class DAO:
         self.n = n  # the number of subunits under this superior
         if self.m % self.s != 0:
             raise ValueError("m is not dividable by s")
-        self.policy_num = self.m // self.s
-        self.individuals = []
-        self.reality = reality
-        self.lr = lr  # learning from consensus
-        self.auto_lr =auto_lr  # autonomous learning
+        self.policy_num = self.m // 3
+        self.lr = lr  # learning from policy
+        self.auto_lr = auto_lr  # autonomous learning
         self.subgroup_size = subgroup_size
-        self.consensus = [0] * (m // s)
+        self.reality = reality
+        self.superior = Superior(m=self.policy_num, reality=self.reality, n=50, p1=0.9, p2=0.1)
+        self.individuals = []
+        self.belief = np.random.choice([-1, 0, 1], self.policy_num, p=[1/3, 1/3, 1/3])
+        self.policy = self.reality.belief_2_policy(belief=self.belief)
         for i in range(self.n):
             individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr, auto_lr=self.auto_lr)
             individual.connections = list(range((i // self.subgroup_size) * self.subgroup_size, ((i // self.subgroup_size) + 1) * self.subgroup_size))
             self.individuals.append(individual)
         self.performance_across_time = []
         self.diversity_across_time = []
-        self.consensus_performance_across_time = []
 
     def search(self):
-        # For DAO, we integrate the autonomous team together, and each of these autonomous teams are based on Fang's model
         for individual in self.individuals:
             connected_group = [self.individuals[i] for i in individual.connections]
             superior_belief = []
@@ -49,22 +51,12 @@ class DAO:
             if len(superior_belief) != 0:
                 majority_view = self.get_majority_view(superior_belief)
                 individual.learning_from_belief(belief=majority_view)  # using auto_lr
-        new_consensus = []
-        for i in range(self.policy_num):
-            temp = sum([individual.policy[i] for individual in self.individuals])
-            if temp < 0:
-                new_consensus.append(-1)
-            elif temp > 0:
-                new_consensus.append(1)
-            else:
-                new_consensus.append(0)
-        self.consensus = new_consensus.copy()
         for individual in self.individuals:
-            individual.learning_from_policy(policy=self.consensus)  # using lr
+            individual.learning_from_policy(policy=self.superior.policy)
+        self.superior.search()
         performance_list = [individual.payoff for individual in self.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.diversity_across_time.append(self.get_diversity())
-        self.consensus_performance_across_time.append(self.reality.get_policy_payoff(policy=self.consensus))
 
     def get_majority_view(self, superior_belief=None):
         majority_view = []
@@ -94,25 +86,33 @@ class DAO:
                 acc += 1
         return acc
 
+    def adjust_majority_view(self, majority_view=None):
+        adjusted_majority_view = majority_view.copy()
+        if len(adjusted_majority_view) != self.m:
+            raise ValueError("The length of majority view should be m")
+        for index in range(self.policy_num):
+            if sum(adjusted_majority_view[index*3: (index+1)*3]) != self.superior.policy[index]:
+                adjusted_majority_view[index * 3: (index + 1) * 3] = self.reality.policy_2_belief(policy=self.consensus[index])
+        return adjusted_majority_view
 
 if __name__ == '__main__':
-    m = 120
+    m = 30
     s = 3
     n = 280
     lr = 0.3
     auto_lr = 0.5
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s)
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr)
+    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr)
     for _ in range(300):
-        dao.search()
+        hierarchy.search()
     import matplotlib.pyplot as plt
     x = range(300)
-    plt.plot(x, dao.performance_across_time, "r-", label="DAO")
-    plt.plot(x, dao.consensus_performance_across_time, "b-", label="Consensus")
+    plt.plot(x, hierarchy.performance_across_time, "k-", label="Hierarchy")
+    plt.plot(x, hierarchy.superior.performance_across_time, "k--", label="Superior")
     # plt.title('Diversity Decrease')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("DAO_performance.png", transparent=True, dpi=1200)
+    plt.savefig("Hierarchy_performance.png", transparent=True, dpi=1200)
     plt.show()
