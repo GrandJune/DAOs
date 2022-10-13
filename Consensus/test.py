@@ -16,3 +16,5 @@ import time
 # plt.ylabel('Performance')
 # plt.legend()
 # plt.show()
+x = [1, 2, 1, 2]
+print(np.std(x))

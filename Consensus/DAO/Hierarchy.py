@@ -31,30 +31,51 @@ class Hierarchy:
         self.subgroup_size = subgroup_size
         self.reality = reality
         self.superior = Superior(m=self.policy_num, reality=self.reality, n=50, p1=0.9, p2=0.1)
+        # n is the number of managers, instead of employers;  In March's paper, n=50
+        # p1, p2 is set to be the best one in March's paper
         self.individuals = []
         for i in range(self.n):
             individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr, auto_lr=self.auto_lr)
             individual.connections = list(range((i // self.subgroup_size) * self.subgroup_size, ((i // self.subgroup_size) + 1) * self.subgroup_size))
             self.individuals.append(individual)
         self.performance_across_time = []
+        self.deviation_across_time = []
         self.diversity_across_time = []
 
     def search(self):
+        # Supervision Formation
+        self.superior.search()
+        # Autonomous team learning
         for individual in self.individuals:
             connected_group = [self.individuals[i] for i in individual.connections]
-            superior_belief = []
+            superior_belief_pool = []
             for each in connected_group:
                 if each.payoff > individual.payoff:
-                    superior_belief.append(each.belief)
-            if len(superior_belief) != 0:
-                majority_view = self.get_majority_view(superior_belief)
-                individual.learning_from_belief(belief=majority_view)  # using auto_lr
+                    superior_belief_pool.append(each.belief)
+            if len(superior_belief_pool) != 0:
+                majority_view = self.get_majority_view(superior_belief_pool)
+                individual.superior_majority_view = majority_view
+            else:
+                individual.superior_majority_view = None
+        # Adjust the superior majority view according to supervision and then learn from it
         for individual in self.individuals:
-            individual.learning_from_policy(policy=self.superior.policy)
-        self.superior.search()
+            if individual.superior_majority_view:  # only those have better reference will learn / update their belief
+                # print("Before: ", individual.superior_majority_view, self.consensus)
+                individual.superior_majority_view = \
+                    self.adjust_majority_view(majority_view=individual.superior_majority_view)
+                # print("After: ", individual.superior_majority_view)
+                for index in range(self.m):
+                    if np.random.uniform(0, 1) < individual.lr:
+                        individual.belief[index] = individual.superior_majority_view[index]
+            individual.payoff = self.reality.get_payoff(belief=individual.belief)
+            # Individual don't need to do strategic search
+            # individual.policy = self.reality.belief_2_policy(belief=individual.belief)
+            # individual.policy_payoff = self.reality.get_policy_payoff(policy=individual.policy)
+
         performance_list = [individual.payoff for individual in self.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        self.diversity_across_time.append(self.get_diversity())
+        # self.diversity_across_time.append(self.get_diversity())
+        self.consensus_performance_across_time.append(self.consensus_payoff)
 
     def get_majority_view(self, superior_belief=None):
         majority_view = []
