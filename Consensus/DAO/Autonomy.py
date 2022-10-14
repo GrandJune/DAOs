@@ -49,7 +49,7 @@ class Autonomy:
                     superior_belief_pool.append(each.belief)
             if len(superior_belief_pool) != 0:
                 majority_view = self.get_majority_view(superior_belief_pool)
-                individual.learning_from_belief(belief=majority_view)  # using auto_lr
+                individual.learning_from_belief(belief=majority_view)  # using lr
         performance_list = [individual.payoff for individual in self.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.diversity_across_time.append(self.get_diversity())
@@ -67,8 +67,8 @@ class Autonomy:
         return majority_view
 
     def get_diversity(self):
-        belief_pool = [individual.belief for individual in self.individuals]
         diversity = 0
+        belief_pool = [individual.belief for individual in self.individuals]
         for index, individual in enumerate(self.individuals):
             selected_pool = belief_pool[index+1::]
             one_pair_diversity = [self.get_distance(individual.belief, belief) for belief in selected_pool]

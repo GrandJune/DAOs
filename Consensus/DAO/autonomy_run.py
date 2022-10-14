@@ -54,6 +54,7 @@ if __name__ == '__main__':
     performance_across_time = [result[0] for result in results]
     deviation_across_time = [result[1] for result in results]
     diversity_across_time = [result[2] for result in results]
+
     performance_across_time_2 = []
     deviation_across_time_2 = []
     diversity_across_time_2 = []

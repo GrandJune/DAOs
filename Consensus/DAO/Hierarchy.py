@@ -82,8 +82,8 @@ class Hierarchy:
         return majority_view
 
     def get_diversity(self):
-        belief_pool = [individual.belief for individual in self.individuals]
         diversity = 0
+        belief_pool = [individual.belief for individual in self.individuals]
         for index, individual in enumerate(self.individuals):
             selected_pool = belief_pool[index+1::]
             one_pair_diversity = [self.get_distance(individual.belief, belief) for belief in selected_pool]

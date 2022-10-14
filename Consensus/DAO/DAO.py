@@ -10,7 +10,7 @@ import numpy as np
 
 
 class DAO:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, auto_lr=None, subgroup_size=None):
+    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, subgroup_size=None):
         """
         :param m: problem space
         :param s: the first complexity
@@ -28,7 +28,6 @@ class DAO:
         self.policy_num = self.m // 3
         self.reality = reality
         self.lr = lr  # learning from consensus
-        self.auto_lr = auto_lr  # autonomous learning
         self.subgroup_size = subgroup_size
         self.consensus = [0] * self.policy_num
         self.consensus_payoff = 0
@@ -96,12 +95,9 @@ class DAO:
         return majority_view
 
     def get_diversity(self):
-        individual_pool = []
-        for team in self.teams:
-            individual_pool += team.individuals
         diversity = 0
-        belief_pool = [individual.belief for individual in individual_pool]
-        for index, individual in enumerate(individual_pool):
+        belief_pool = [individual.belief for individual in self.individuals]
+        for index, individual in enumerate(self.individuals):
             selected_pool = belief_pool[index+1::]
             one_pair_diversity = [self.get_distance(individual.belief, belief) for belief in selected_pool]
             diversity += sum(one_pair_diversity)
