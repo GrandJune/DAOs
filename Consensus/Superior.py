@@ -30,15 +30,14 @@ class Superior:
         self.policy = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
         self.payoff = self.reality.get_policy_payoff(policy=self.policy)
         self.performance_across_time = []
-        self.diversity_across_time = []
 
     def search(self):
-        superior_policy = []
+        superior_policy_list = []
         for manager in self.managers:
             if manager.payoff > self.payoff:
-                superior_policy.append(manager.policy)
-        if len(superior_policy) != 0:
-            majority_policy = self.get_majority_view(superior_policy=superior_policy)
+                superior_policy_list.append(manager.policy)
+        if len(superior_policy_list) != 0:
+            majority_policy = self.get_majority_view(superior_policy_list=superior_policy_list)
             # socialization effectiveness
             for index in range(self.m):
                 if self.policy[index] != majority_policy[index]:
@@ -54,10 +53,10 @@ class Superior:
             manager.payoff = self.reality.get_policy_payoff(policy=manager.policy)
         self.performance_across_time.append(self.payoff)
 
-    def get_majority_view(self, superior_policy=None):
+    def get_majority_view(self, superior_policy_list=None):
         majority_view = []
         for i in range(self.m):
-            temp = [policy[i] for policy in superior_policy]
+            temp = [policy[i] for policy in superior_policy_list]
             if sum(temp) > 0:
                 majority_view.append(1)
             elif sum(temp) < 0:

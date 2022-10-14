@@ -11,7 +11,7 @@ from Superior import Superior
 
 
 class Hierarchy:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, auto_lr=None, subgroup_size=None):
+    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, subgroup_size=None):
         """
         :param m: problem space
         :param s: the first complexity
@@ -26,34 +26,47 @@ class Hierarchy:
         if self.m % self.s != 0:
             raise ValueError("m is not dividable by s")
         self.policy_num = self.m // 3
-        self.lr = lr  # learning from policy
-        self.auto_lr = auto_lr  # autonomous learning
+        self.lr = lr  # learning rate
         self.subgroup_size = subgroup_size
         self.reality = reality
         self.superior = Superior(m=self.policy_num, reality=self.reality, n=50, p1=0.9, p2=0.1)
+        # n is the number of managers, instead of employers;  In March's paper, n=50
+        # p1, p2 is set to be the best one in March's paper
         self.individuals = []
         for i in range(self.n):
-            individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr, auto_lr=self.auto_lr)
+            individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
             individual.connections = list(range((i // self.subgroup_size) * self.subgroup_size, ((i // self.subgroup_size) + 1) * self.subgroup_size))
             self.individuals.append(individual)
+        # DVs
         self.performance_across_time = []
+        self.deviation_across_time = []
         self.diversity_across_time = []
+        self.superior_performance_across_time = []
 
     def search(self):
+        # Supervision Formation
+        self.superior.search()
+        # Autonomous team learning
         for individual in self.individuals:
             connected_group = [self.individuals[i] for i in individual.connections]
-            superior_belief = []
+            superior_belief_pool = []
             for each in connected_group:
                 if each.payoff > individual.payoff:
-                    superior_belief.append(each.belief)
-            if len(superior_belief) != 0:
-                majority_view = self.get_majority_view(superior_belief)
-                individual.learning_from_belief(belief=majority_view)  # using auto_lr
+                    superior_belief_pool.append(each.belief)
+            if len(superior_belief_pool) != 0:
+                majority_view = self.get_majority_view(superior_belief_pool)
+                individual.superior_majority_view = majority_view
+            else:
+                individual.superior_majority_view = None
+        # Adjust the superior majority view according to supervision and then learn from it
         for individual in self.individuals:
-            individual.learning_from_policy(policy=self.superior.policy)
-        self.superior.search()
+            if individual.superior_majority_view:  # only those have better reference will learn / update their belief
+                individual.superior_majority_view = \
+                    self.adjust_majority_view(majority_view=individual.superior_majority_view)
+                individual.learning_from_belief(belief=individual.superior_majority_view)
         performance_list = [individual.payoff for individual in self.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
+        self.deviation_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
 
     def get_majority_view(self, superior_belief=None):
@@ -69,8 +82,8 @@ class Hierarchy:
         return majority_view
 
     def get_diversity(self):
-        belief_pool = [individual.belief for individual in self.individuals]
         diversity = 0
+        belief_pool = [individual.belief for individual in self.individuals]
         for index, individual in enumerate(self.individuals):
             selected_pool = belief_pool[index+1::]
             one_pair_diversity = [self.get_distance(individual.belief, belief) for belief in selected_pool]
@@ -96,17 +109,16 @@ class Hierarchy:
 
 if __name__ == '__main__':
     m = 30
-    s = 3
+    s = 1
     n = 280
     lr = 0.3
-    auto_lr = 0.5
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s)
-    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, auto_lr=auto_lr,subgroup_size=group_size)
-    for _ in range(300):
+    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr,subgroup_size=group_size)
+    for _ in range(100):
         hierarchy.search()
     import matplotlib.pyplot as plt
-    x = range(300)
+    x = range(100)
     plt.plot(x, hierarchy.performance_across_time, "k-", label="Hierarchy")
     plt.plot(x, hierarchy.superior.performance_across_time, "k--", label="Superior")
     # plt.title('Diversity Decrease')
@@ -115,3 +127,8 @@ if __name__ == '__main__':
     plt.legend(frameon=False, ncol=3, fontsize=10)
     plt.savefig("Hierarchy_performance.png", transparent=True, dpi=1200)
     plt.show()
+    plt.clf()
+
+
+
+

@@ -13,35 +13,36 @@ import multiprocessing as mp
 import time
 from multiprocessing import Pool
 from multiprocessing import Semaphore
+from matplotlib import container
 import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, auto_lr=None, lr=None, threshold_ratio=None,
+def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     reality = Reality(m=m, s=s)
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size, auto_lr=auto_lr)
+    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
     for _ in range(search_loop):
         dao.search(threshold_ratio=threshold_ratio)
-    return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time]
+    return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time, dao.deviation_across_time, dao.diversity_across_time]
     sema.release()
-
 
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 30
+    m = 90
     s = 1
-    n = 7000
-    auto_lr = 0.3
+    n = 1400
     lr = 0.3
     repetition = 100
-    search_loop = 100
-    threshold_ratio_list = np.arange(0, 0.30, 0.05)
+    search_loop = 300
+    threshold_ratio_list = np.arange(0, 0.21, 0.01)
     group_size = 7  # the smallest group size in Fang's model: 7
     performance_across_para = []
     consensus_performance_across_para = []
-    concurrency = 25
+    deviation_across_para = []
+    diversity_across_para = []
+    concurrency = 30
     for threshold_ratio in threshold_ratio_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
@@ -49,7 +50,7 @@ if __name__ == '__main__':
         jobs = []
         for loop in range(repetition):
             sema.acquire()
-            p = mp.Process(target=func, args=(m, s, n, group_size, auto_lr, lr, threshold_ratio, search_loop, loop, return_dict, sema))
+            p = mp.Process(target=func, args=(m, s, n, group_size, lr, threshold_ratio, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
@@ -57,23 +58,35 @@ if __name__ == '__main__':
         results = return_dict.values()  # Don't need dict index, since it is repetition.
         performance_across_repeat = [result[0][-1] for result in results]
         consensus_performance_across_repeat = [result[1][-1] for result in results]
+        deviation_across_repeat = [result[2][-1] for result in results]
+        diversity_across_repeat = [result[3][-1] for result in results]
         performance_across_para.append(sum(performance_across_repeat) / len(performance_across_repeat))
         consensus_performance_across_para.append(sum(consensus_performance_across_repeat) / len(consensus_performance_across_repeat))
+        deviation_temp = math.sqrt(sum([result ** 2 for result in deviation_across_repeat])/len(deviation_across_repeat))
+        deviation_across_para.append(deviation_temp)
+        diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
 
     with open("dao_performance_across_threshold", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
     with open("dao_consensus_performance_across_threshold", 'wb') as out_file:
         pickle.dump(consensus_performance_across_para, out_file)
-    t1 = time.time()
+    with open("dao_deviation_across_threshold", 'wb') as out_file:
+        pickle.dump(deviation_across_para, out_file)
+    with open("dao_diversity_across_threshold", 'wb') as out_file:
+        pickle.dump(diversity_across_para, out_file)
+
+
     import matplotlib.pyplot as plt
+    from matplotlib import container
     x = threshold_ratio_list
-    plt.plot(x, performance_across_para, "r-", label="DAO")
-    plt.plot(x, consensus_performance_across_para, "g-", label="Consensus")
-    # plt.title('Diversity Decrease')
+    fig, (ax1) = plt.subplots(1, 1)
+    ax1.errorbar(x, performance_across_para, yerr=deviation_across_para, color="k", fmt="--", capsize=5, capthick=0.8, ecolor="k", label="DAO")
     plt.xlabel('Threshold', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.xticks(x)
-    plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Performance_across_threshold.png", transparent=True, dpi=200)
+    handles, labels = ax1.get_legend_handles_labels()
+    handles = [h[0] if isinstance(h, container.ErrorbarContainer) else h for h in handles]
+    plt.legend(handles, labels, loc='upper left', numpoints=1)
+    plt.savefig("Performance_across_threshold.png", transparent=True, dpi=500)
     plt.clf()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))

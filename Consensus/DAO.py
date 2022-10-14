@@ -10,7 +10,7 @@ import numpy as np
 
 
 class DAO:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, auto_lr=None, subgroup_size=None):
+    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, subgroup_size=None):
         """
         :param m: problem space
         :param s: the first complexity
@@ -28,7 +28,6 @@ class DAO:
         self.policy_num = self.m // 3
         self.reality = reality
         self.lr = lr  # learning from consensus
-        self.auto_lr = auto_lr  # autonomous learning
         self.subgroup_size = subgroup_size
         self.consensus = [0] * self.policy_num
         self.consensus_payoff = 0
@@ -36,10 +35,11 @@ class DAO:
         self.individuals = []
         # team = Team(policy_num=self.policy_num)
         for i in range(self.n):
-            individual = Individual(m=self.m, s=self.s, reality=self.reality, auto_lr=self.auto_lr, lr=self.lr)
+            individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
             individual.connections = list(range((i // self.subgroup_size) * self.subgroup_size, ((i // self.subgroup_size) + 1) * self.subgroup_size))
             self.individuals.append(individual)
         self.performance_across_time = []
+        self.deviation_across_time = []
         self.diversity_across_time = []
         self.consensus_performance_across_time = []
 
@@ -73,20 +73,13 @@ class DAO:
 
         for individual in self.individuals:
             if individual.superior_majority_view:  # only those have better reference will learn / update their belief
-                # print("Before: ", individual.superior_majority_view, self.consensus)
                 individual.superior_majority_view = \
                     self.adjust_majority_view(majority_view=individual.superior_majority_view)
-                # print("After: ", individual.superior_majority_view)
-                for index in range(self.m):
-                    if np.random.uniform(0, 1) < individual.lr:
-                        individual.belief[index] = individual.superior_majority_view[index]
-            individual.payoff = self.reality.get_payoff(belief=individual.belief)
-            individual.policy = self.reality.belief_2_policy(belief=individual.belief)
-            individual.policy_payoff = self.reality.get_policy_payoff(policy=individual.policy)
-
+                individual.learning_from_belief(belief=individual.superior_majority_view)
         performance_list = [individual.payoff for individual in self.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        # self.diversity_across_time.append(self.get_diversity())
+        self.deviation_across_time.append(np.std(performance_list))
+        self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
 
     def get_majority_view(self, belief_pool=None):
@@ -102,12 +95,9 @@ class DAO:
         return majority_view
 
     def get_diversity(self):
-        individual_pool = []
-        for team in self.teams:
-            individual_pool += team.individuals
         diversity = 0
-        belief_pool = [individual.belief for individual in individual_pool]
-        for index, individual in enumerate(individual_pool):
+        belief_pool = [individual.belief for individual in self.individuals]
+        for index, individual in enumerate(self.individuals):
             selected_pool = belief_pool[index+1::]
             one_pair_diversity = [self.get_distance(individual.belief, belief) for belief in selected_pool]
             diversity += sum(one_pair_diversity)
@@ -136,10 +126,9 @@ if __name__ == '__main__':
     n = 280
     search_loop = 100
     lr = 0.3
-    auto_lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s)
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size, auto_lr=auto_lr)
+    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
     # dao.teams[0].individuals[0].belief = reality.real_code.copy()
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)

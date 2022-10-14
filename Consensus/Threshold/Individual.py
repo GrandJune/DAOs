@@ -10,11 +10,10 @@ from Reality import Reality
 
 
 class Individual:
-    def __init__(self, m=None, s=None, reality=None, lr=None, auto_lr=None):
+    def __init__(self, m=None, s=None, reality=None, lr=None):
         self.m = m
         self.s = s
-        self.lr = lr  # learning rate, learning from consensus/policy
-        self.auto_lr = auto_lr  # autonomous leaning
+        self.lr = lr  # learning rate, learning from (adjusted) majority view
         self.token = None  # should introduce more dimensions of token
         self.connections = []  # for autonomy, to seek for superior subgroup
         self.reality = reality
@@ -23,33 +22,18 @@ class Individual:
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy_num = self.m // 3
         self.policy = self.reality.belief_2_policy(belief=self.belief)  # a fake policy for voting
-        self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
+        # self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
         self.superior_majority_view = None
-
-    def learning_from_policy(self, policy=None):
-        next_belief = self.belief.copy()
-        for i in range(self.policy_num):
-            next_belief[i * 3: (i + 1) * 3] = self.reality.policy_2_belief(policy=policy[i])
-        next_payoff = self.reality.get_payoff(belief=next_belief)
-        if next_payoff > self.payoff:
-            for i in range(self.m):
-                if np.random.uniform(0, 1) < self.lr:
-                    self.belief[i] = next_belief[i]
-            self.payoff = self.reality.get_payoff(belief=self.belief)
-            self.policy = self.reality.belief_2_policy(belief=self.belief)
-            self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
     def learning_from_belief(self, belief=None):
         if len(belief) != self.m:
             raise ValueError("Learning from a wrong belief (not autonomous majority view)")
         for i in range(self.m):
-            if np.random.uniform(0, 1) < self.auto_lr:
+            if np.random.uniform(0, 1) < self.lr:
                 self.belief[i] = belief[i]
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)
-        self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
-
-
+        # self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
 
 if __name__ == '__main__':
