@@ -11,7 +11,7 @@ from Superior import Superior
 
 
 class Hierarchy:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, auto_lr=None, subgroup_size=None):
+    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, subgroup_size=None):
         """
         :param m: problem space
         :param s: the first complexity
@@ -68,7 +68,6 @@ class Hierarchy:
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.deviation_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
-        self.superior_performance_across_time.append(self.superior.performance_across_time)
 
     def get_majority_view(self, superior_belief=None):
         majority_view = []
@@ -110,16 +109,16 @@ class Hierarchy:
 
 if __name__ == '__main__':
     m = 30
-    s = 3
+    s = 1
     n = 280
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s)
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr,subgroup_size=group_size)
-    for _ in range(300):
+    for _ in range(100):
         hierarchy.search()
     import matplotlib.pyplot as plt
-    x = range(300)
+    x = range(100)
     plt.plot(x, hierarchy.performance_across_time, "k-", label="Hierarchy")
     plt.plot(x, hierarchy.superior.performance_across_time, "k--", label="Superior")
     # plt.title('Diversity Decrease')
@@ -128,3 +127,8 @@ if __name__ == '__main__':
     plt.legend(frameon=False, ncol=3, fontsize=10)
     plt.savefig("Hierarchy_performance.png", transparent=True, dpi=1200)
     plt.show()
+    plt.clf()
+
+
+
+
