@@ -33,11 +33,10 @@ if __name__ == '__main__':
     s = 1
     n = 1400
     lr = 0.3
+    threshold_ratio = 0.1
     repetition = 100
     search_loop = 300
     group_size = 7  # the smallest group size in Fang's model: 7
-    performance_across_para = []
-    consensus_performance_across_para = []
     concurrency = 30
     sema = Semaphore(concurrency)
     manager = mp.Manager()
