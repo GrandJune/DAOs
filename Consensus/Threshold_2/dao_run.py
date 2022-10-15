@@ -24,7 +24,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
     for _ in range(search_loop):
         dao.search(threshold_ratio=threshold_ratio)
-    return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time, dao.deviation_across_time, dao.diversity_across_time]
+    return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time, dao.diversity_across_time]
     sema.release()
 
 
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     n = 1400
     lr = 0.3
     repetition = 100
-    search_loop = 300
+    search_loop = 1000
     threshold_ratio_list = np.arange(0, 0.21, 0.01)
     group_size = 7  # the smallest group size in Fang's model: 7
     performance_across_para = []
@@ -58,20 +58,15 @@ if __name__ == '__main__':
         results = return_dict.values()  # Don't need dict index, since it is repetition.
         performance_across_repeat = [result[0][-1] for result in results]
         consensus_performance_across_repeat = [result[1][-1] for result in results]
-        deviation_across_repeat = [result[2][-1] for result in results]
-        diversity_across_repeat = [result[3][-1] for result in results]
+        diversity_across_repeat = [result[2][-1] for result in results]
         performance_across_para.append(sum(performance_across_repeat) / len(performance_across_repeat))
         consensus_performance_across_para.append(sum(consensus_performance_across_repeat) / len(consensus_performance_across_repeat))
-        deviation_temp = math.sqrt(sum([result ** 2 for result in deviation_across_repeat])/len(deviation_across_repeat))
-        deviation_across_para.append(deviation_temp)
         diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
 
     with open("dao_performance_across_threshold", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
     with open("dao_consensus_performance_across_threshold", 'wb') as out_file:
         pickle.dump(consensus_performance_across_para, out_file)
-    with open("dao_deviation_across_threshold", 'wb') as out_file:
-        pickle.dump(deviation_across_para, out_file)
     with open("dao_diversity_across_threshold", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
 
