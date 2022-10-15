@@ -39,7 +39,6 @@ class DAO:
             individual.connections = list(range((i // self.subgroup_size) * self.subgroup_size, ((i // self.subgroup_size) + 1) * self.subgroup_size))
             self.individuals.append(individual)
         self.performance_across_time = []
-        self.deviation_across_time = []
         self.diversity_across_time = []
         self.consensus_performance_across_time = []
 
@@ -78,7 +77,6 @@ class DAO:
                 individual.learning_from_belief(belief=individual.superior_majority_view)
         performance_list = [individual.payoff for individual in self.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        self.deviation_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
 

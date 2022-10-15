@@ -23,7 +23,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
     autonomy = Autonomy(m=m, s=s, n=n, reality=reality, subgroup_size=group_size, lr=lr)
     for _ in range(search_loop):
         autonomy.search()
-    return_dict[loop] = [autonomy.performance_across_time, autonomy.deviation_across_time, autonomy.diversity_across_time]
+    return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time]
     sema.release()
 
 
@@ -34,8 +34,8 @@ if __name__ == '__main__':
     n = 1400
     lr = 0.3
     threshold_ratio = 0.1
-    repetition = 100
-    search_loop = 300
+    repetition = 200
+    search_loop = 1000
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 30
     sema = Semaphore(concurrency)
@@ -51,24 +51,18 @@ if __name__ == '__main__':
         proc.join()
     results = return_dict.values()  # Don't need dict index, since it is repetition.
     performance_across_time = [result[0] for result in results]
-    deviation_across_time = [result[1] for result in results]
-    diversity_across_time = [result[2] for result in results]
+    diversity_across_time = [result[1] for result in results]
 
-    performance_across_time_2 = []
-    deviation_across_time_2 = []
-    diversity_across_time_2 = []
+    performance_across_time_final = []
+    diversity_across_time_final = []
     for index in range(search_loop):
-        temp_1 = sum([result[index] for result in performance_across_time]) / search_loop
-        temp_2 = math.sqrt(sum([result[index] ** 2 for result in deviation_across_time]) / search_loop)  # standard deviation
-        temp_3 = sum([result[index] for result in diversity_across_time]) / search_loop
-        performance_across_time_2.append(temp_1)
-        deviation_across_time_2.append(temp_2)
-        diversity_across_time_2.append(temp_3)
+        temp_performance = sum([result[index] for result in performance_across_time]) / search_loop
+        temp_diversity = sum([result[index] for result in diversity_across_time]) / search_loop
+        performance_across_time_final.append(temp_performance)
+        diversity_across_time_final.append(temp_diversity)
     with open("autonomy_performance_across_time", 'wb') as out_file:
-        pickle.dump(performance_across_time_2, out_file)
-    with open("autonomy_deviation_across_time", 'wb') as out_file:
-        pickle.dump(deviation_across_time_2, out_file)
+        pickle.dump(performance_across_time_final, out_file)
     with open("autonomy_diversity_across_time", 'wb') as out_file:
-        pickle.dump(diversity_across_time_2, out_file)
+        pickle.dump(diversity_across_time_final, out_file)
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
