@@ -59,9 +59,12 @@ if __name__ == '__main__':
         performance_across_repeat = [result[0][-1] for result in results]
         consensus_performance_across_repeat = [result[1][-1] for result in results]
         diversity_across_repeat = [result[2][-1] for result in results]
+        deviation_across_repeat = np.std(performance_across_repeat)
+
         performance_across_para.append(sum(performance_across_repeat) / len(performance_across_repeat))
         consensus_performance_across_para.append(sum(consensus_performance_across_repeat) / len(consensus_performance_across_repeat))
         diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
+        deviation_across_para.append(deviation_across_repeat)
 
     with open("dao_performance_across_threshold", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
@@ -69,6 +72,8 @@ if __name__ == '__main__':
         pickle.dump(consensus_performance_across_para, out_file)
     with open("dao_diversity_across_threshold", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
+    with open("dao_deviation_across_threshold", 'wb') as out_file:
+        pickle.dump(deviation_across_para, out_file)
 
 
     import matplotlib.pyplot as plt
@@ -81,7 +86,8 @@ if __name__ == '__main__':
     plt.xticks(x)
     handles, labels = ax1.get_legend_handles_labels()
     handles = [h[0] if isinstance(h, container.ErrorbarContainer) else h for h in handles]
-    plt.legend(handles, labels, loc='upper left', numpoints=1)
+    plt.legend(handles, labels, numpoints=1)
     plt.savefig("Performance_across_threshold.png", transparent=True, dpi=500)
     plt.clf()
+    t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))

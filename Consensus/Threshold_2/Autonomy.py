@@ -35,7 +35,6 @@ class Autonomy:
             individual.connections = list(range((i // self.subgroup_size) * self.subgroup_size, ((i // self.subgroup_size) + 1) * self.subgroup_size))
             self.individuals.append(individual)
         self.performance_across_time = []
-        self.deviation_across_time = []
         self.diversity_across_time = []
 
     def search(self):

@@ -39,7 +39,6 @@ class Hierarchy:
             self.individuals.append(individual)
         # DVs
         self.performance_across_time = []
-        self.deviation_across_time = []
         self.diversity_across_time = []
         self.superior_performance_across_time = []
 
@@ -66,7 +65,6 @@ class Hierarchy:
                 individual.learning_from_belief(belief=individual.superior_majority_view)
         performance_list = [individual.payoff for individual in self.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        self.deviation_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
 
     def get_majority_view(self, superior_belief=None):
