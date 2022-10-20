@@ -32,7 +32,7 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     s = 1
-    n = 1400
+    n = 700
     lr = 0.3
     repetition = 100
     search_loop = 1000

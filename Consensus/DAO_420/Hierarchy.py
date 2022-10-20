@@ -11,7 +11,7 @@ from Superior import Superior
 
 
 class Hierarchy:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, subgroup_size=None):
+    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, subgroup_size=None, p1=0.9, p2=0.1):
         """
         :param m: problem space
         :param s: the first complexity
@@ -29,7 +29,7 @@ class Hierarchy:
         self.lr = lr  # learning rate
         self.subgroup_size = subgroup_size
         self.reality = reality
-        self.superior = Superior(m=self.policy_num, reality=self.reality, n=50, p1=0.9, p2=0.1)
+        self.superior = Superior(m=self.policy_num, reality=self.reality, n=50, p1=p1, p2=p2)
         # n is the number of managers, instead of employers;  In March's paper, n=50
         # p1, p2 is set to be the best one in March's paper
         self.individuals = []
@@ -106,7 +106,7 @@ class Hierarchy:
 
 
 if __name__ == '__main__':
-    m = 30
+    m = 90
     s = 1
     n = 280
     lr = 0.3

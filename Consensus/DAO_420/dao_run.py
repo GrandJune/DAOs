@@ -59,7 +59,7 @@ if __name__ == '__main__':
     consensus_performance_across_time_final = []
     diversity_across_time_final = []
     for index in range(search_loop):
-        temp_performance = sum([result[index] for result in performance_across_time]) / search_loop
+        temp_performance = sum([result[index] for result in performance_across_time]) / repetition
         temp_consensus = sum([result[index] for result in consensus_performance_across_time]) / search_loop
         temp_diversity = sum([result[index] for result in diversity_across_time]) / search_loop
         performance_across_time_final.append(temp_performance)
@@ -74,3 +74,4 @@ if __name__ == '__main__':
         pickle.dump(diversity_across_time_final, out_file)
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
+

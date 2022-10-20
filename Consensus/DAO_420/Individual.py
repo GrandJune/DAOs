@@ -29,8 +29,11 @@ class Individual:
         if len(belief) != self.m:
             raise ValueError("Learning from a wrong belief (not autonomous majority view)")
         for i in range(self.m):
-            if np.random.uniform(0, 1) < self.lr:
-                self.belief[i] = belief[i]
+            if belief[i] != 0:
+                if np.random.uniform(0, 1) < self.lr:
+                    self.belief[i] = belief[i]
+            else:
+                pass  # retain the previous belief
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)
         # self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
@@ -48,7 +51,7 @@ if __name__ == '__main__':
     from DAO import Team
     team = Team(policy_num=m // 3)
     for _ in range(n):
-        individual = Individual(m=m, s=s, reality=reality, lr=lr, auto_lr=auto_lr)
+        individual = Individual(m=m, s=s, reality=reality, lr=lr)
         team.individuals.append(individual)
     consensus = reality.real_policy
     performance_across_time = []
