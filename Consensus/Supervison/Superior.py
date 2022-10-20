@@ -20,8 +20,8 @@ class Superior:
         """
         self.m = m  # policy length
         self.n = n  # the number of subunits under this superior
-        self.p1 = p1  # code learning from belief, 0.9
-        self.p2 = p2  # belief learning from code, 0.1
+        self.p1 = p1  # agent learning from code, 0.1
+        self.p2 = p2  # code learning from belief, 0.9
         self.reality = reality
         self.managers = []
         for _ in range(self.n):
@@ -38,17 +38,17 @@ class Superior:
                 superior_policy_list.append(manager.policy)
         if len(superior_policy_list) != 0:
             majority_policy = self.get_majority_view(superior_policy_list=superior_policy_list)
-            # socialization effectiveness
+            # socialization effectiveness, code learning from belief, p2
             for index in range(self.m):
                 if self.policy[index] != majority_policy[index]:
-                    if np.random.uniform(0, 1) < self.p1:
+                    if np.random.uniform(0, 1) < self.p2:
                         self.policy[index] = majority_policy[index]
         self.payoff = self.reality.get_policy_payoff(policy=self.policy)
-        # learning effectiveness
+        # learning effectiveness, agent learning from code, p1
         for manager in self.managers:
             for index in range(self.m):
                 if manager.policy[index] != self.policy[index]:
-                    if np.random.uniform(0, 1) < self.p2:
+                    if np.random.uniform(0, 1) < self.p1:
                         manager.policy[index] = self.policy[index]
             manager.payoff = self.reality.get_policy_payoff(policy=manager.policy)
         self.performance_across_time.append(self.payoff)

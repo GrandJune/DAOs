@@ -11,7 +11,7 @@ from Superior import Superior
 
 
 class Hierarchy:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, subgroup_size=None):
+    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, subgroup_size=None, p1=0.1, p2=0.9):
         """
         :param m: problem space
         :param s: the first complexity
@@ -29,7 +29,7 @@ class Hierarchy:
         self.lr = lr  # learning rate
         self.subgroup_size = subgroup_size
         self.reality = reality
-        self.superior = Superior(m=self.policy_num, reality=self.reality, n=50, p1=0.9, p2=0.1)
+        self.superior = Superior(m=self.policy_num, reality=self.reality, n=50, p1=p1, p2=p2)
         # n is the number of managers, instead of employers;  In March's paper, n=50
         # p1, p2 is set to be the best one in March's paper
         self.individuals = []
@@ -39,7 +39,6 @@ class Hierarchy:
             self.individuals.append(individual)
         # DVs
         self.performance_across_time = []
-        self.deviation_across_time = []
         self.diversity_across_time = []
         self.superior_performance_across_time = []
 
@@ -66,7 +65,6 @@ class Hierarchy:
                 individual.learning_from_belief(belief=individual.superior_majority_view)
         performance_list = [individual.payoff for individual in self.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        self.deviation_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
 
     def get_majority_view(self, superior_belief=None):
@@ -108,7 +106,7 @@ class Hierarchy:
 
 
 if __name__ == '__main__':
-    m = 30
+    m = 90
     s = 1
     n = 280
     lr = 0.3

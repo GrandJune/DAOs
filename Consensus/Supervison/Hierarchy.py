@@ -11,7 +11,7 @@ from Superior import Superior
 
 
 class Hierarchy:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, subgroup_size=None, p1=0.9, p2=0.1):
+    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, subgroup_size=None, p1=0.1, p2=0.9):
         """
         :param m: problem space
         :param s: the first complexity
