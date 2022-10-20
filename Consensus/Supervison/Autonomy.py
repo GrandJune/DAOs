@@ -91,10 +91,10 @@ if __name__ == '__main__':
     # according to the practice, such a subdivision of an organization, such a size of autonomous team cannot be large.
     reality = Reality(m=m, s=s)
     autonomy = Autonomy(m=m, s=s, n=n, subgroup_size=group_size, reality=reality, lr=lr)
-    for _ in range(50):
+    for _ in range(100):
         autonomy.search()
     import matplotlib.pyplot as plt
-    x = range(50)
+    x = range(100)
     plt.plot(x, autonomy.performance_across_time, "k-", label="Autonomy")
     # plt.title('Diversity Decrease')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
@@ -102,5 +102,6 @@ if __name__ == '__main__':
     plt.legend(frameon=False, ncol=3, fontsize=10)
     plt.savefig("Autonomy_performance.png", transparent=True, dpi=1200)
     plt.show()
+    print("END")
 
 

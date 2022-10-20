@@ -13,7 +13,6 @@ import multiprocessing as mp
 import time
 from multiprocessing import Pool
 from multiprocessing import Semaphore
-from matplotlib import container
 import pickle
 import math
 
@@ -28,15 +27,16 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
     sema.release()
 
 
+
 if __name__ == '__main__':
     t0 = time.time()
-    m = 90
+    m = 60
     s = 1
-    n = 700
+    n = 420
     lr = 0.3
-    repetition = 100
-    search_loop = 1000
-    threshold_ratio_list = np.arange(0, 0.21, 0.01)
+    repetition = 30
+    search_loop = 600
+    threshold_ratio_list = np.arange(0.40, 0.70, 0.05)
     group_size = 7  # the smallest group size in Fang's model: 7
     performance_across_para = []
     consensus_performance_across_para = []
@@ -50,7 +50,8 @@ if __name__ == '__main__':
         jobs = []
         for loop in range(repetition):
             sema.acquire()
-            p = mp.Process(target=func, args=(m, s, n, group_size, lr, threshold_ratio, search_loop, loop, return_dict, sema))
+            p = mp.Process(target=func,
+                           args=(m, s, n, group_size, lr, threshold_ratio, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
@@ -62,7 +63,8 @@ if __name__ == '__main__':
         deviation_across_repeat = np.std(performance_across_repeat)
 
         performance_across_para.append(sum(performance_across_repeat) / len(performance_across_repeat))
-        consensus_performance_across_para.append(sum(consensus_performance_across_repeat) / len(consensus_performance_across_repeat))
+        consensus_performance_across_para.append(
+            sum(consensus_performance_across_repeat) / len(consensus_performance_across_repeat))
         diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
         deviation_across_para.append(deviation_across_repeat)
 
@@ -75,12 +77,13 @@ if __name__ == '__main__':
     with open("dao_deviation_across_threshold", 'wb') as out_file:
         pickle.dump(deviation_across_para, out_file)
 
-
     import matplotlib.pyplot as plt
     from matplotlib import container
+
     x = threshold_ratio_list
     fig, (ax1) = plt.subplots(1, 1)
-    ax1.errorbar(x, performance_across_para, yerr=deviation_across_para, color="k", fmt="--", capsize=5, capthick=0.8, ecolor="k", label="DAO")
+    ax1.errorbar(x, performance_across_para, yerr=deviation_across_para, color="k", fmt="--", capsize=5, capthick=0.8,
+                 ecolor="k", label="DAO")
     plt.xlabel('Threshold', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.xticks(x)
@@ -90,4 +93,4 @@ if __name__ == '__main__':
     plt.savefig("Performance_across_threshold.png", transparent=True, dpi=500)
     plt.clf()
     t1 = time.time()
-    print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
+    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
