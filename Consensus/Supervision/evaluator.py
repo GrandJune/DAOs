@@ -10,29 +10,40 @@ import pickle
 import numpy as np
 
 
-data_folder = r"E:\data\gst-1014\Threshold"
-dao_performance_file = data_folder + r"\dao_performance_across_threshold"
-# s_performance_file = data_folder + r"\s_performance_across_K"
-# t_performance_file = data_folder + r"\t_performance_across_K"
-with open(dao_performance_file, 'rb') as infile:
-    dao_performance = pickle.load(infile)
-# with open(s_performance_file, 'rb') as infile:
-#     s_performance = pickle.load(infile)
-# with open(t_performance_file, 'rb') as infile:
-#     t_performance = pickle.load(infile)
+data_folder = r"E:\data\dao-1018\Supervision"
+performance_file = data_folder + r"\hierarchy_performance_across_threshold"
+deviation_file = data_folder + r"\hierarchy_deviation_across_threshold"
+diversity_file = data_folder + r"\hierarchy_diversity_across_threshold"
 
-x = np.arange(0, 0.30, 0.05)
+with open(performance_file, 'rb') as infile:
+    performance = pickle.load(infile)
+with open(deviation_file, 'rb') as infile:
+    deviation = pickle.load(infile)
+with open(diversity_file, 'rb') as infile:
+    diversity = pickle.load(infile)
+
+p1_list = np.arange(0.1, 1.0, 0.1)
 fig, (ax1) = plt.subplots(1, 1)
-ax1.errorbar(x, dao_performance, yerr=0.1, color="g", fmt="--", capsize=5, capthick=0.8, ecolor="g", label="DAO")
-plt.xlabel('Threshold', fontweight='bold', fontsize=10)
+ax1.errorbar(p1_list, performance, yerr=deviation, color="g", fmt="-", capsize=5, capthick=0.8, ecolor="g", label="Hierarchy")
+plt.xlabel('P1', fontweight='bold', fontsize=10)
 plt.ylabel('Performance', fontweight='bold', fontsize=10)
-plt.xticks(x)
+plt.xticks(p1_list)
 handles, labels = ax1.get_legend_handles_labels()
 handles = [h[0] if isinstance(h, container.ErrorbarContainer) else h for h in handles]
 plt.legend(handles, labels, loc='upper left', numpoints=1)
-
-# plt.legend(frameon=False, ncol=3, fontsize=10)
-plt.show()
-# plt.savefig("Performance_across_threshold.png", transparent=True, dpi=200)
+plt.savefig(data_folder + r"\Performance_across_p1.png", transparent=False, dpi=200)
+# plt.show()
 plt.clf()
-# print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
+
+fig, (ax1) = plt.subplots(1, 1)
+ax1.plot(p1_list, diversity, "k-", label="Supervision")
+plt.xlabel('P1', fontweight='bold', fontsize=10)
+plt.ylabel('Performance', fontweight='bold', fontsize=10)
+plt.xticks(p1_list)
+handles, labels = ax1.get_legend_handles_labels()
+handles = [h[0] if isinstance(h, container.ErrorbarContainer) else h for h in handles]
+plt.legend(handles, labels, loc='upper left', numpoints=1)
+plt.savefig(data_folder + r"\Supervision_across_p1.png", transparent=False, dpi=200)
+# plt.show()
+plt.clf()
+print("END")

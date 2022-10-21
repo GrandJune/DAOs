@@ -8,6 +8,7 @@ from Individual import Individual
 import numpy as np
 from Reality import Reality
 from Superior import Superior
+import time
 
 
 class Hierarchy:
@@ -106,17 +107,20 @@ class Hierarchy:
 
 
 if __name__ == '__main__':
-    m = 90
+    t1 = time.time()
+    m = 60
     s = 1
     n = 280
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
+    search_iteration = 200
     reality = Reality(m=m, s=s)
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr,subgroup_size=group_size)
-    for _ in range(100):
+    for i in range(search_iteration):
         hierarchy.search()
+        print(i)
     import matplotlib.pyplot as plt
-    x = range(100)
+    x = range(search_iteration)
     plt.plot(x, hierarchy.performance_across_time, "k-", label="Hierarchy")
     plt.plot(x, hierarchy.superior.performance_across_time, "k--", label="Superior")
     # plt.title('Diversity Decrease')
@@ -126,6 +130,9 @@ if __name__ == '__main__':
     plt.savefig("Hierarchy_performance.png", transparent=True, dpi=1200)
     plt.show()
     plt.clf()
+    t1 = time.time()
+    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
+    print("END")
 
 
 
