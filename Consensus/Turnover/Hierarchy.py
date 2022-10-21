@@ -108,7 +108,7 @@ class Hierarchy:
 
     def turnover(self, turnover_rate=None):
         if turnover_rate:
-            changed_agent_number = math.ceil(turnover_rate * self.n)
+            changed_agent_number = math.ceil(turnover_rate * self.n)  # N here refers to the number of individuals
             selected_index = np.random.choice(range(self.n), changed_agent_number)
             for index in selected_index:
                 individual = self.individuals[index]
