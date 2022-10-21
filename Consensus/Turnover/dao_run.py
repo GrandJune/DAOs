@@ -24,8 +24,8 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
     for period in range(search_loop):
         if (period + 1) % 200 == 0:
             reality.change(reality_change_rate=0.1)
-        dao.search(threshold_ratio=threshold_ratio)
         dao.turnover(turnover_rate=0.01)
+        dao.search(threshold_ratio=threshold_ratio)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time, dao.diversity_across_time]
     sema.release()
 
