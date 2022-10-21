@@ -21,7 +21,9 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     reality = Reality(m=m, s=s)
     autonomy = Autonomy(m=m, s=s, n=n, reality=reality, subgroup_size=group_size, lr=lr)
-    for _ in range(search_loop):
+    for period in range(search_loop):
+        if (period + 1) % 200 == 0:
+            reality.change(reality_change_rate=0.1)
         autonomy.search()
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time]
     sema.release()
@@ -33,15 +35,17 @@ if __name__ == '__main__':
     s = 1
     n = 420
     lr = 0.3
-    threshold_ratio = 0.1
-    repetition = 100
+    repetition = 400
     search_loop = 1000
     group_size = 7  # the smallest group size in Fang's model: 7
-    concurrency = 30
+    concurrency = 100
     sema = Semaphore(concurrency)
     manager = mp.Manager()
     return_dict = manager.dict()
     jobs = []
+
+    performance_final = []
+    diversity_final = []
     for loop in range(repetition):
         sema.acquire()
         p = mp.Process(target=func, args=(m, s, n, group_size, lr, search_loop, loop, return_dict, sema))
@@ -53,16 +57,14 @@ if __name__ == '__main__':
     performance_across_time = [result[0] for result in results]
     diversity_across_time = [result[1] for result in results]
 
-    performance_across_time_final = []
-    diversity_across_time_final = []
-    for index in range(search_loop):
-        temp_performance = sum([result[index] for result in performance_across_time]) / search_loop
-        temp_diversity = sum([result[index] for result in diversity_across_time]) / search_loop
-        performance_across_time_final.append(temp_performance)
-        diversity_across_time_final.append(temp_diversity)
-    with open("autonomy_performance_across_time", 'wb') as out_file:
-        pickle.dump(performance_across_time_final, out_file)
-    with open("autonomy_diversity_across_time", 'wb') as out_file:
-        pickle.dump(diversity_across_time_final, out_file)
+    for period in range(search_loop):
+        temp_performance = [result[period] for result in performance_across_time]
+        temp_diversity = [result[period] for result in diversity_across_time]
+        performance_final.append(sum(temp_performance) / len(temp_performance))
+        diversity_final.append(sum(temp_diversity) / len(temp_diversity))
+    with open("autonomy_performance", 'wb') as out_file:
+        pickle.dump(performance_final, out_file)
+    with open("autonomy_diversity", 'wb') as out_file:
+        pickle.dump(diversity_final, out_file)
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))

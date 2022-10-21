@@ -88,6 +88,13 @@ class Reality:
                 majority_view.append(0)
         return majority_view
 
+    def change(self, reality_change_rate=None):
+        if reality_change_rate:
+            for index in range(self.m):
+                if np.random.uniform(0, 1) < reality_change_rate:
+                    self.real_code[index] *= -1
+            self.real_policy = self.belief_2_policy(belief=self.real_code)
+
 
 if __name__ == '__main__':
     m = 12
