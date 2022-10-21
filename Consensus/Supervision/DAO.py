@@ -44,20 +44,33 @@ class DAO:
         self.diversity_across_time = []
         self.consensus_performance_across_time = []
 
-    def search(self, threshold_ratio=None):
+    def search(self, threshold_ratio=None, enable_token=False):
         # Consensus Formation
         new_consensus = []
-        threshold = threshold_ratio * self.n
-        for i in range(self.policy_num):
-            policy_list = [individual.policy[i] for individual in self.individuals]
-            positive_count = sum([1 for each in policy_list if each == 1])
-            negative_count = sum([1 for each in policy_list if each == -1])
-            if (positive_count > threshold) and sum(policy_list) > 0:
-                new_consensus.append(1)
-            elif (negative_count > threshold) and sum(policy_list) < 0:
-                new_consensus.append(-1)
-            else:
-                new_consensus.append(0)
+        if not enable_token:
+            threshold = threshold_ratio * self.n
+            for i in range(self.policy_num):
+                policy_list = [individual.policy[i] for individual in self.individuals]
+                positive_count = sum([1 for each in policy_list if each == 1])
+                negative_count = sum([1 for each in policy_list if each == -1])
+                if (positive_count > threshold) and sum(policy_list) > 0:
+                    new_consensus.append(1)
+                elif (negative_count > threshold) and sum(policy_list) < 0:
+                    new_consensus.append(-1)
+                else:
+                    new_consensus.append(0)
+        else:  # with token
+            threshold = threshold_ratio * sum([individual.token for individual in self.individuals])
+            for i in range(self.policy_num):
+                policy_list = [individual.policy[i] * individual.token for individual in self.individuals]
+                positive_count = sum([individual.token for individual in self.individuals if individual.policy == 1])
+                negative_count = sum([individual.token for individual in self.individuals if individual.policy == -1])
+                if (positive_count > threshold) and sum(policy_list) > 0:
+                    new_consensus.append(1)
+                elif (negative_count > threshold) and sum(policy_list) < 0:
+                    new_consensus.append(-1)
+                else:
+                    new_consensus.append(0)
         self.consensus = new_consensus.copy()
         self.consensus_payoff = self.reality.get_policy_payoff(policy=self.consensus)
         # Adjust the superior majority view and then learn from it

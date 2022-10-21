@@ -9,11 +9,11 @@ import numpy as np
 
 # Using numpy.random.pareto() method
 token_list = np.random.pareto(8, 1000)
-print(sum(token_list))
+print("sum: ", sum(token_list))
 # print(gfg[:10]/sum(gfg))
 # gfg = np.random.pareto(10, 1000)
 # gfg = [i / sum(gfg) for i in gfg]
-print(max(token_list)/min(token_list))
+print("max/min: ", max(token_list)/min(token_list))
 plt.plot(token_list)
 plt.show()
 
@@ -30,4 +30,4 @@ def gini(x):
     g = 0.5 * rmad
     return g
 
-print(gini(token_list))
+print("Gini", gini(token_list))
