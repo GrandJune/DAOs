@@ -5,6 +5,7 @@
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import numpy as np
+import math
 from Reality import Reality
 
 
@@ -65,11 +66,22 @@ class Superior:
                 majority_view.append(0)
         return majority_view
 
+    def turnover(self, turnover_rate=None):
+        if turnover_rate:
+            changed_agent_number = math.ceil(turnover_rate * self.n)
+            selected_index = np.random.choice(range(self.n), changed_agent_number)
+            for index in selected_index:
+                manager = self.managers[index]
+                manager.turnover()
 
 class Manager:
     def __init__(self, m=None, reality=None, ):
         self.m = m
         self.reality = reality
+        self.policy = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
+        self.payoff = self.reality.get_policy_payoff(policy=self.policy)
+
+    def turnover(self):
         self.policy = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
         self.payoff = self.reality.get_policy_payoff(policy=self.policy)
 

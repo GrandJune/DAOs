@@ -1,3 +1,5 @@
+import math
+
 from Superior import Superior
 from Reality import Reality
 from Individual import Individual
@@ -16,5 +18,7 @@ import time
 # plt.ylabel('Performance')
 # plt.legend()
 # plt.show()
-x = [1, 2, 1, 2]
-print(np.std(x))
+# x = [1, 2, 1, 2]
+# print(np.std(x))
+list_ = np.random.choice(range(420), math.ceil(0.01*420), replace=False)
+print(list_)
