@@ -44,7 +44,7 @@ if __name__ == '__main__':
     performance_across_para_time = []
     diversity_across_para_time = []
     superior_performance_across_para_time = []
-    concurrency = 50
+    concurrency = 100
     for p1 in p1_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
