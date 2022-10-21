@@ -4,6 +4,8 @@
 # @FileName: Superior.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
+import math
+
 from Individual import Individual
 from Reality import Reality
 import numpy as np
@@ -39,7 +41,6 @@ class DAO:
             individual.connections = list(range((i // self.subgroup_size) * self.subgroup_size, ((i // self.subgroup_size) + 1) * self.subgroup_size))
             self.individuals.append(individual)
         self.performance_across_time = []
-        self.deviation_across_time = []
         self.diversity_across_time = []
         self.consensus_performance_across_time = []
 
@@ -48,11 +49,12 @@ class DAO:
         new_consensus = []
         threshold = threshold_ratio * self.n
         for i in range(self.policy_num):
-            temp = sum([individual.policy[i] for individual in self.individuals])
-            # print("Belief temp", temp / self.n)
-            if temp > threshold:
+            policy_list = [individual.policy[i] for individual in self.individuals]
+            positive_count = sum([1 for each in policy_list if each == 1])
+            negative_count = sum([1 for each in policy_list if each == -1])
+            if (positive_count > threshold) and sum(policy_list) > 0:
                 new_consensus.append(1)
-            elif temp < -threshold:
+            elif (negative_count > threshold) and sum(policy_list) < 0:
                 new_consensus.append(-1)
             else:
                 new_consensus.append(0)
@@ -78,7 +80,6 @@ class DAO:
                 individual.learning_from_belief(belief=individual.superior_majority_view)
         performance_list = [individual.payoff for individual in self.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        self.deviation_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
 
@@ -117,24 +118,33 @@ class DAO:
         for index in range(self.policy_num):
             if sum(adjusted_majority_view[index*3: (index+1)*3]) != self.consensus[index]:
                 adjusted_majority_view[index * 3: (index + 1) * 3] = self.reality.policy_2_belief(policy=self.consensus[index])
+                # adjusted_majority_view[index * 3: (index + 1) * 3] = [0, 0, 0]
         return adjusted_majority_view
+
+    def turnover(self, turnover_rate=None):
+        if turnover_rate:
+            changed_agent_number = math.ceil(turnover_rate * self.n)
+            selected_index = np.random.choice(range(self.n), changed_agent_number)
+            for index in selected_index:
+                individual = self.individuals[index]
+                individual.turnover()
 
 
 if __name__ == '__main__':
-    m = 30
+    m = 90
     s = 1
     n = 280
     search_loop = 100
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
-    reality = Reality(m=m, s=s)
+    reality = Reality(m=m, s=s, version="Rushed")
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
     # dao.teams[0].individuals[0].belief = reality.real_code.copy()
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
     for _ in range(search_loop):
-        dao.search(threshold_ratio=0.1)
+        dao.search(threshold_ratio=0.4)
         print(dao.consensus)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].payoff)
     import matplotlib.pyplot as plt

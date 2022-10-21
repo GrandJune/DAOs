@@ -6,6 +6,7 @@
 # Observing PEP 8 coding style
 from Individual import Individual
 import numpy as np
+import math
 from Reality import Reality
 
 
@@ -35,7 +36,6 @@ class Autonomy:
             individual.connections = list(range((i // self.subgroup_size) * self.subgroup_size, ((i // self.subgroup_size) + 1) * self.subgroup_size))
             self.individuals.append(individual)
         self.performance_across_time = []
-        self.deviation_across_time = []
         self.diversity_across_time = []
 
     def search(self):
@@ -82,6 +82,14 @@ class Autonomy:
                 acc += 1
         return acc
 
+    def turnover(self, turnover_rate=None):
+        if turnover_rate:
+            changed_agent_number = math.ceil(turnover_rate * self.n)
+            selected_index = np.random.choice(range(self.n), changed_agent_number)
+            for index in selected_index:
+                individual = self.individuals[index]
+                individual.turnover()
+
 
 if __name__ == '__main__':
     m = 30
@@ -92,10 +100,10 @@ if __name__ == '__main__':
     # according to the practice, such a subdivision of an organization, such a size of autonomous team cannot be large.
     reality = Reality(m=m, s=s)
     autonomy = Autonomy(m=m, s=s, n=n, subgroup_size=group_size, reality=reality, lr=lr)
-    for _ in range(50):
+    for _ in range(100):
         autonomy.search()
     import matplotlib.pyplot as plt
-    x = range(50)
+    x = range(100)
     plt.plot(x, autonomy.performance_across_time, "k-", label="Autonomy")
     # plt.title('Diversity Decrease')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
@@ -103,5 +111,6 @@ if __name__ == '__main__':
     plt.legend(frameon=False, ncol=3, fontsize=10)
     plt.savefig("Autonomy_performance.png", transparent=True, dpi=1200)
     plt.show()
+    print("END")
 
 

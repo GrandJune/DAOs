@@ -6,6 +6,7 @@
 # Observing PEP 8 coding style
 from Individual import Individual
 import numpy as np
+import math
 from Reality import Reality
 from Superior import Superior
 import time
@@ -104,6 +105,16 @@ class Hierarchy:
             if sum(adjusted_majority_view[index*3: (index+1)*3]) != self.superior.policy[index]:
                 adjusted_majority_view[index * 3: (index + 1) * 3] = self.reality.policy_2_belief(policy=self.superior.policy[index])
         return adjusted_majority_view
+
+    def turnover(self, turnover_rate=None):
+        if turnover_rate:
+            changed_agent_number = math.ceil(turnover_rate * self.n)  # N here refers to the number of individuals
+            selected_index = np.random.choice(range(self.n), changed_agent_number)
+            for index in selected_index:
+                individual = self.individuals[index]
+                individual.turnover()
+            self.superior.turnover(turnover_rate=turnover_rate)
+
 
 
 if __name__ == '__main__':

@@ -6,6 +6,7 @@
 # Observing PEP 8 coding style
 from Individual import Individual
 import numpy as np
+import math
 from Reality import Reality
 
 
@@ -80,6 +81,14 @@ class Autonomy:
             if a[i] != b[i]:
                 acc += 1
         return acc
+
+    def turnover(self, turnover_rate=None):
+        if turnover_rate:
+            changed_agent_number = math.ceil(turnover_rate * self.n)
+            selected_index = np.random.choice(range(self.n), changed_agent_number)
+            for index in selected_index:
+                individual = self.individuals[index]
+                individual.turnover()
 
 
 if __name__ == '__main__':

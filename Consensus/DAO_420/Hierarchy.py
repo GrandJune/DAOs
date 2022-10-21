@@ -6,6 +6,7 @@
 # Observing PEP 8 coding style
 from Individual import Individual
 import numpy as np
+import math
 from Reality import Reality
 from Superior import Superior
 import time
@@ -105,17 +106,29 @@ class Hierarchy:
                 adjusted_majority_view[index * 3: (index + 1) * 3] = self.reality.policy_2_belief(policy=self.superior.policy[index])
         return adjusted_majority_view
 
+    def turnover(self, turnover_rate=None):
+        if turnover_rate:
+            changed_agent_number = math.ceil(turnover_rate * self.n)  # N here refers to the number of individuals
+            selected_index = np.random.choice(range(self.n), changed_agent_number)
+            for index in selected_index:
+                individual = self.individuals[index]
+                individual.turnover()
+            self.superior.turnover(turnover_rate=turnover_rate)
+
+
 
 if __name__ == '__main__':
-    t1 = time.time()
+    t0 = time.time()
     m = 60
     s = 1
     n = 280
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
-    search_iteration = 200
+    p1 = 0.5  # belief learning from code
+    p2 = 0.9  # code learning from belief
+    search_iteration = 100
     reality = Reality(m=m, s=s)
-    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr,subgroup_size=group_size)
+    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr,subgroup_size=group_size, p1=p1, p2=p2)
     for i in range(search_iteration):
         hierarchy.search()
         print(i)
@@ -130,6 +143,15 @@ if __name__ == '__main__':
     plt.savefig("Hierarchy_performance.png", transparent=True, dpi=1200)
     plt.show()
     plt.clf()
+
+
+    plt.plot(x, hierarchy.diversity_across_time, "k-", label="Hierarchy")
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Diversity', fontweight='bold', fontsize=10)
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    plt.savefig("Hierarchy_diversity.png", transparent=True, dpi=1200)
+    plt.show()
+
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
     print("END")
