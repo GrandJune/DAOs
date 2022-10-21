@@ -125,6 +125,8 @@ class DAO:
         return acc
 
     def adjust_majority_view(self, majority_view=None):
+        if not majority_view:
+            return None
         adjusted_majority_view = majority_view.copy()
         if len(adjusted_majority_view) != self.m:
             raise ValueError("The length of majority view should be m")

@@ -17,15 +17,19 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None, asymmetry=None,
+def func(m=None, s=None, n=None, group_size=None, lr=None, promotion=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     reality = Reality(m=m, s=s)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
-    # pre-assign the token according to the asymmetry degree
+    # equally pre-assign token
     for individual in dao.individuals:
-        individual.token = np.random.pareto(a=asymmetry)
+        individual.token = 1
     for period in range(search_loop):
         dao.search(threshold_ratio=0.6, enable_token=True)
+    # post-adjust the token according to the performance
+    for individual in dao.individuals:
+        if np.random.uniform(0, 1) < individual.payoff:
+            individual.token += promotion
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time, dao.diversity_across_time]
     sema.release()
 
@@ -37,14 +41,14 @@ if __name__ == '__main__':
     n = 420
     lr = 0.3
     repetition = 400
-    search_loop = 200
+    promotion_list = [1, 2, 3, 4, 5]
+    search_loop = 1200
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 100
-    asymmetry_list = [1, 2, 4, 8]  # smaller asymmetry is associated with higher wealth inequality
     performance_across_para = []
     consensus_across_para = []
     diversity_across_para = []
-    for asymmetry in asymmetry_list:
+    for promotion in promotion_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
         return_dict = manager.dict()
@@ -56,7 +60,7 @@ if __name__ == '__main__':
         for loop in range(repetition):
             sema.acquire()
             p = mp.Process(target=func,
-                           args=(m, s, n, group_size, lr, asymmetry, search_loop, loop, return_dict, sema))
+                           args=(m, s, n, group_size, lr, promotion, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
