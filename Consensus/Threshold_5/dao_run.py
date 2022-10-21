@@ -34,15 +34,20 @@ if __name__ == '__main__':
     s = 1
     n = 420
     lr = 0.3
-    repetition = 30
+    repetition = 60
     search_loop = 600
-    threshold_ratio_list = np.arange(0.40, 0.70, 0.05)
+    threshold_ratio_list = np.arange(0.40, 0.70, 0.01)
     group_size = 7  # the smallest group size in Fang's model: 7
-    performance_across_para = []
+    performance_across_para = []  # remove the across_time dimension (to draw a figure)
     consensus_performance_across_para = []
     deviation_across_para = []
     diversity_across_para = []
-    concurrency = 30
+
+    original_performance_across_para = []  # retain the across_time dimension
+    original_diversity_across_para = []
+    original_consensus_across_para = []
+
+    concurrency = 60
     for threshold_ratio in threshold_ratio_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
@@ -58,11 +63,28 @@ if __name__ == '__main__':
             proc.join()
         results = return_dict.values()  # Don't need dict index, since it is repetition.
         performance_across_repeat = [result[0][-1] for result in results]
+        original_performance_across_time_repeat = [result[0] for result in results]
+
         consensus_performance_across_repeat = [result[1][-1] for result in results]
+        original_consensus_performance_across_time_repeat = [result[1] for result in results]
+
         diversity_across_repeat = [result[2][-1] for result in results]
+        original_diversity_across_time_repeat = [result[2] for result in results]
+
         deviation_across_repeat = np.std(performance_across_repeat)
 
         performance_across_para.append(sum(performance_across_repeat) / len(performance_across_repeat))
+
+        for time in range(search_loop):
+            temp_performance = [performance_list[time] for performance_list in original_performance_across_time_repeat]
+            original_performance_across_para.append(sum(temp_performance) / len(temp_performance))
+
+            temp_diversity = [diversity_list[time] for diversity_list in original_diversity_across_time_repeat]
+            original_diversity_across_para.append(sum(temp_diversity) / len(temp_diversity))
+
+            temp_consensus = [consensus_list[time] for consensus_list in original_consensus_performance_across_time_repeat]
+            original_consensus_across_para.append(sum(temp_consensus) / len(temp_consensus))
+
         consensus_performance_across_para.append(
             sum(consensus_performance_across_repeat) / len(consensus_performance_across_repeat))
         diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
@@ -76,6 +98,13 @@ if __name__ == '__main__':
         pickle.dump(diversity_across_para, out_file)
     with open("dao_deviation_across_threshold", 'wb') as out_file:
         pickle.dump(deviation_across_para, out_file)
+
+    with open("dao_performance_across_threshold_time", 'wb') as out_file:
+        pickle.dump(original_performance_across_para, out_file)
+    with open("dao_consensus_performance_across_threshold_time", 'wb') as out_file:
+        pickle.dump(original_consensus_across_para, out_file)
+    with open("dao_diversity_across_threshold_time", 'wb') as out_file:
+        pickle.dump(original_diversity_across_para, out_file)
 
     import matplotlib.pyplot as plt
     from matplotlib import container
