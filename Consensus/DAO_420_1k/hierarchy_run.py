@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time     : 10/13/2022 15:20
 # @Author   : Junyi
-# @FileName: autonomy_run.py
+# @FileName: hierarchy_run.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import numpy as np
@@ -17,13 +17,12 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None,
-         search_loop=None, loop=None, return_dict=None, sema=None):
+def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loop=None, return_dict=None, sema=None):
     reality = Reality(m=m, s=s)
-    autonomy = Autonomy(m=m, s=s, n=n, reality=reality, subgroup_size=group_size, lr=lr)
+    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
     for _ in range(search_loop):
-        autonomy.search()
-    return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time]
+        hierarchy.search()
+    return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_across_time, hierarchy.diversity_across_time]
     sema.release()
 
 
@@ -34,7 +33,7 @@ if __name__ == '__main__':
     n = 420
     lr = 0.3
     threshold_ratio = 0.1
-    repetition = 100
+    repetition = 1000
     search_loop = 1000
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 30
@@ -51,18 +50,38 @@ if __name__ == '__main__':
         proc.join()
     results = return_dict.values()  # Don't need dict index, since it is repetition.
     performance_across_time = [result[0] for result in results]
-    diversity_across_time = [result[1] for result in results]
+    superior_performance_across_time = [result[1] for result in results]
+    diversity_across_time = [result[2] for result in results]
 
     performance_across_time_final = []
+    superior_performance_across_time_final = []
     diversity_across_time_final = []
     for index in range(search_loop):
         temp_performance = sum([result[index] for result in performance_across_time]) / search_loop
-        temp_diversity = sum([result[index] for result in diversity_across_time]) / search_loop
+        temp_superior = sum([result[index] for result in superior_performance_across_time]) / search_loop
+        temp_diveristy = sum([result[index] for result in diversity_across_time]) / search_loop
         performance_across_time_final.append(temp_performance)
-        diversity_across_time_final.append(temp_diversity)
-    with open("autonomy_performance_across_time", 'wb') as out_file:
+        superior_performance_across_time_final.append(temp_superior)
+        diversity_across_time_final.append(temp_diveristy)
+
+    with open("hierarchy_performance_across_time", 'wb') as out_file:
         pickle.dump(performance_across_time_final, out_file)
-    with open("autonomy_diversity_across_time", 'wb') as out_file:
+    with open("hierarchy_superior_performance_across_time", 'wb') as out_file:
+        pickle.dump(superior_performance_across_time_final, out_file)
+    with open("hierarchy_diversity_across_time", 'wb') as out_file:
         pickle.dump(diversity_across_time_final, out_file)
+
+    # save the original data to assess the iteration
+    with open("hierarchy_original_performance", 'wb') as out_file:
+        pickle.dump(performance_across_time, out_file)
+    with open("hierarchy_original_superior_performance", 'wb') as out_file:
+        pickle.dump(superior_performance_across_time, out_file)
+    with open("hierarchy_original_diversity", 'wb') as out_file:
+        pickle.dump(diversity_across_time, out_file)
+
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
+
+
+
+
