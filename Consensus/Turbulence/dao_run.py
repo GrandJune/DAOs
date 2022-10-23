@@ -23,7 +23,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
     for period in range(search_loop):
         if (period + 1) % 200 == 0:
-            reality.change(reality_change_rate=0.1)
+            reality.change(reality_change_rate=0.2)
         dao.search(threshold_ratio=threshold_ratio)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time, dao.diversity_across_time]
     sema.release()
@@ -65,9 +65,9 @@ if __name__ == '__main__':
         performance_temp = [performance_list[period] for performance_list in performance_across_repeat]
         consensus_temp = [consensus_list[period] for consensus_list in consensus_performance_across_repeat]
         diversity_temp = [diversity_list[period] for diversity_list in diversity_across_repeat]
-        performance_final.append(performance_temp)
-        consensus_final.append(consensus_temp)
-        diversity_final.append(diversity_temp)
+        performance_final.append(sum(performance_temp) / len(performance_temp))
+        consensus_final.append(sum(consensus_temp) / len(consensus_temp))
+        diversity_final.append(sum(diversity_temp) / len(diversity_temp))
 
 
     with open("dao_performance", 'wb') as out_file:

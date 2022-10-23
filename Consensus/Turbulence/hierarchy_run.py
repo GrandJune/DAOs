@@ -62,9 +62,9 @@ if __name__ == '__main__':
         performance_temp = [performance_list[period] for performance_list in performance_across_repeat]
         superior_temp = [superior_list[period] for superior_list in superior_performance_across_repeat]
         diversity_temp = [diversity_list[period] for diversity_list in diversity_across_repeat]
-        performance_final.append(performance_temp)
-        superior_final.append(superior_temp)
-        diversity_final.append(diversity_temp)
+        performance_final.append(sum(performance_temp) / len(performance_temp))
+        superior_final.append(sum(superior_temp) / len(superior_temp))
+        diversity_final.append(sum(diversity_temp) / len(diversity_temp))
 
     with open("hierarchy_performance", 'wb') as out_file:
         pickle.dump(performance_final, out_file)

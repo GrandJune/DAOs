@@ -119,7 +119,7 @@ class Hierarchy:
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
+    m = 90
     s = 1
     n = 280
     lr = 0.3
