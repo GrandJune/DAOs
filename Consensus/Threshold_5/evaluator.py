@@ -10,7 +10,7 @@ import pickle
 import numpy as np
 
 
-data_folder = r"E:\data\gst-1018\Threshold_4"
+data_folder = r"E:\data\dao-1023\Threshold_5"
 dao_performance_file = data_folder + r"\dao_performance_across_threshold"
 dao_deviation_file = data_folder + r"\dao_deviation_across_threshold"
 dao_diversity_file = data_folder + r"\dao_diversity_across_threshold"
@@ -24,18 +24,17 @@ with open(dao_diversity_file, 'rb') as infile:
 with open(dao_consensus_file, 'rb') as infile:
     dao_consensus = pickle.load(infile)
 
-
-x = np.arange(0.40, 0.70, 0.05)
+x = np.arange(0.40, 0.70, 0.01)
 fig, (ax1) = plt.subplots(1, 1)
 ax1.plot(x, dao_consensus, "k--", label="Consensus")
 ax1.errorbar(x, dao_performance, yerr=dao_deviation, color="k", fmt="-", capsize=5, capthick=0.8, ecolor="g", label="DAO")
 plt.xlabel('Threshold', fontweight='bold', fontsize=10)
 plt.ylabel('Performance', fontweight='bold', fontsize=10)
-plt.xticks(x)
+# plt.xticks(x)
 handles, labels = ax1.get_legend_handles_labels()
 handles = [h[0] if isinstance(h, container.ErrorbarContainer) else h for h in handles]
 plt.legend(handles, labels, loc='upper left', numpoints=1)
-plt.savefig(data_folder + r"\Performance_2_across_threshold.png", transparent=False, dpi=200)
+plt.savefig(data_folder + r"\Performance_across_threshold.png", transparent=False, dpi=200)
 plt.clf()
 
 fig, (ax1) = plt.subplots(1, 1)
@@ -43,10 +42,10 @@ plt.plot(x, dao_diversity, "k-", label="DAO")
 # ax1.errorbar(x, dao_diversity, yerr=dao_deviation, color="k", fmt="-", capsize=5, capthick=0.8, ecolor="g", label="DAO")
 plt.xlabel('Threshold', fontweight='bold', fontsize=10)
 plt.ylabel('Diversity', fontweight='bold', fontsize=10)
-plt.xticks(x)
+# plt.xticks(x)
 handles, labels = ax1.get_legend_handles_labels()
 handles = [h[0] if isinstance(h, container.ErrorbarContainer) else h for h in handles]
 plt.legend(handles, labels, loc='upper left', numpoints=1)
 plt.savefig(data_folder + r"\Diversity_across_threshold.png", transparent=False, dpi=200)
-# plt.show()
+plt.clf()
 print("END")

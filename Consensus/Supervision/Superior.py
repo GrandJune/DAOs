@@ -33,6 +33,7 @@ class Superior:
         self.code_payoff = 0
         self.superior_group = []
         self.performance_average_across_time = []
+        self.code_payoff_across_time = []
 
     def search(self):
         self.get_superior_group()
@@ -40,6 +41,7 @@ class Superior:
         for manager in self.managers:
             manager.learn_from_code(code=self.code)  # using p1
         performance_list = [manager.payoff for manager in self.managers]
+        self.code_payoff_across_time.append(self.code_payoff)
         self.performance_average_across_time.append(sum(performance_list) / len(performance_list))
 
     def get_majority_view(self, superior_policy_list=None):

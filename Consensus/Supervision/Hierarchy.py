@@ -135,7 +135,8 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     x = range(search_iteration)
     plt.plot(x, hierarchy.performance_across_time, "k-", label="Hierarchy")
-    plt.plot(x, hierarchy.superior.performance_average_across_time, "k--", label="Superior")
+    plt.plot(x, hierarchy.superior.performance_average_across_time, "k--", label="Managers")
+    plt.plot(x, hierarchy.superior.code_payoff_across_time, "k:", label="Code")
     # plt.title('Diversity Decrease')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)

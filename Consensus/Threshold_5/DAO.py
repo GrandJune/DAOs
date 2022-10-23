@@ -156,9 +156,10 @@ if __name__ == '__main__':
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
-    for _ in range(search_loop):
-        dao.search(threshold_ratio=0.4)
-        print(dao.consensus)
+    for period in range(search_loop):
+        dao.search(threshold_ratio=0.6)
+        print(period)
+        # print(dao.consensus)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].payoff)
     import matplotlib.pyplot as plt
     x = range(search_loop)
