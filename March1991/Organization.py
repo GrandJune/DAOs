@@ -31,6 +31,7 @@ class Organization:
     def learn_from_beliefs(self):
         belief_list = [individual.belief for individual in self.individuals if individual.index in self.superior_group]
         dominant_belief = self.get_dominant_belif(belief_list=belief_list)
+        # print("dominant_belief: ", dominant_belief)
         for index in range(self.m):
             if np.random.uniform(0, 1) < self.p2:
                 self.code[index] = dominant_belief[index]

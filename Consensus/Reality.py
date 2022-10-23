@@ -44,15 +44,15 @@ class Reality:
         return ress
 
     def get_policy_payoff(self, policy=None, mode="Normal"):
+        res = 0
         if mode == "Penalty":
-            temp = [a * b for a, b in zip(self.real_policy, policy)]
-            return sum(temp) / len(policy)
+            for index in range(self.policy_num):
+                res += self.real_policy[index] * policy[index]
         elif mode == "Normal":
-            res = 0
-            for a, b in zip(self.real_policy, policy):
-                if a == b:
+            for index in range(self.policy_num):
+                if self.real_policy[index] == policy[index]:
                     res += 1
-            return res / len(policy)
+        return res / self.policy_num
 
     def belief_2_policy(self, belief=None):
         policy = []
@@ -106,13 +106,15 @@ if __name__ == '__main__':
     # payoff = reality.get_payoff(belief=belief)
     # print(payoff)
     # print(reality.cell_num)
-    belief = reality.policy_2_belief(policy=1)
-    print(belief)
+    # belief = reality.policy_2_belief(policy=1)
+    # print(belief)
     # print("real_code: ", reality.real_code)
     # test_belief = np.random.choice((1, -1), m, p=[0.5, 0.5])
     # print("test_belief: ", test_belief)
     # print(reality.get_payoff(belief=test_belief))
-    # test_policy = reality.belief_2_policy(belief=test_belief)
-    # print("test_policy: ", test_policy)
+    test_policy = np.random.choice((1, -1), m//3, p=[0.5, 0.5])
+    print("real_policy: ", reality.real_policy)
+    print("test_policy: ", test_policy)
+    print(reality.get_policy_payoff(policy=test_policy))
 
 

@@ -13,6 +13,7 @@ from itertools import product
 class Reality:
     def __init__(self, m=None, s=None, version="Rushed"):
         self.m = m
+        self.s = s
         if m % 3 != 0:
             raise ValueError("m is not dividable by 3")
         self.version = version

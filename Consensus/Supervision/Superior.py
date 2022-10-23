@@ -11,7 +11,7 @@ from Manager import Manager
 
 
 class Superior:
-    def __init__(self, m=None, n=None, reality=None, p1=None, p2=None):
+    def __init__(self, policy_num=None, manager_num=None, reality=None, p1=None, p2=None):
         """
         March's model to model how the traditional organizational cognition is formed.
         :param m: problem dimension (the length of policy directives, i.e., m // s)
@@ -20,16 +20,16 @@ class Superior:
         :param p1: code learning from belief
         :param p2: belief learning from code
         """
-        self.m = m  # policy length
-        self.n = n  # the number of subunits under this superior
+        self.policy_num = policy_num  # policy length
+        self.manager_num = manager_num  # the number of subunits under this superior
         self.p1 = p1  # agent learning from code, 0.1
         self.p2 = p2  # code learning from belief, 0.9
         self.reality = reality
         self.managers = []
-        for _ in range(self.n):
-            manager = Manager(m=self.m, reality=self.reality, p1=self.p1)
+        for _ in range(self.manager_num):
+            manager = Manager(policy_num=self.policy_num, reality=self.reality, p1=self.p1)
             self.managers.append(manager)
-        self.code = [0] * self.m  # the initialization of code is zero
+        self.code = [0] * self.policy_num  # the initialization of code is zero
         self.code_payoff = 0
         self.superior_group = []
         self.performance_average_across_time = []
@@ -43,8 +43,8 @@ class Superior:
         self.performance_average_across_time.append(sum(performance_list) / len(performance_list))
 
     def get_majority_view(self, superior_policy_list=None):
-        majority_view = [0] * self.m
-        for i in range(self.m):
+        majority_view = [0] * self.policy_num
+        for i in range(self.policy_num):
             temp = [policy[i] for policy in superior_policy_list]
             if sum(temp) > 0:
                 majority_view[i] = 1
@@ -59,17 +59,30 @@ class Superior:
                 self.superior_group.append(manager)
 
     def learn_from_superior_group(self):
-        policy_list = [manager.policy for manager in self.superior_group]
-        dominant_policy = self.get_majority_view(superior_policy_list=policy_list)
-        for index in range(self.m):
-            if np.random.uniform(0, 1) < self.p2:
-                self.code[index] = dominant_policy[index]
+        if self.superior_group:
+            policy_list = [manager.policy for manager in self.superior_group]
+            dominant_policy = self.get_majority_view(superior_policy_list=policy_list)
+            # print("dominant_policy: ", dominant_policy)
+            for index in range(self.policy_num):
+                if self.code[index] == dominant_policy[index]:
+                    continue
+                else:
+                    # those whose belief differ from the code, within superior group
+                    differ_count = 0  # k in March's paper, pg.74, footnote
+                    for manager in self.superior_group:
+                        if manager.policy[index] != self.code[index]:
+                            differ_count += 1
+                    # print("change Prob. :", 1 - (1 - self.p2) ** differ_count)
+                    if np.random.uniform(0, 1) < 1 - (1 - self.p2) ** differ_count:
+                        self.code[index] = dominant_policy[index]
+        else:
+            pass
         self.code_payoff = self.reality.get_policy_payoff(policy=self.code)
 
     def turnover(self, turnover_rate=None):
         if turnover_rate:
-            changed_agent_number = math.ceil(turnover_rate * self.n)  # N here refers to the number of managers
-            selected_index = np.random.choice(range(self.n), changed_agent_number)
+            changed_agent_number = math.ceil(turnover_rate * self.manager_num)  # N here refers to the number of managers
+            selected_index = np.random.choice(range(self.manager_num), changed_agent_number)
             for index in selected_index:
                 manager = self.managers[index]
                 manager.turnover()
@@ -100,35 +113,35 @@ if __name__ == '__main__':
 
 
     # Single P1
-    m = 30
+    m = 90
+    policy_num = m // 3
     s = 1
-    n = 50
+    manager_num = 50
     p1 = 0.1  # belief learning from code
-    p2 = 0.9  # code learning from belief
-    repetition = 50
+    p2 = 0.1  # code learning from belief
     performance_list_across_repeat = []
     code_performance_list_across_repeat = []
-    for repeat in range(repetition):
-        reality = Reality(m=m, s=s)
-        superior = Superior(m=m, n=n, reality=reality, p1=p1, p2=p2)
-        code_payoff_across_time = []
-        for index in range(100):
-            superior.search()
-            code_payoff_across_time.append(superior.code_payoff)
-        code_performance_list_across_repeat.append(code_payoff_across_time)
-        performance_list_across_repeat.append(superior.performance_average_across_time)
-        print("repeat: ", repeat)
-    results, results_2 = [], []
-    for period in range(repetition):
-        temp = [performance_list[period] for performance_list in performance_list_across_repeat]
-        results.append(sum(temp) / len(temp))
-        temp_2 = [payoff_list[period] for payoff_list in code_performance_list_across_repeat]
-        results_2.append(sum(temp_2) / len(temp_2))
+    reality = Reality(m=m, s=s)
+    superior = Superior(policy_num=policy_num, manager_num=manager_num, reality=reality, p1=p1, p2=p2)
+    code_payoff_across_time = []
+    for index in range(100):
+        print(index, superior.code, superior.code_payoff)
+        superior.search()
+        # print(index)
+        # code_payoff_across_time.append(superior.code_payoff)
+    # code_performance_list_across_repeat.append(code_payoff_across_time)
+    # performance_list_across_repeat.append(superior.performance_average_across_time)
+    # results, results_2 = [], []
+    # for period in range(repetition):
+    #     temp = [performance_list[period] for performance_list in performance_list_across_repeat]
+    #     results.append(sum(temp) / len(temp))
+    #     temp_2 = [payoff_list[period] for payoff_list in code_performance_list_across_repeat]
+    #     results_2.append(sum(temp_2) / len(temp_2))
     import matplotlib.pyplot as plt
-    x = range(repetition)
-    plt.plot(x, results, "k-", label="Average")
-    plt.plot(x, results_2, "k--", label="Code")
-    plt.xlabel('P1', fontweight='bold', fontsize=10)
+    x = range(100)
+    plt.plot(x, superior.performance_average_across_time, "k-", label="Average")
+    # plt.plot(x, results_2, "k--", label="Code")
+    plt.xlabel('Time', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
     plt.savefig("March.png", transparent=False, dpi=200)
