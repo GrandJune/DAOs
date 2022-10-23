@@ -34,9 +34,9 @@ if __name__ == '__main__':
     s = 1
     n = 420
     lr = 0.3
-    threshold_ratio = 0.1
+    threshold_ratio = 0.6
     repetition = 400
-    search_loop = 1000
+    search_loop = 2000
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 100
     sema = Semaphore(concurrency)

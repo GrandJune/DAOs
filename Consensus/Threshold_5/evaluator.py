@@ -48,4 +48,14 @@ handles = [h[0] if isinstance(h, container.ErrorbarContainer) else h for h in ha
 plt.legend(handles, labels, loc='upper left', numpoints=1)
 plt.savefig(data_folder + r"\Diversity_across_threshold.png", transparent=False, dpi=200)
 plt.clf()
+
+# Deviation
+fig, (ax1) = plt.subplots(1, 1)
+ax1.plot(x, dao_deviation, "k--", label="Deviation")
+plt.xlabel('Threshold', fontweight='bold', fontsize=10)
+plt.ylabel('Deviation', fontweight='bold', fontsize=10)
+# plt.xticks(x)
+plt.legend()
+plt.savefig(data_folder + r"\Deviation_across_threshold.png", transparent=False, dpi=200)
+plt.clf()
 print("END")
