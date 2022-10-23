@@ -76,7 +76,7 @@ class Superior:
                     if np.random.uniform(0, 1) < 1 - (1 - self.p2) ** differ_count:
                         self.code[index] = dominant_policy[index]
         else:
-            pass
+            pass  # if there is no superior group, the code remain unchanged.
         self.code_payoff = self.reality.get_policy_payoff(policy=self.code)
 
     def turnover(self, turnover_rate=None):

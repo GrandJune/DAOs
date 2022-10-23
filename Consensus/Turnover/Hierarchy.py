@@ -31,7 +31,7 @@ class Hierarchy:
         self.lr = lr  # learning rate
         self.subgroup_size = subgroup_size
         self.reality = reality
-        self.superior = Superior(m=self.policy_num, reality=self.reality, n=50, p1=p1, p2=p2)
+        self.superior = Superior(policy_num=self.policy_num, reality=self.reality, manager_num=50, p1=p1, p2=p2)
         # n is the number of managers, instead of employers;  In March's paper, n=50
         # p1, p2 is set to be the best one in March's paper
         self.individuals = []
@@ -102,8 +102,8 @@ class Hierarchy:
         if len(adjusted_majority_view) != self.m:
             raise ValueError("The length of majority view should be m")
         for index in range(self.policy_num):
-            if sum(adjusted_majority_view[index*3: (index+1)*3]) != self.superior.policy[index]:
-                adjusted_majority_view[index * 3: (index + 1) * 3] = self.reality.policy_2_belief(policy=self.superior.policy[index])
+            if sum(adjusted_majority_view[index*3: (index+1)*3]) != self.superior.code[index]:
+                adjusted_majority_view[index * 3: (index + 1) * 3] = self.reality.policy_2_belief(policy=self.superior.code[index])
         return adjusted_majority_view
 
     def turnover(self, turnover_rate=None):
@@ -126,7 +126,7 @@ if __name__ == '__main__':
     group_size = 7  # the smallest group size in Fang's model: 7
     p1 = 0.5  # belief learning from code
     p2 = 0.9  # code learning from belief
-    search_iteration = 100
+    search_iteration = 200
     reality = Reality(m=m, s=s)
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr,subgroup_size=group_size, p1=p1, p2=p2)
     for i in range(search_iteration):
@@ -135,7 +135,7 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     x = range(search_iteration)
     plt.plot(x, hierarchy.performance_across_time, "k-", label="Hierarchy")
-    plt.plot(x, hierarchy.superior.performance_across_time, "k--", label="Superior")
+    plt.plot(x, hierarchy.superior.performance_average_across_time, "k--", label="Superior")
     # plt.title('Diversity Decrease')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)

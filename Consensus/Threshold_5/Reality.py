@@ -16,12 +16,6 @@ class Reality:
         self.s = s
         if m % 3 != 0:
             raise ValueError("m is not dividable by 3")
-        if m % s != 0:
-            raise ValueError("m is not dividable by s")
-        if self.s < 1:
-            raise ValueError("The number of complexity should be greater than 0")
-        if self.s > self.m:
-            raise ValueError("The number of complexity should be less than the number of reality")
         self.version = version
         self.policy_num = self.m // 3
         self.real_code = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
@@ -97,7 +91,7 @@ class Reality:
 
 
 if __name__ == '__main__':
-    m = 12
+    m = 30
     s = 1
     version = "Rushed"
     reality = Reality(m=m, s=s, version=version)
@@ -106,10 +100,11 @@ if __name__ == '__main__':
     # payoff = reality.get_payoff(belief=belief)
     # print(payoff)
     # print(reality.cell_num)
-    belief = reality.policy_2_belief(policy=1)
-    print(belief)
-    # print("real_code: ", reality.real_code)
-    # test_belief = np.random.choice((1, -1), m, p=[0.5, 0.5])
+    # belief = reality.policy_2_belief(policy=1)
+    # print(belief)
+    print("real_policy: ", reality.real_policy)
+    test_belief = np.random.choice((1, -1), m//3, p=[0.5, 0.5])
+    print("test_policy: ", test_belief, reality.get_policy_payoff(policy=test_belief))
     # print("test_belief: ", test_belief)
     # print(reality.get_payoff(belief=test_belief))
     # test_policy = reality.belief_2_policy(belief=test_belief)
