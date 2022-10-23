@@ -72,3 +72,6 @@ if __name__ == '__main__':
         pickle.dump(superior_final, out_file)
     with open("hierarchy_diversity", 'wb') as out_file:
         pickle.dump(diversity_final, out_file)
+
+    t1 = time.time()
+    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))

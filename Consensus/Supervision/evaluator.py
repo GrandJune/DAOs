@@ -10,7 +10,7 @@ import pickle
 import numpy as np
 
 
-data_folder = r"E:\data\dao-1018\Supervision"
+data_folder = r"E:\data\dao-1023\Supervision"
 performance_file = data_folder + r"\hierarchy_performance_across_threshold"
 deviation_file = data_folder + r"\hierarchy_deviation_across_threshold"
 diversity_file = data_folder + r"\hierarchy_diversity_across_threshold"
@@ -39,7 +39,7 @@ plt.savefig(data_folder + r"\Performance_across_p1.png", transparent=False, dpi=
 plt.clf()
 
 fig, (ax1) = plt.subplots(1, 1)
-ax1.plot(p1_list, diversity, "k-", label="Supervision")
+ax1.plot(p1_list, diversity, "k-", label="Diversity")
 plt.xlabel('P1', fontweight='bold', fontsize=10)
 plt.ylabel('Performance', fontweight='bold', fontsize=10)
 plt.xticks(p1_list)

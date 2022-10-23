@@ -86,5 +86,5 @@ if __name__ == '__main__':
     # # plt.xticks(x)
     # plt.legend(frameon=False, ncol=1, fontsize=10)
     # plt.savefig(r"\DAO_performance.png", transparent=False, dpi=200)
-    # t1 = time.time()
-    # print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
+    t1 = time.time()
+    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))

@@ -82,9 +82,9 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     m = 30
     n = 100
-    p1 = 0.3
-    p2 = 0.3
-    loop = 50
+    p1 = 0.1
+    p2 = 0.9
+    loop = 100
     reality = Reality(m=m)
     # individual = Individual(m=m, p1=p1, reality=reality)
     organization = Organization(m=m, n=n, p1=p1, p2=p2, reality=reality)
