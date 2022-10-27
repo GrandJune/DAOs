@@ -18,7 +18,6 @@ class Reality:
             if self.code[i] == belief[i]:
                 res += 1
             # elif self.code[i] + belief[i] == 0:  # totally wrong element
-            #     res -= 1
         return res / self.m
 
     def turbulence(self, p4=None):
