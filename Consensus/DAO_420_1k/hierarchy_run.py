@@ -22,7 +22,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
     for _ in range(search_loop):
         hierarchy.search()
-    return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_across_time, hierarchy.diversity_across_time]
+    return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time, hierarchy.diversity_across_time]
     sema.release()
 
 

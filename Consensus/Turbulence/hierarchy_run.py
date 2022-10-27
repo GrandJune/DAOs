@@ -24,7 +24,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
         if (period + 1) % 200 == 0:
             reality.change(reality_change_rate=0.1)
         hierarchy.search()
-    return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_across_time, hierarchy.diversity_across_time]
+    return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time, hierarchy.diversity_across_time]
     sema.release()
 
 

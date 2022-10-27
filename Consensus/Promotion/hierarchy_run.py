@@ -19,13 +19,10 @@ import math
 
 def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loop=None, return_dict=None, sema=None):
     reality = Reality(m=m, s=s)
-    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size, p1=0.1, p2=0.9)
-    for period in range(search_loop):
-        if (period + 1) % 200 == 0:
-            reality.change(reality_change_rate=0.1)
-        hierarchy.turnover(turnover_rate=0.01)
+    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
+    for _ in range(search_loop):
         hierarchy.search()
-    return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_across_time, hierarchy.diversity_across_time]
+    return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time, hierarchy.diversity_across_time]
     sema.release()
 
 
@@ -35,41 +32,66 @@ if __name__ == '__main__':
     s = 1
     n = 420
     lr = 0.3
-    repetition = 400
-    search_loop = 1000
+    threshold_ratio = 0.6
+    hyper_iteration = 10
+    repetition = 100
+    concurrency = 30
+    search_loop = 2000
     group_size = 7  # the smallest group size in Fang's model: 7
-    concurrency = 100
-    sema = Semaphore(concurrency)
-    manager = mp.Manager()
-    return_dict = manager.dict()
-    jobs = []
+    performance_across_time_hyper = []
+    superior_performance_across_time_hyper = []
+    diversity_across_time_hyper = []
+    for hyper_loop in range(hyper_iteration):
+        sema = Semaphore(concurrency)
+        manager = mp.Manager()
+        jobs = []
+        return_dict = manager.dict()
+        for loop in range(repetition):
+            sema.acquire()
+            p = mp.Process(target=func, args=(m, s, n, group_size, lr, search_loop, loop, return_dict, sema))
+            jobs.append(p)
+            p.start()
+        for proc in jobs:
+            proc.join()
+        results = return_dict.values()  # Don't need dict index, since it is repetition.
+        performance_across_time = [result[0] for result in results]
+        superior_performance_across_time = [result[1] for result in results]
+        diversity_across_time = [result[2] for result in results]
 
-    performance_final = []
-    superior_final = []
-    diversity_final = []
-    for loop in range(repetition):
-        sema.acquire()
-        p = mp.Process(target=func,
-                       args=(m, s, n, group_size, lr, search_loop, loop, return_dict, sema))
-        jobs.append(p)
-        p.start()
-    for proc in jobs:
-        proc.join()
-    results = return_dict.values()  # Don't need dict index, since it is repetition.
-    performance_across_repeat = [result[0] for result in results]
-    superior_performance_across_repeat = [result[1] for result in results]
-    diversity_across_repeat = [result[2] for result in results]
-    for period in range(search_loop):
-        performance_temp = [performance_list[period] for performance_list in performance_across_repeat]
-        superior_temp = [superior_list[period] for superior_list in superior_performance_across_repeat]
-        diversity_temp = [diversity_list[period] for diversity_list in diversity_across_repeat]
-        performance_final.append(performance_temp)
-        superior_final.append(superior_temp)
-        diversity_final.append(diversity_temp)
+        # emerge the hyper_loop
+        performance_across_time_hyper += performance_across_time
+        superior_performance_across_time_hyper += superior_performance_across_time
+        diversity_across_time_hyper += diversity_across_time
 
-    with open("hierarchy_performance", 'wb') as out_file:
-        pickle.dump(performance_final, out_file)
-    with open("hierarchy_superior_performance", 'wb') as out_file:
-        pickle.dump(superior_final, out_file)
-    with open("hierarchy_diversity", 'wb') as out_file:
-        pickle.dump(diversity_final, out_file)
+    performance_across_time_final = []
+    superior_performance_across_time_final = []
+    diversity_across_time_final = []
+    for index in range(search_loop):
+        temp_performance = sum([result[index] for result in performance_across_time_hyper]) / search_loop
+        temp_superior = sum([result[index] for result in superior_performance_across_time_hyper]) / search_loop
+        temp_diveristy = sum([result[index] for result in diversity_across_time_hyper]) / search_loop
+        performance_across_time_final.append(temp_performance)
+        superior_performance_across_time_final.append(temp_superior)
+        diversity_across_time_final.append(temp_diveristy)
+
+    with open("hierarchy_performance_across_time", 'wb') as out_file:
+        pickle.dump(performance_across_time_final, out_file)
+    with open("hierarchy_superior_performance_across_time", 'wb') as out_file:
+        pickle.dump(superior_performance_across_time_final, out_file)
+    with open("hierarchy_diversity_across_time", 'wb') as out_file:
+        pickle.dump(diversity_across_time_final, out_file)
+
+    # save the original data to assess the iteration
+    with open("hierarchy_original_performance", 'wb') as out_file:
+        pickle.dump(performance_across_time_hyper, out_file)
+    with open("hierarchy_original_superior_performance", 'wb') as out_file:
+        pickle.dump(superior_performance_across_time_hyper, out_file)
+    with open("hierarchy_original_diversity", 'wb') as out_file:
+        pickle.dump(diversity_across_time_hyper, out_file)
+
+    t1 = time.time()
+    print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
+
+
+
+
