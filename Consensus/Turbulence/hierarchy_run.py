@@ -23,6 +23,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
     for period in range(search_loop):
         if (period + 1) % 200 == 0:
             reality.change(reality_change_rate=0.1)
+        hierarchy.turnover(turnover_rate=0.01)
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time, hierarchy.diversity_across_time]
     sema.release()
@@ -62,9 +63,9 @@ if __name__ == '__main__':
         performance_temp = [performance_list[period] for performance_list in performance_across_repeat]
         superior_temp = [superior_list[period] for superior_list in superior_performance_across_repeat]
         diversity_temp = [diversity_list[period] for diversity_list in diversity_across_repeat]
-        performance_final.append(sum(performance_temp) / len(performance_temp))
-        superior_final.append(sum(superior_temp) / len(superior_temp))
-        diversity_final.append(sum(diversity_temp) / len(diversity_temp))
+        performance_final.append(performance_temp)
+        superior_final.append(superior_temp)
+        diversity_final.append(diversity_temp)
 
     with open("hierarchy_performance", 'wb') as out_file:
         pickle.dump(performance_final, out_file)
@@ -72,6 +73,3 @@ if __name__ == '__main__':
         pickle.dump(superior_final, out_file)
     with open("hierarchy_diversity", 'wb') as out_file:
         pickle.dump(diversity_final, out_file)
-
-    t1 = time.time()
-    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
