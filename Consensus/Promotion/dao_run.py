@@ -40,45 +40,61 @@ if __name__ == '__main__':
     s = 1
     n = 420
     lr = 0.3
-    repetition = 400
-    promotion_list = [1, 2, 3, 4, 5]
-    search_loop = 1200
+    hyper_iteration = 4
+    repetition = 100
+    promotion_list = [1, 2, 3, 4]
+    search_loop = 2000
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 100
     performance_across_para = []
     consensus_across_para = []
     diversity_across_para = []
-    for promotion in promotion_list:
-        sema = Semaphore(concurrency)
-        manager = mp.Manager()
-        return_dict = manager.dict()
-        jobs = []
 
+    performance_across_para_hyper = []
+    consensus_across_para_hyper = []
+    diversity_across_para_hyper = []
+    for promotion in promotion_list:
+        # before taking an average across repetitions
+        performance_across_hyper = []
+        consensus_across_hyper = []
+        diversity_across_hyper = []
+
+        # after taking an average across repetitions
         performance_final = []
         consensus_final = []
         diversity_final = []
-        for loop in range(repetition):
-            sema.acquire()
-            p = mp.Process(target=func,
-                           args=(m, s, n, group_size, lr, promotion, search_loop, loop, return_dict, sema))
-            jobs.append(p)
-            p.start()
-        for proc in jobs:
-            proc.join()
-        results = return_dict.values()  # Don't need dict index, since it is repetition.
-        performance_across_repeat = [result[0] for result in results]
-        consensus_performance_across_repeat = [result[1] for result in results]
-        diversity_across_repeat = [result[2] for result in results]
+
+        for hyper_loop in range(hyper_iteration):
+            sema = Semaphore(concurrency)
+            manager = mp.Manager()
+            return_dict = manager.dict()
+            jobs = []
+            for loop in range(repetition):
+                sema.acquire()
+                p = mp.Process(target=func,
+                               args=(m, s, n, group_size, lr, promotion, search_loop, loop, return_dict, sema))
+                jobs.append(p)
+                p.start()
+            for proc in jobs:
+                proc.join()
+            results = return_dict.values()  # Don't need dict index, since it is repetition.
+            performance_across_hyper += [result[0] for result in results]
+            consensus_across_hyper += [result[1] for result in results]
+            diversity_across_hyper = [result[2] for result in results]
         for period in range(search_loop):
-            performance_temp = [performance_list[period] for performance_list in performance_across_repeat]
-            consensus_temp = [consensus_list[period] for consensus_list in consensus_performance_across_repeat]
-            diversity_temp = [diversity_list[period] for diversity_list in diversity_across_repeat]
-            performance_final.append(performance_temp)
-            consensus_final.append(consensus_temp)
-            diversity_final.append(diversity_temp)
+            performance_temp = [performance_list[period] for performance_list in performance_across_hyper]
+            consensus_temp = [consensus_list[period] for consensus_list in consensus_across_hyper]
+            diversity_temp = [diversity_list[period] for diversity_list in diversity_across_hyper]
+            performance_final.append(sum(performance_temp) / len(performance_temp))
+            consensus_final.append(sum(consensus_temp) / len(consensus_temp))
+            diversity_final.append(sum(diversity_temp) / len(diversity_temp))
         performance_across_para.append(performance_final)
         consensus_across_para.append(consensus_final)
         diversity_across_para.append(diversity_final)
+
+        performance_across_para_hyper.append(performance_across_hyper)
+        consensus_across_para_hyper.append(consensus_across_hyper)
+        diversity_across_para_hyper.append(diversity_across_hyper)
 
     with open("dao_performance", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
@@ -86,6 +102,13 @@ if __name__ == '__main__':
         pickle.dump(consensus_across_para, out_file)
     with open("dao_diversity", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
+
+    with open("dao_original_performance", 'wb') as out_file:
+        pickle.dump(performance_across_para_hyper, out_file)
+    with open("dao_original_consensus_performance", 'wb') as out_file:
+        pickle.dump(consensus_across_para_hyper, out_file)
+    with open("dao_original_diversity", 'wb') as out_file:
+        pickle.dump(diversity_across_para_hyper, out_file)
 
     # import matplotlib.pyplot as plt
     # x = range(search_loop)

@@ -32,7 +32,7 @@ if __name__ == '__main__':
     s = 1
     n = 420
     lr = 0.3
-    repetition = 400
+    repetition = 100
     search_loop = 200
     p1_list = np.arange(0.1, 1.0, 0.1)
     group_size = 7  # the smallest group size in Fang's model: 7
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     performance_across_para_time = []
     diversity_across_para_time = []
     superior_performance_across_para_time = []
-    concurrency = 100
+    concurrency = 20
     for p1 in p1_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
