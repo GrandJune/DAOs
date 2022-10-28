@@ -10,56 +10,36 @@ import pickle
 import numpy as np
 
 
-data_folder = r"E:\data\dao-1018\Supervision"
-performance_file = data_folder + r"\hierarchy_performance_across_threshold"
-deviation_file = data_folder + r"\hierarchy_deviation_across_threshold"
-diversity_file = data_folder + r"\hierarchy_diversity_across_threshold"
-superior_file = data_folder + r"\superior_performance_across_threshold"
+data_folder = r"E:\data\dao-1023\Asymmetry"
+performance_file = data_folder + r"\dao_performance"
+diversity_file = data_folder + r"\dao_diversity"
+consensus_file = data_folder + r"\dao_consensus_performance"
 
 with open(performance_file, 'rb') as infile:
     performance = pickle.load(infile)
-with open(deviation_file, 'rb') as infile:
-    deviation = pickle.load(infile)
 with open(diversity_file, 'rb') as infile:
     diversity = pickle.load(infile)
-with open(superior_file, 'rb') as infile:
-    superior = pickle.load(infile)
+with open(consensus_file, 'rb') as infile:
+    consensus = pickle.load(infile)
 
-p1_list = np.arange(0.1, 1.0, 0.1)
-fig, (ax1) = plt.subplots(1, 1)
-ax1.errorbar(p1_list, performance, yerr=deviation, color="g", fmt="-", capsize=5, capthick=0.8, ecolor="g", label="Hierarchy")
+performance_final = []
+for data_para in performance:
+    performance_para = []
+    for data_search in data_para:
+        temp = sum(data_search) / len(data_search)
+        performance_para.append(temp)
+    performance_final.append(performance_para)
+
+# asymmetry_list = [1, 2, 4, 8]
+plt.plot(range(1200), performance_final[0], "k-", label="a=1")
+# plt.plot(range(1200), performance_final[1], "k--", label="a=2")
+# plt.plot(range(1200), performance_final[2], "k:", label="a=4")
+# plt.plot(range(1200), performance_final[3], "k.", label="a=8")
 plt.xlabel('P1', fontweight='bold', fontsize=10)
 plt.ylabel('Performance', fontweight='bold', fontsize=10)
-plt.xticks(p1_list)
-handles, labels = ax1.get_legend_handles_labels()
-handles = [h[0] if isinstance(h, container.ErrorbarContainer) else h for h in handles]
-plt.legend(handles, labels, loc='upper left', numpoints=1)
-plt.savefig(data_folder + r"\Performance_across_p1.png", transparent=False, dpi=200)
+plt.legend()
+plt.savefig(data_folder + r"\Performance_across_asymmetry.png", transparent=False, dpi=200)
 # plt.show()
-plt.clf()
+# plt.clf()
 
-fig, (ax1) = plt.subplots(1, 1)
-ax1.plot(p1_list, diversity, "k-", label="Supervision")
-plt.xlabel('P1', fontweight='bold', fontsize=10)
-plt.ylabel('Performance', fontweight='bold', fontsize=10)
-plt.xticks(p1_list)
-handles, labels = ax1.get_legend_handles_labels()
-handles = [h[0] if isinstance(h, container.ErrorbarContainer) else h for h in handles]
-plt.legend(handles, labels, loc='upper left', numpoints=1)
-plt.savefig(data_folder + r"\Diversity_across_p1.png", transparent=False, dpi=200)
-# plt.show()
-plt.clf()
-
-
-fig, (ax1) = plt.subplots(1, 1)
-ax1.plot(p1_list, superior, "k-", label="Supervision")
-plt.xlabel('P1', fontweight='bold', fontsize=10)
-plt.ylabel('Performance', fontweight='bold', fontsize=10)
-plt.xticks(p1_list)
-handles, labels = ax1.get_legend_handles_labels()
-handles = [h[0] if isinstance(h, container.ErrorbarContainer) else h for h in handles]
-plt.legend(handles, labels, loc='upper left', numpoints=1)
-plt.savefig(data_folder + r"\Superior_performance_across_p1.png", transparent=False, dpi=200)
-# plt.show()
-plt.clf()
 print("END")

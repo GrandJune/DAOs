@@ -129,6 +129,8 @@ class DAO:
         if len(adjusted_majority_view) != self.m:
             raise ValueError("The length of majority view should be m")
         for index in range(self.policy_num):
+            # if self.consensus[index] == 0:  # if do nothing in case of zero, cannot enable sufficient search
+            #     continue
             if sum(adjusted_majority_view[index*3: (index+1)*3]) != self.consensus[index]:
                 adjusted_majority_view[index * 3: (index + 1) * 3] = self.reality.policy_2_belief(policy=self.consensus[index])
                 # adjusted_majority_view[index * 3: (index + 1) * 3] = [0, 0, 0]
@@ -144,10 +146,10 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 90
+    m = 30
     s = 1
     n = 280
-    search_loop = 500
+    search_loop = 300
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s, version="Rushed")
