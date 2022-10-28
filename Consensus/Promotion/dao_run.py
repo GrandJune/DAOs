@@ -45,7 +45,7 @@ if __name__ == '__main__':
     promotion_list = [1, 2, 3, 4]
     search_loop = 2000
     group_size = 7  # the smallest group size in Fang's model: 7
-    concurrency = 100
+    concurrency = 25
     performance_across_para = []
     consensus_across_para = []
     diversity_across_para = []
