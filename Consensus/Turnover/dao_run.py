@@ -22,9 +22,9 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
     reality = Reality(m=m, s=s)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
     for period in range(search_loop):
-        if (period + 1) % 200 == 0:
-            reality.change(reality_change_rate=0.1)
-        dao.turnover(turnover_rate=0.01)
+        if (period + 1) % 100 == 0:
+            reality.change(reality_change_rate=0.2)
+        dao.turnover(turnover_rate=0.1)
         dao.search(threshold_ratio=0.6)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time, dao.diversity_across_time]
     sema.release()

@@ -22,8 +22,8 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
     reality = Reality(m=m, s=s)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
     for period in range(search_loop):
-        if (period + 1) % 200 == 0:
-            reality.change(reality_change_rate=0.1)
+        if (period + 1) % 100 == 0:
+            reality.change(reality_change_rate=0.2)
         dao.search(threshold_ratio=0.6)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time, dao.diversity_across_time]
     sema.release()
@@ -32,11 +32,11 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 90
+    m = 60
     s = 1
     n = 420
     lr = 0.3
-    hyper_iteration = 4
+    hyper_iteration = 2
     repetition = 100
     search_loop = 1000
     group_size = 7  # the smallest group size in Fang's model: 7
