@@ -146,7 +146,7 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 30
+    m = 60
     s = 1
     n = 280
     search_loop = 300
@@ -171,6 +171,15 @@ if __name__ == '__main__':
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
     plt.savefig("DAO_performance.png", transparent=True, dpi=1200)
-    plt.show()
+    # plt.show()
+    plt.clf()
+
+    plt.plot(x, dao.diversity_across_time, "k-", label="Diversity")
+    # plt.title('Diversity Decrease')
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Diversity', fontweight='bold', fontsize=10)
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    plt.savefig("DAO_diversity.png", transparent=True, dpi=1200)
+    plt.clf()
 
 
