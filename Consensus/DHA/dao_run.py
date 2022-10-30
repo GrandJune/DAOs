@@ -30,15 +30,15 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 90
+    m = 60
     s = 1
     n = 420
     lr = 0.3
     threshold_ratio = 0.6
-    hyper_iteration = 10
-    repetition = 100
+    hyper_iteration = 4
+    repetition = 25
     concurrency = 25
-    search_loop = 2000
+    search_loop = 1000
     group_size = 7  # the smallest group size in Fang's model: 7
     performance_across_time_hyper = []
     consensus_performance_across_time_hyper = []
