@@ -10,7 +10,7 @@ import pickle
 import numpy as np
 
 
-data_folder = r"E:\data\dao-1023\Turbulence_2"
+data_folder = r"E:\data\dao-1023\Turbulence_3"
 h_performance_file = data_folder + r"\hierarchy_performance"
 d_performance_file = data_folder + r"\dao_performance"
 a_performance_file = data_folder + r"\autonomy_performance"
@@ -54,9 +54,9 @@ with open(consensus_performance_file, 'rb') as infile:
 #     d_diversity_2.append(sum(each) / len(each))
 
 x = range(len(h_performance))
-plt.plot(x, h_performance, "k--", label="Hierarchy")
-plt.plot(x, d_performance, "k-", label="DAO")
-plt.plot(x, a_performance, "k:", label="Autonomy")
+plt.plot(range(len(h_performance)), h_performance, "k--", label="Hierarchy")
+plt.plot(range(len(d_performance)), d_performance, "k-", label="DAO")
+plt.plot(range(len(a_performance)), a_performance, "k:", label="Autonomy")
 plt.xlabel('Time', fontweight='bold', fontsize=10)
 plt.ylabel('Performance', fontweight='bold', fontsize=10)
 # plt.xticks(x)
@@ -65,9 +65,9 @@ plt.savefig(data_folder + r"\Performance_turbulence.png", transparent=False, dpi
 plt.clf()
 
 fifig, (ax1) = plt.subplots(1, 1)
-ax1.plot(x, h_diversity, "k--", label="Hierarchy")
-ax1.plot(x, d_diversity, "k-", label="DAO")
-ax1.plot(x, a_diversity, "k:", label="Autonomy")
+ax1.plot(range(len(h_diversity)), h_diversity, "k--", label="Hierarchy")
+ax1.plot(range(len(d_diversity)), d_diversity, "k-", label="DAO")
+ax1.plot(range(len(a_diversity)), a_diversity, "k:", label="Autonomy")
 plt.xlabel('Time', fontweight='bold', fontsize=10)
 plt.ylabel('Diversity', fontweight='bold', fontsize=10)
 # plt.xticks(p1_list)
