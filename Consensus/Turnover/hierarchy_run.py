@@ -36,7 +36,7 @@ if __name__ == '__main__':
     n = 420
     lr = 0.3
     hyper_iteration = 2
-    repetition = 100
+    repetition = 25
     search_loop = 2000
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 25
