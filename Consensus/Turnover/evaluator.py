@@ -10,7 +10,7 @@ import pickle
 import numpy as np
 
 
-data_folder = r"E:\data\dao-1023\Turnover_3"
+data_folder = r"E:\data\dao-1023\Turnover_4"
 d_performance_file = data_folder + r"\dao_performance"
 d_consensus_file = data_folder + r"\dao_consensus_performance"
 h_performance_file = data_folder + r"\hierarchy_performance"
@@ -46,9 +46,7 @@ d_x = range(len(d_performance))
 h_x = range(len(h_performance))
 a_x = range(len(a_performance))
 plt.plot(d_x, d_performance, "r-", label="DAO")
-plt.plot(d_x, d_consensus, "r--", label="Consensus")
 plt.plot(h_x, h_performance, "g-", label="Hierarchy")
-plt.plot(h_x, h_superior, "g--", label="Authority")
 plt.plot(a_x, a_performance, "k-", label="Autonomy")
 plt.xlabel('Time', fontweight='bold', fontsize=10)
 plt.ylabel('Performance', fontweight='bold', fontsize=10)
@@ -65,4 +63,11 @@ plt.legend()
 plt.savefig(data_folder + r"\Diversity_under_turnover.png", transparent=False, dpi=200)
 # plt.show()
 plt.clf()
+
+plt.plot(d_x, d_consensus, "r--", label="Consensus")
+plt.plot(h_x, h_superior, "g--", label="Authority")
+plt.xlabel('Time', fontweight='bold', fontsize=10)
+plt.ylabel('Diversity', fontweight='bold', fontsize=10)
+plt.legend()
+plt.savefig(data_folder + r"\Consensus_Superior_under_turnover.png", transparent=False, dpi=200)
 print("END")

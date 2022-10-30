@@ -39,7 +39,7 @@ class Individual:
         # self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
     def turnover(self):
-        self.belief = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
+        self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)
         self.superior_majority_view = None
