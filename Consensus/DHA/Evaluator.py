@@ -8,14 +8,14 @@ import matplotlib.pyplot as plt
 import pickle
 from matplotlib import container
 
-data_folder = r"E:\data\dao-1023\DAO_420"
+data_folder = r"E:\data\dao-1023\DAO"
 dao_performance_file = data_folder + r"\dao_performance_across_time"
-# hierarchy_performance_file = data_folder + r"\hierarchy_performance_across_time"
+hierarchy_performance_file = data_folder + r"\hierarchy_performance_across_time"
 autonomy_performance_file = data_folder + r"\autonomy_performance_across_time"
 with open(dao_performance_file, 'rb') as infile:
     dao_performance = pickle.load(infile)
-# with open(hierarchy_performance_file, 'rb') as infile:
-#     hierarchy_performance = pickle.load(infile)
+with open(hierarchy_performance_file, 'rb') as infile:
+    hierarchy_performance = pickle.load(infile)
 with open(autonomy_performance_file, 'rb') as infile:
     autonomy_performance = pickle.load(infile)
 
@@ -35,9 +35,8 @@ with open(autonomy_performance_file, 'rb') as infile:
 # Plot performance across time (cannot use error bar, it has too many points)
 x = range(len(dao_performance))
 plt.plot(x, dao_performance, "r-", label="DAO")
-# plt.plot(x, hierarchy_performance, "b-", label="Hierarchy")
+plt.plot(x, hierarchy_performance, "b-", label="Hierarchy")
 plt.plot(x, autonomy_performance, "k-", label="Autonomy")
-# plt.title('Diversity Decrease')
 plt.xlabel('Time', fontweight='bold', fontsize=10)
 plt.ylabel('Performance', fontweight='bold', fontsize=10)
 # plt.xticks(x)
