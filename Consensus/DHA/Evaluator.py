@@ -8,10 +8,15 @@ import matplotlib.pyplot as plt
 import pickle
 from matplotlib import container
 
-data_folder = r"E:\data\dao-1023\DAO"
+data_folder = r"F:\data\dao-1023\DAO"
 dao_performance_file = data_folder + r"\dao_performance_across_time"
 hierarchy_performance_file = data_folder + r"\hierarchy_performance_across_time"
 autonomy_performance_file = data_folder + r"\autonomy_performance_across_time"
+
+dao_diversity_file = data_folder + r"\dao_diversity_across_time"
+hierarchy_diversity_file = data_folder + r"\hierarchy_diversity_across_time"
+autonomy_diversity_file = data_folder + r"\autonomy_diversity_across_time"
+
 with open(dao_performance_file, 'rb') as infile:
     dao_performance = pickle.load(infile)
 with open(hierarchy_performance_file, 'rb') as infile:
@@ -19,9 +24,16 @@ with open(hierarchy_performance_file, 'rb') as infile:
 with open(autonomy_performance_file, 'rb') as infile:
     autonomy_performance = pickle.load(infile)
 
-# dao_performance = [each * 10 for each in dao_performance]
-# hierarchy_performance = [each * 10 for each in hierarchy_performance]
-# autonomy_performance = [each * 10 for each in autonomy_performance]
+with open(dao_diversity_file, 'rb') as infile:
+    dao_diversity = pickle.load(infile)
+with open(hierarchy_diversity_file, 'rb') as infile:
+    hierarchy_diversity = pickle.load(infile)
+with open(autonomy_diversity_file, 'rb') as infile:
+    autonomy_diversity = pickle.load(infile)
+
+dao_performance = [each * 5 for each in dao_performance]
+hierarchy_performance = [each * 5 for each in hierarchy_performance]
+autonomy_performance = [each * 5 for each in autonomy_performance]
 # dao_deviation_file = data_folder + r"\dao_deviation_across_time"
 # hierarchy_deviation_file = data_folder + r"\hierarchy_deviation_across_time"
 # autonomy_deviation_file = data_folder + r"\autonomy_deviation_across_time"
@@ -44,6 +56,18 @@ plt.legend(frameon=False, ncol=1, fontsize=10)
 plt.savefig(data_folder + r"\DHA_performance.png", transparent=False, dpi=200)
 plt.show()
 # plt.clf()
+
+
+x = range(len(dao_performance))
+plt.plot(x, dao_diversity, "r-", label="DAO")
+plt.plot(x, hierarchy_diversity, "b-", label="Hierarchy")
+plt.plot(x, autonomy_diversity, "k-", label="Autonomy")
+plt.xlabel('Time', fontweight='bold', fontsize=10)
+plt.ylabel('Diversity', fontweight='bold', fontsize=10)
+# plt.xticks(x)
+plt.legend(frameon=False, ncol=1, fontsize=10)
+plt.savefig(data_folder + r"\DHA_diversity.png", transparent=False, dpi=200)
+plt.show()
 
 # Performance
 # x = range(len(dao_performance))

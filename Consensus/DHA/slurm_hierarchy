@@ -1,0 +1,8 @@
+#!/bin/bash
+#SBATCH --time=48:00:00
+#SBATCH --job-name=Hierarchy
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=junyili@u.nus.edu
+#SBATCH --mem=20gb
+#SBATCH --partition=long
+python hierarchy_run.py

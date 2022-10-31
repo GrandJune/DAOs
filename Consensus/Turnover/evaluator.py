@@ -10,7 +10,7 @@ import pickle
 import numpy as np
 
 
-data_folder = r"E:\data\dao-1023\Turnover_4"
+data_folder = r"F:\data\dao-1023\Turnover_1"
 d_performance_file = data_folder + r"\dao_performance"
 d_consensus_file = data_folder + r"\dao_consensus_performance"
 h_performance_file = data_folder + r"\hierarchy_performance"
@@ -42,20 +42,34 @@ with open(h_diversity_file, 'rb') as infile:
 with open(a_diversity_file, 'rb') as infile:
     a_diversity = pickle.load(infile)
 
+d_performance_2 = []
+for each in d_performance:
+    d_performance_2.append(sum(each) / len(each))
+h_performance_2 = []
+for each in h_performance:
+    h_performance_2.append(sum(each) / len(each))
+
+d_diversity_2 = []
+for each in d_diversity:
+    d_diversity_2.append(sum(each) / len(each))
+h_diversity_2 = []
+for each in h_diversity:
+    h_diversity_2.append(sum(each) / len(each))
+
 d_x = range(len(d_performance))
 h_x = range(len(h_performance))
 a_x = range(len(a_performance))
-plt.plot(d_x, d_performance, "r-", label="DAO")
-plt.plot(h_x, h_performance, "g-", label="Hierarchy")
-plt.plot(a_x, a_performance, "k-", label="Autonomy")
+plt.plot(d_x, d_performance_2, "k-", label="DAO")
+plt.plot(h_x, h_performance_2, "k--", label="Hierarchy")
+plt.plot(a_x, a_performance, "k:", label="Autonomy")
 plt.xlabel('Time', fontweight='bold', fontsize=10)
 plt.ylabel('Performance', fontweight='bold', fontsize=10)
 plt.legend()
 plt.savefig(data_folder + r"\Performance_under_turnover.png", transparent=False, dpi=200)
 # plt.show()
 plt.clf()
-plt.plot(d_x, d_diversity, "k-", label="DAO")
-plt.plot(h_x, h_diversity, "k--", label="Hierarchy")
+plt.plot(d_x, d_diversity_2, "k-", label="DAO")
+plt.plot(h_x, h_diversity_2, "k--", label="Hierarchy")
 plt.plot(a_x, a_diversity, "k:", label="Autonomy")
 plt.xlabel('Time', fontweight='bold', fontsize=10)
 plt.ylabel('Diversity', fontweight='bold', fontsize=10)
