@@ -70,7 +70,6 @@ class DAO:
                 elif (negative_count > threshold) and sum(policy_list) < 0:
                     new_consensus.append(-1)
                 else:
-                    # print("positive_count: ", positive_count, "negative_count: ", negative_count)
                     new_consensus.append(0)
         self.consensus = new_consensus.copy()
         self.consensus_payoff = self.reality.get_policy_payoff(policy=self.consensus)
