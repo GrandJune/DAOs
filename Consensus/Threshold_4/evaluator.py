@@ -10,7 +10,7 @@ import pickle
 import numpy as np
 
 
-data_folder = r"E:\data\dao-1023\Threshold_5"
+data_folder = r"E:\data\dao-1023\Threshold_6"
 dao_performance_file = data_folder + r"\dao_performance_across_threshold"
 dao_deviation_file = data_folder + r"\dao_deviation_across_threshold"
 dao_diversity_file = data_folder + r"\dao_diversity_across_threshold"
@@ -24,7 +24,7 @@ with open(dao_diversity_file, 'rb') as infile:
 with open(dao_consensus_file, 'rb') as infile:
     dao_consensus = pickle.load(infile)
 
-x = np.arange(0.40, 0.70, 0.01)
+x = np.arange(0.40, 0.72, 0.02)
 fig, (ax1) = plt.subplots(1, 1)
 ax1.plot(x, dao_consensus, "k--", label="Consensus")
 ax1.errorbar(x, dao_performance, yerr=dao_deviation, color="k", fmt="-", capsize=5, capthick=0.8, ecolor="g", label="DAO")

@@ -63,13 +63,14 @@ class DAO:
             threshold = threshold_ratio * sum([individual.token for individual in self.individuals])
             for i in range(self.policy_num):
                 policy_list = [individual.policy[i] * individual.token for individual in self.individuals]
-                positive_count = sum([individual.token for individual in self.individuals if individual.policy == 1])
-                negative_count = sum([individual.token for individual in self.individuals if individual.policy == -1])
+                positive_count = sum([individual.token for individual in self.individuals if individual.policy[i] == 1])
+                negative_count = sum([individual.token for individual in self.individuals if individual.policy[i] == -1])
                 if (positive_count > threshold) and sum(policy_list) > 0:
                     new_consensus.append(1)
                 elif (negative_count > threshold) and sum(policy_list) < 0:
                     new_consensus.append(-1)
                 else:
+                    # print("positive_count: ", positive_count, "negative_count: ", negative_count)
                     new_consensus.append(0)
         self.consensus = new_consensus.copy()
         self.consensus_payoff = self.reality.get_policy_payoff(policy=self.consensus)
@@ -149,7 +150,7 @@ if __name__ == '__main__':
     m = 30
     s = 1
     n = 280
-    search_loop = 300
+    search_loop = 100
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s, version="Rushed")
@@ -158,8 +159,11 @@ if __name__ == '__main__':
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
+    for individual in dao.individuals:
+        individual.token = np.random.pareto(a=2)
+
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.6)
+        dao.search(threshold_ratio=0.6, enable_token=True)
         print(period, dao.consensus)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].payoff)
     import matplotlib.pyplot as plt
