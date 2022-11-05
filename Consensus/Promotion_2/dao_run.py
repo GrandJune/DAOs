@@ -36,8 +36,8 @@ if __name__ == '__main__':
     s = 1
     n = 420
     lr = 0.3
-    hyper_iteration = 4
-    repetition = 100
+    hyper_iteration = 8
+    repetition = 50
     promotion_list = [0, 1, 2, 4]
     search_loop = 2000
     group_size = 7  # the smallest group size in Fang's model: 7
