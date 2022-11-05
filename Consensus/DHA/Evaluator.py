@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import pickle
 from matplotlib import container
 
-data_folder = r"E:\data\dao-1023\DHA"
+data_folder = r"E:\data\dao-1023\DAO_2"
 dao_performance_file = data_folder + r"\dao_performance_across_time"
 hierarchy_performance_file = data_folder + r"\hierarchy_performance_across_time"
 autonomy_performance_file = data_folder + r"\autonomy_performance_across_time"

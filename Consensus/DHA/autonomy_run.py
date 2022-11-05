@@ -31,11 +31,11 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 60
     s = 1
-    n = 420
+    n = 1001
     lr = 0.3
     hyper_iteration = 4
-    repetition = 25
-    concurrency = 25
+    repetition = 50
+    concurrency = 50
     search_loop = 1000
     group_size = 7  # the smallest group size in Fang's model: 7
     performance_across_time_hyper = []
