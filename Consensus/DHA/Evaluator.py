@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import pickle
 from matplotlib import container
 
-data_folder = r"F:\data\dao-1023\DAO"
+data_folder = r"E:\data\dao-1023\DHA"
 dao_performance_file = data_folder + r"\dao_performance_across_time"
 hierarchy_performance_file = data_folder + r"\hierarchy_performance_across_time"
 autonomy_performance_file = data_folder + r"\autonomy_performance_across_time"
@@ -31,9 +31,10 @@ with open(hierarchy_diversity_file, 'rb') as infile:
 with open(autonomy_diversity_file, 'rb') as infile:
     autonomy_diversity = pickle.load(infile)
 
-dao_performance = [each * 5 for each in dao_performance]
-hierarchy_performance = [each * 5 for each in hierarchy_performance]
-autonomy_performance = [each * 5 for each in autonomy_performance]
+# dao_performance = [each * 5 for each in dao_performance]
+# hierarchy_performance = [each * 5 for each in hierarchy_performance]
+# autonomy_performance = [each * 5 for each in autonomy_performance]
+
 # dao_deviation_file = data_folder + r"\dao_deviation_across_time"
 # hierarchy_deviation_file = data_folder + r"\hierarchy_deviation_across_time"
 # autonomy_deviation_file = data_folder + r"\autonomy_deviation_across_time"
@@ -46,9 +47,9 @@ autonomy_performance = [each * 5 for each in autonomy_performance]
 
 # Plot performance across time (cannot use error bar, it has too many points)
 x = range(len(dao_performance))
-plt.plot(x, dao_performance, "r-", label="DAO")
-plt.plot(x, hierarchy_performance, "b-", label="Hierarchy")
-plt.plot(x, autonomy_performance, "k-", label="Autonomy")
+plt.plot(range(len(dao_performance)), dao_performance, "r-", label="DAO")
+plt.plot(range(len(hierarchy_performance)), hierarchy_performance, "b-", label="Hierarchy")
+plt.plot(range(len(autonomy_performance)), autonomy_performance, "k-", label="Autonomy")
 plt.xlabel('Time', fontweight='bold', fontsize=10)
 plt.ylabel('Performance', fontweight='bold', fontsize=10)
 # plt.xticks(x)
@@ -59,9 +60,9 @@ plt.show()
 
 
 x = range(len(dao_performance))
-plt.plot(x, dao_diversity, "r-", label="DAO")
-plt.plot(x, hierarchy_diversity, "b-", label="Hierarchy")
-plt.plot(x, autonomy_diversity, "k-", label="Autonomy")
+plt.plot(range(len(dao_performance)), dao_diversity, "r-", label="DAO")
+plt.plot(range(len(hierarchy_diversity)), hierarchy_diversity, "b-", label="Hierarchy")
+plt.plot(range(len(autonomy_diversity)), autonomy_diversity, "k-", label="Autonomy")
 plt.xlabel('Time', fontweight='bold', fontsize=10)
 plt.ylabel('Diversity', fontweight='bold', fontsize=10)
 # plt.xticks(x)

@@ -66,9 +66,9 @@ if __name__ == '__main__':
     superior_performance_across_time_final = []
     diversity_across_time_final = []
     for index in range(search_loop):
-        temp_performance = sum([result[index] for result in performance_across_time_hyper]) / search_loop
-        temp_superior = sum([result[index] for result in superior_performance_across_time_hyper]) / search_loop
-        temp_diveristy = sum([result[index] for result in diversity_across_time_hyper]) / search_loop
+        temp_performance = sum([result[index] for result in performance_across_time_hyper]) / len(performance_across_time_hyper)
+        temp_superior = sum([result[index] for result in superior_performance_across_time_hyper]) / len(superior_performance_across_time_hyper)
+        temp_diveristy = sum([result[index] for result in diversity_across_time_hyper]) / len(diversity_across_time_hyper)
         performance_across_time_final.append(temp_performance)
         superior_performance_across_time_final.append(temp_superior)
         diversity_across_time_final.append(temp_diveristy)

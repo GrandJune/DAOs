@@ -69,9 +69,9 @@ if __name__ == '__main__':
     consensus_performance_across_time_final = []
     diversity_across_time_final = []
     for index in range(search_loop):
-        temp_performance = sum([result[index] for result in performance_across_time_hyper]) / repetition
-        temp_consensus = sum([result[index] for result in consensus_performance_across_time_hyper]) / search_loop
-        temp_diversity = sum([result[index] for result in diversity_across_time_hyper]) / search_loop
+        temp_performance = sum([result[index] for result in performance_across_time_hyper]) / len(performance_across_time_hyper)
+        temp_consensus = sum([result[index] for result in consensus_performance_across_time_hyper]) / len(consensus_performance_across_time_hyper)
+        temp_diversity = sum([result[index] for result in diversity_across_time_hyper]) / len(diversity_across_time_hyper)
         performance_across_time_final.append(temp_performance)
         consensus_performance_across_time_final.append(temp_consensus)
         diversity_across_time_final.append(temp_diversity)

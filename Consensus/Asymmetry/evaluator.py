@@ -10,7 +10,7 @@ import pickle
 import numpy as np
 
 
-data_folder = r"E:\data\dao-1023\Asymmetry_2"
+data_folder = r"E:\data\dao-1023\Asymmetry_3"
 performance_file = data_folder + r"\dao_performance"
 diversity_file = data_folder + r"\dao_diversity"
 consensus_file = data_folder + r"\dao_consensus_performance"
@@ -24,15 +24,30 @@ with open(consensus_file, 'rb') as infile:
 
 x = range(len(performance[0]))
 # asymmetry_list = [1, 2, 4, 8]
-# plt.plot(x, performance[0], "k-", label="a=1")
-plt.plot(x, performance[1], "k--", label="a=2")
-# plt.plot(x, performance[2], "k:", label="a=4")
-# plt.plot(x, performance[3], "k.", label="a=8")
-plt.xlabel('P1', fontweight='bold', fontsize=10)
+plt.plot(x, performance[0], "r-", label="Symmetry")
+plt.plot(x, performance[1], "y-", label="High Asymmetry")
+plt.plot(x, performance[2], "g-", label="Medium Asymmetry")
+plt.plot(x, performance[3], "b-", label="Low Asymmetry")
+# plt.plot(x, performance[4], "k-", label="a=8")
+# plt.title("a is negatively correlated with inequality")
+plt.xlabel('Time', fontweight='bold', fontsize=10)
 plt.ylabel('Performance', fontweight='bold', fontsize=10)
 plt.legend()
 plt.savefig(data_folder + r"\Performance_across_asymmetry.png", transparent=False, dpi=200)
 # plt.show()
-# plt.clf()
+plt.clf()
 
+
+x = range(len(performance[0]))
+# asymmetry_list = [1, 2, 4, 8]
+plt.plot(x, diversity[0], "r-", label="Symmetry")
+plt.plot(x, diversity[1], "y-", label="High Asymmetry")
+plt.plot(x, diversity[2], "g-", label="Medium Asymmetry")
+plt.plot(x, diversity[3], "b-", label="Low Asymmetry")
+# plt.plot(x, diversity[4], "k-", label="a=8")
+# plt.title("a is negatively correlated with inequality")
+plt.xlabel('Time', fontweight='bold', fontsize=10)
+plt.ylabel('Diversity', fontweight='bold', fontsize=10)
+plt.legend()
+plt.savefig(data_folder + r"\Diversity_across_asymmetry.png", transparent=False, dpi=200)
 print("END")

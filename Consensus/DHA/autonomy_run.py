@@ -63,8 +63,8 @@ if __name__ == '__main__':
     performance_across_time_final = []
     diversity_across_time_final = []
     for index in range(search_loop):
-        temp_performance = sum([result[index] for result in performance_across_time_hyper]) / search_loop
-        temp_diversity = sum([result[index] for result in diversity_across_time_hyper]) / search_loop
+        temp_performance = sum([result[index] for result in performance_across_time_hyper]) / len(performance_across_time_hyper)
+        temp_diversity = sum([result[index] for result in diversity_across_time_hyper]) / len(diversity_across_time_hyper)
         performance_across_time_final.append(temp_performance)
         diversity_across_time_final.append(temp_diversity)
     with open("autonomy_performance_across_time", 'wb') as out_file:
