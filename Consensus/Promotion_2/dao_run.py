@@ -21,15 +21,11 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, promotion=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     reality = Reality(m=m, s=s)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
-    # equally pre-assign token
+    # initially with equal token
     for individual in dao.individuals:
         individual.token = 1
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.6, enable_token=True)
-    # post-adjust the token according to the performance
-    for individual in dao.individuals:
-        if np.random.uniform(0, 1) < individual.payoff:
-            individual.token += promotion
+        dao.search(threshold_ratio=0.6, enable_token=True, promotion=promotion)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time, dao.diversity_across_time]
     sema.release()
 
@@ -42,7 +38,7 @@ if __name__ == '__main__':
     lr = 0.3
     hyper_iteration = 4
     repetition = 100
-    promotion_list = [1, 2, 3, 4]
+    promotion_list = [0, 1, 2, 4]
     search_loop = 2000
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50

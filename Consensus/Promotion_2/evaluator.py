@@ -30,7 +30,8 @@ with open(original_consensus_file, 'rb') as infile:
 
 promotion_list = [1, 2, 3, 4]
 for index, each in enumerate(performance):
-    plt.plot(promotion_list, each, label="Promotion={0}".format(promotion_list[index]))
+    plt.plot(range(len(each)), each, label="Promotion={0}".format(promotion_list[index]))
+    break
 plt.xlabel('Time', fontweight='bold', fontsize=10)
 plt.ylabel('Performance', fontweight='bold', fontsize=10)
 plt.xticks(promotion_list)

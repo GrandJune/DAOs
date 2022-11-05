@@ -44,7 +44,7 @@ class DAO:
         self.diversity_across_time = []
         self.consensus_performance_across_time = []
 
-    def search(self, threshold_ratio=None, enable_token=False):
+    def search(self, threshold_ratio=None, enable_token=False, promotion=None):
         # Consensus Formation
         new_consensus = []
         if not enable_token:
@@ -95,6 +95,11 @@ class DAO:
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
+
+        # reward the individuals
+        for individual in self.individuals:
+            if np.random.uniform(0, 1) <= individual.payoff:
+                individual.token += promotion
 
     def get_majority_view(self, belief_pool=None):
         majority_view = []
