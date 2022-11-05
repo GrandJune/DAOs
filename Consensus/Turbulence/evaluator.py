@@ -10,7 +10,7 @@ import pickle
 import numpy as np
 
 
-data_folder = r"E:\data\dao-1023\Turbulence_3"
+data_folder = r"E:\data\dao-1023\Turbulence_4"
 h_performance_file = data_folder + r"\hierarchy_performance"
 d_performance_file = data_folder + r"\dao_performance"
 a_performance_file = data_folder + r"\autonomy_performance"

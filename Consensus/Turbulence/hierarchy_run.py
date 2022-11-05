@@ -22,7 +22,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size, p1=0.1, p2=0.9)
     for period in range(search_loop):
         if (period + 1) % 200 == 0:
-            reality.change(reality_change_rate=0.1)
+            reality.change(reality_change_rate=0.2)
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time, hierarchy.diversity_across_time]
     sema.release()
@@ -35,10 +35,10 @@ if __name__ == '__main__':
     n = 420
     lr = 0.3
     hyper_iteration = 2
-    repetition = 25
-    search_loop = 2000
+    repetition = 50
+    search_loop = 4000
     group_size = 7  # the smallest group size in Fang's model: 7
-    concurrency = 25
+    concurrency = 50
     # after taking an average across repetitions
     performance_final = []
     consensus_final = []
