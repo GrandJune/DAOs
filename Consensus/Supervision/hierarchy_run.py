@@ -18,6 +18,7 @@ import math
 
 
 def func(m=None, s=None, n=None, group_size=None, lr=None, p1=None, search_loop=None, loop=None, return_dict=None, sema=None):
+    np.random.seed(None)
     reality = Reality(m=m, s=s)
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size, p1=p1, p2=0.9)
     for _ in range(search_loop):

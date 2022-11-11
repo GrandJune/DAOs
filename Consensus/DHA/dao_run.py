@@ -19,26 +19,27 @@ import math
 
 def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
+    np.random.seed(None)
     reality = Reality(m=m, s=s)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
     for _ in range(search_loop):
         dao.search(threshold_ratio=threshold_ratio)
+    print("reality: ", reality.real_code)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time, dao.diversity_across_time]
     sema.release()
 
 
-
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
+    m = 30
     s = 1
-    n = 1001
+    n = 35
     lr = 0.3
     threshold_ratio = 0.6
     hyper_iteration = 4
-    repetition = 50
+    repetition = 10
     concurrency = 50
-    search_loop = 1000
+    search_loop = 100
     group_size = 7  # the smallest group size in Fang's model: 7
     performance_across_time_hyper = []
     consensus_performance_across_time_hyper = []
@@ -59,7 +60,8 @@ if __name__ == '__main__':
         performance_across_time = [result[0] for result in results]
         consensus_performance_across_time = [result[1] for result in results]
         diversity_across_time = [result[2] for result in results]
-
+        for each in performance_across_time:
+            print(hyper_loop, each[-1])
         # emerge the hyper_loop
         performance_across_time_hyper += performance_across_time
         consensus_performance_across_time_hyper += consensus_performance_across_time

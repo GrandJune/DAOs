@@ -8,10 +8,13 @@ import matplotlib.pyplot as plt
 import pickle
 from matplotlib import container
 
-data_folder = r"E:\data\dao-1023\DAO_2"
+data_folder = r"E:\data\dao-1023\DHA_2"
 dao_performance_file = data_folder + r"\dao_performance_across_time"
 hierarchy_performance_file = data_folder + r"\hierarchy_performance_across_time"
 autonomy_performance_file = data_folder + r"\autonomy_performance_across_time"
+
+consensus_performance_file = data_folder + r"\dao_consensus_performance_across_time"
+superior_performance_file = data_folder + r"\hierarchy_superior_performance_across_time"
 
 dao_diversity_file = data_folder + r"\dao_diversity_across_time"
 hierarchy_diversity_file = data_folder + r"\hierarchy_diversity_across_time"
@@ -31,24 +34,18 @@ with open(hierarchy_diversity_file, 'rb') as infile:
 with open(autonomy_diversity_file, 'rb') as infile:
     autonomy_diversity = pickle.load(infile)
 
-# dao_performance = [each * 5 for each in dao_performance]
-# hierarchy_performance = [each * 5 for each in hierarchy_performance]
-# autonomy_performance = [each * 5 for each in autonomy_performance]
+with open(consensus_performance_file, 'rb') as infile:
+    consensus_performance = pickle.load(infile)
+with open(superior_performance_file, 'rb') as infile:
+    superior_performance = pickle.load(infile)
 
-# dao_deviation_file = data_folder + r"\dao_deviation_across_time"
-# hierarchy_deviation_file = data_folder + r"\hierarchy_deviation_across_time"
-# autonomy_deviation_file = data_folder + r"\autonomy_deviation_across_time"
-# with open(dao_deviation_file, 'rb') as infile:
-#     dao_deviation = pickle.load(infile)
-# with open(hierarchy_deviation_file, 'rb') as infile:
-#     hierarchy_deviation = pickle.load(infile)
-# with open(autonomy_deviation_file, 'rb') as infile:
-#     autonomy_deviation = pickle.load(infile)
 
 # Plot performance across time (cannot use error bar, it has too many points)
 x = range(len(dao_performance))
 plt.plot(range(len(dao_performance)), dao_performance, "r-", label="DAO")
+plt.plot(range(len(dao_performance)), consensus_performance, "r--", label="Consensus")
 plt.plot(range(len(hierarchy_performance)), hierarchy_performance, "b-", label="Hierarchy")
+plt.plot(range(len(hierarchy_performance)), superior_performance, "b--", label="Superior")
 plt.plot(range(len(autonomy_performance)), autonomy_performance, "k-", label="Autonomy")
 plt.xlabel('Time', fontweight='bold', fontsize=10)
 plt.ylabel('Performance', fontweight='bold', fontsize=10)
@@ -56,7 +53,7 @@ plt.ylabel('Performance', fontweight='bold', fontsize=10)
 plt.legend(frameon=False, ncol=1, fontsize=10)
 plt.savefig(data_folder + r"\DHA_performance.png", transparent=False, dpi=200)
 plt.show()
-# plt.clf()
+plt.clf()
 
 
 x = range(len(dao_performance))
