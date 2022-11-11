@@ -1,0 +1,10 @@
+#!/bin/bash
+#SBATCH --time=3-00:00:00
+#SBATCH --job-name=Turn_h
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=junyili@u.nus.edu
+#SBATCH --mem=50gb
+#SBATCH --partition=long
+#SBATCH --nodelist=amdgpu2
+#SBATCH --nodes=1
+python hierarchy_run.py

@@ -33,13 +33,13 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
+    m = 90
     s = 1
     n = 420
     lr = 0.3
-    hyper_iteration = 2
+    hyper_iteration = 1
     repetition = 50
-    search_loop = 4000
+    search_loop = 5000
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
     # after taking an average across repetitions

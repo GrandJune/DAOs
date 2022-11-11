@@ -22,8 +22,6 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
     reality = Reality(m=m, s=s)
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size, p1=0.1, p2=0.9)
     for period in range(search_loop):
-        # if (period + 1) % 200 == 0:
-        #     reality.change(reality_change_rate=0.1)
         hierarchy.turnover(turnover_rate=0.01)
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time, hierarchy.diversity_across_time]
@@ -32,13 +30,13 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
+    m = 90
     s = 1
     n = 420
     lr = 0.3
-    hyper_iteration = 2
+    hyper_iteration = 1
     repetition = 50
-    search_loop = 2000
+    search_loop = 5000
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
     # after taking an average across repetitions

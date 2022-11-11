@@ -97,9 +97,10 @@ class DAO:
         self.consensus_performance_across_time.append(self.consensus_payoff)
 
         # reward the individuals
-        for individual in self.individuals:
-            if np.random.uniform(0, 1) <= individual.payoff:
-                individual.token += promotion
+        if promotion:
+            for individual in self.individuals:
+                if np.random.uniform(0, 1) <= individual.payoff:
+                    individual.token += promotion
 
     def get_majority_view(self, belief_pool=None):
         majority_view = []
