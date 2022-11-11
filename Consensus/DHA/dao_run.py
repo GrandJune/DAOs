@@ -24,22 +24,21 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
     for _ in range(search_loop):
         dao.search(threshold_ratio=threshold_ratio)
-    print("reality: ", reality.real_code)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time, dao.diversity_across_time]
     sema.release()
 
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 30
+    m = 90
     s = 1
-    n = 35
+    n = 420
     lr = 0.3
     threshold_ratio = 0.6
     hyper_iteration = 4
-    repetition = 10
+    repetition = 100
     concurrency = 50
-    search_loop = 100
+    search_loop = 1000
     group_size = 7  # the smallest group size in Fang's model: 7
     performance_across_time_hyper = []
     consensus_performance_across_time_hyper = []

@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --time=3-00:00:00
-#SBATCH --job-name=Autonomy
+#SBATCH --job-name=Asymmetry
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
 #SBATCH --mem=20gb
 #SBATCH --partition=long
-#SBATCH --nodelist=xgph10
+#SBATCH --nodelist=xgph12
 #SBATCH --nodes=1
-python autonomy_run.py
+python dao_run.py

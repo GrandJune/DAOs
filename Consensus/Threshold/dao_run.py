@@ -35,9 +35,9 @@ if __name__ == '__main__':
     s = 1
     n = 420
     lr = 0.3
-    repetition = 30
+    repetition = 50
     search_loop = 2000
-    threshold_ratio_list = np.arange(0.40, 0.72, 0.02)
+    threshold_ratio_list = np.arange(0.40, 0.71, 0.01)
     group_size = 7  # the smallest group size in Fang's model: 7
 
     performance_across_para = []  # remove the time dimension
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     consensus_performance_across_para_time = []
     diversity_across_para_time = []
 
-    concurrency = 30
+    concurrency = 50
     for threshold_ratio in threshold_ratio_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
