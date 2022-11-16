@@ -3,7 +3,8 @@
 #SBATCH --job-name=Asymmetry
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=100gb
+#SBATCH --mem=50gb
 #SBATCH --partition=long
-#SBATCH --nodelist=xgph[10-14,16-19]
+#SBATCH --cpus-per-task=50
+#SBATCH --nodes=2-5
 python dao_run.py

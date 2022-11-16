@@ -1,10 +1,8 @@
 #!/bin/bash
 #SBATCH --time=3-00:00:00
-#SBATCH --job-name=Tur_h
-#SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=junyili@u.nus.edu
+#SBATCH --job-name=Tb_H
 #SBATCH --mem=50gb
 #SBATCH --partition=long
-#SBATCH --nodelist=xgph16
-#SBATCH --nodes=1
+#SBATCH --cpus-per-task=50
+#SBATCH --nodes=2-20
 python hierarchy_run.py

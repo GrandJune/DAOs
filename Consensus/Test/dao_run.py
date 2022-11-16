@@ -32,20 +32,21 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, asymmetry=None,
     for period in range(search_loop):
         dao.search(threshold_ratio=0.6, enable_token=True)
     print("Code: ", reality.real_code, "Payoff: ", dao.individuals[0].payoff, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())))
+    print("CPU的核数为：{}".format(mp.cpu_count()))
     sema.release()
 
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 10
+    m = 30
     s = 1
     n = 70
     lr = 0.3
     hyper_iteration = 1
-    repetition = 50
-    search_loop = 200
+    repetition = 100
+    search_loop = 100
     group_size = 7  # the smallest group size in Fang's model: 7
-    concurrency = 50
+    concurrency = 100
     asymmetry_list = [0]  # smaller asymmetry is associated with higher wealth inequality
     # after taking an average across repetitions
     performance_across_para = []
@@ -72,7 +73,7 @@ if __name__ == '__main__':
             for loop in range(repetition):
                 sema.acquire()
                 p = mp.Process(target=func,
-                               args=(m, s, n, group_size, lr, asymmetry, search_loop, loop, return_dict, sema))
+                               args=(m, s, n, group_size, lr, asymmetry, search_loop, sema))
                 jobs.append(p)
                 p.start()
             for proc in jobs:
