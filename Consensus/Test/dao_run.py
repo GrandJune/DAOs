@@ -18,7 +18,7 @@ import math
 
 
 def func(m=None, s=None, n=None, group_size=None, lr=None, asymmetry=None,
-         search_loop=None, loop=None, return_dict=None, sema=None):
+         search_loop=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
@@ -31,22 +31,22 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, asymmetry=None,
             individual.token = np.random.pareto(a=asymmetry)
     for period in range(search_loop):
         dao.search(threshold_ratio=0.6, enable_token=True)
-    return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time, dao.diversity_across_time]
+    print("Code: ", reality.real_code, "Payoff: ", dao.individuals[0].payoff, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())))
     sema.release()
 
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
+    m = 10
     s = 1
-    n = 420
+    n = 70
     lr = 0.3
-    hyper_iteration = 4
+    hyper_iteration = 1
     repetition = 50
-    search_loop = 1000
+    search_loop = 200
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
-    asymmetry_list = [0, 1, 2, 4]  # smaller asymmetry is associated with higher wealth inequality
+    asymmetry_list = [0]  # smaller asymmetry is associated with higher wealth inequality
     # after taking an average across repetitions
     performance_across_para = []
     consensus_across_para = []
@@ -77,41 +77,5 @@ if __name__ == '__main__':
                 p.start()
             for proc in jobs:
                 proc.join()
-            results = return_dict.values()  # Don't need dict index, since it is repetition.
-            performance_hyper += [result[0] for result in results]
-            consensus_hyper += [result[1] for result in results]
-            diversity_hyper += [result[2] for result in results]
-        for period in range(search_loop):
-            performance_temp = [performance_list[period] for performance_list in performance_hyper]
-            consensus_temp = [consensus_list[period] for consensus_list in consensus_hyper]
-            diversity_temp = [diversity_list[period] for diversity_list in diversity_hyper]
-
-            performance_final.append(sum(performance_temp) / len(performance_temp))
-            consensus_final.append(sum(consensus_temp) / len(consensus_temp))
-            diversity_final.append(sum(diversity_temp) / len(diversity_temp))
-
-        performance_across_para.append(performance_final)
-        consensus_across_para.append(consensus_final)
-        diversity_across_para.append(diversity_final)
-
-        performance_across_para_hyper.append(performance_hyper)
-        consensus_across_para_hyper.append(consensus_hyper)
-        diversity_across_para_hyper.append(diversity_hyper)
-    # after taking an average across repetitions
-    with open("dao_performance", 'wb') as out_file:
-        pickle.dump(performance_across_para, out_file)
-    with open("dao_consensus_performance", 'wb') as out_file:
-        pickle.dump(consensus_across_para, out_file)
-    with open("dao_diversity", 'wb') as out_file:
-        pickle.dump(diversity_across_para, out_file)
-
-    # before taking an average across repetitions
-    with open("dao_original_performance", 'wb') as out_file:
-        pickle.dump(performance_across_para_hyper, out_file)
-    with open("dao_original_consensus_performance", 'wb') as out_file:
-        pickle.dump(consensus_across_para_hyper, out_file)
-    with open("dao_original_diversity", 'wb') as out_file:
-        pickle.dump(diversity_across_para_hyper, out_file)
-
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
