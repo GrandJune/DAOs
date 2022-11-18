@@ -146,10 +146,10 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 30
+    m = 90
     s = 1
-    n = 280
-    search_loop = 100
+    n = 420
+    search_loop = 200
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s, version="Rushed")
@@ -162,8 +162,13 @@ if __name__ == '__main__':
         individual.token = np.random.pareto(a=2)
 
     for period in range(search_loop):
+        if (period + 1) % 20 == 0:
+            reality.change(reality_change_rate=0.2)
+            for agent in dao.individuals:
+                agent.payoff = reality.get_payoff(belief=agent.belief)
         dao.search(threshold_ratio=0.6, enable_token=True)
-        print(period, dao.consensus)
+        print(period)
+        # print(period, dao.consensus)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].payoff)
     import matplotlib.pyplot as plt
     x = range(search_loop)

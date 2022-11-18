@@ -24,6 +24,11 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
     for period in range(search_loop):
         if (period + 1) % 200 == 0:
             reality.change(reality_change_rate=0.2)
+            for agent in hierarchy.individuals:
+                agent.payoff = reality.get_payoff(belief=agent.belief)
+            for agent in hierarchy.superior.managers:
+                agent.payoff = reality.get_policy_payoff(policy=agent.policy)
+            hierarchy.superior.code_payoff = reality.get_policy_payoff(policy=hierarchy.superior.code)
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time, hierarchy.diversity_across_time]
     sema.release()

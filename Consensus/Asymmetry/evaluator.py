@@ -10,7 +10,7 @@ import pickle
 import numpy as np
 
 
-data_folder = r"E:\data\dao-1023\Asymmetry_3"
+data_folder = r"E:\data\dao-1118\DAO\Asymmetry"
 performance_file = data_folder + r"\dao_performance"
 diversity_file = data_folder + r"\dao_diversity"
 consensus_file = data_folder + r"\dao_consensus_performance"

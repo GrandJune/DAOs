@@ -25,6 +25,8 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
     for period in range(search_loop):
         if (period + 1) % 200 == 0:
             reality.change(reality_change_rate=0.2)
+            for agent in autonomy.individuals:
+                agent.payoff = reality.get_payoff(belief=agent.belief)
         autonomy.search()
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time]
     sema.release()
