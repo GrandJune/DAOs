@@ -6,5 +6,5 @@
 #SBATCH --mem=50gb
 #SBATCH --partition=long
 #SBATCH --cpus-per-task=50
-#SBATCH --nodes=2-20
+#SBATCH --nodes=1
 python dao_run.py
