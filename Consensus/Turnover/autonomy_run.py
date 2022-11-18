@@ -23,7 +23,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
     reality = Reality(m=m, s=s)
     autonomy = Autonomy(m=m, s=s, n=n, reality=reality, subgroup_size=group_size, lr=lr)
     for period in range(search_loop):
-        autonomy.turnover(turnover_rate=0.01)
+        autonomy.turnover(turnover_rate=0.1)
         autonomy.search()
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time]
     sema.release()
