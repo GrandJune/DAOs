@@ -10,7 +10,7 @@ import pickle
 import numpy as np
 
 
-data_folder = r"E:\data\dao-1023\Promotion"
+data_folder = r"E:\data\dao-1118\DAO\Promotion"
 performance_file = data_folder + r"\dao_performance"
 consensus_file = data_folder + r"\dao_consensus_performance"
 diversity_file = data_folder + r"\dao_diversity"
@@ -28,15 +28,27 @@ with open(original_performance_file, 'rb') as infile:
 with open(original_consensus_file, 'rb') as infile:
     original_consensus = pickle.load(infile)
 
-promotion_list = [1, 2, 3, 4]
+promotion_list = [0, 1, 2, 4]
 for index, each in enumerate(performance):
     plt.plot(range(len(each)), each, label="Promotion={0}".format(promotion_list[index]))
-    break
+    # break
 plt.xlabel('Time', fontweight='bold', fontsize=10)
 plt.ylabel('Performance', fontweight='bold', fontsize=10)
-plt.xticks(promotion_list)
+# plt.xticks(promotion_list)
 plt.legend()
 plt.savefig(data_folder + r"\Performance_across_promotion.png", transparent=False, dpi=200)
-# plt.show()
+plt.show()
 plt.clf()
+
+for index, each in enumerate(diversity):
+    plt.plot(range(len(each)), each, label="Promotion={0}".format(promotion_list[index]))
+    # break
+plt.xlabel('Time', fontweight='bold', fontsize=10)
+plt.ylabel('Diversity', fontweight='bold', fontsize=10)
+# plt.xticks(promotion_list)
+plt.legend()
+plt.savefig(data_folder + r"\Diversity_across_promotion.png", transparent=False, dpi=200)
+plt.show()
+plt.clf()
+
 print("END")
