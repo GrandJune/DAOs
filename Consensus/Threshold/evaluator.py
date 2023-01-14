@@ -10,7 +10,7 @@ import pickle
 import numpy as np
 
 
-data_folder = r"E:\data\dao-1118\DAO\Threshold"
+data_folder = r"F:\data\dao-1118\DAO\Threshold"
 dao_performance_file = data_folder + r"\dao_performance_across_threshold"
 dao_deviation_file = data_folder + r"\dao_deviation_across_threshold"
 dao_diversity_file = data_folder + r"\dao_diversity_across_threshold"
