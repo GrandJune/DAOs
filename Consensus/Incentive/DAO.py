@@ -77,9 +77,9 @@ class DAO:
         for individual in self.individuals:
             connected_group = [self.individuals[i] for i in individual.connections]
             superior_belief_pool = []
-            for each in connected_group:
-                if each.payoff > individual.payoff:
-                    superior_belief_pool.append(each.belief)
+            for neighbor in connected_group:
+                if neighbor.payoff > individual.payoff:
+                    superior_belief_pool.append(neighbor.belief)
             if len(superior_belief_pool) != 0:
                 majority_view = self.get_majority_view(superior_belief_pool)
                 individual.superior_majority_view = majority_view
@@ -99,8 +99,9 @@ class DAO:
         # reward the individuals
         if promotion:
             for individual in self.individuals:
-                if np.random.uniform(0, 1) <= individual.payoff:
-                    individual.token += promotion
+                individual.token += individual.payoff
+                # if np.random.uniform(0, 1) <= individual.payoff:
+                #     individual.token += promotion
 
     def get_majority_view(self, belief_pool=None):
         majority_view = []

@@ -39,7 +39,7 @@ if __name__ == '__main__':
     lr = 0.3
     hyper_iteration = 4
     repetition = 50
-    promotion_list = [0, 1, 2, 4]
+    promotion_list = [False, True]
     search_loop = 2000
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
@@ -107,6 +107,8 @@ if __name__ == '__main__':
     with open("dao_original_diversity", 'wb') as out_file:
         pickle.dump(diversity_across_para_hyper, out_file)
 
+    t1 = time.time()
+    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
     # import matplotlib.pyplot as plt
     # x = range(search_loop)
     # fig, (ax1) = plt.subplots(1, 1)
@@ -116,5 +118,4 @@ if __name__ == '__main__':
     # # plt.xticks(x)
     # plt.legend(frameon=False, ncol=1, fontsize=10)
     # plt.savefig(r"\DAO_performance.png", transparent=False, dpi=200)
-    # t1 = time.time()
-    # print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
+
