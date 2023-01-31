@@ -1,0 +1,8 @@
+#!/bin/bash
+#SBATCH --time=3-00:00:00
+#SBATCH --job-name=Tn_A
+#SBATCH --mem=50gb
+#SBATCH --partition=long
+#SBATCH --cpus-per-task=50
+#SBATCH --nodes=1
+python autonomy_run.py
