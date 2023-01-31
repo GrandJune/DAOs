@@ -14,8 +14,9 @@ class Individual:
         self.m = m
         self.s = s
         self.lr = lr  # learning rate, learning from (adjusted) majority view
-        self.token = None  # should introduce more dimensions of token; delegation or inactivated token?
+        self.token = None  # should introduce more dimensions of token
         self.connections = []  # for autonomy, to seek for superior subgroup
+        self.group_id = None
         self.reality = reality
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
         # self.belief = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])

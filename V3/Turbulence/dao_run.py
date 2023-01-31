@@ -21,12 +21,13 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
+    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     for period in range(search_loop):
-        if (period + 1) % 1000 == 0:
-            reality.change(reality_change_rate=0.2)
-            for agent in dao.individuals:
-                agent.payoff = reality.get_payoff(belief=agent.belief)
+        # Christina Fang use a regular turbulence in her paper; This periodic turbulence suggest that hierarchy out-perform DAO in our previous results
+        # Thus we try a more random turbulence;
+        reality.change(reality_change_rate=0.1)
+        for agent in dao.individuals:
+            agent.payoff = reality.get_payoff(belief=agent.belief)
         dao.search(threshold_ratio=0.6)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time, dao.diversity_across_time]
     sema.release()
@@ -35,9 +36,9 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 90
+    m = 60
     s = 1
-    n = 420
+    n = 350
     lr = 0.3
     hyper_iteration = 1
     repetition = 50

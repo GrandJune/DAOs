@@ -5,20 +5,18 @@
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import math
-
 from Individual import Individual
 from Reality import Reality
 import numpy as np
 
 
 class DAO:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, subgroup_size=None):
+    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, group_size=None):
         """
         :param m: problem space
         :param s: the first complexity
         :param n: the number of agents
         :param reality: to provide feedback
-        :param confirm: the extent to which agents confirm to their superior
         """
         self.m = m  # state length
         self.s = s  # lower-level interdependency
@@ -30,7 +28,7 @@ class DAO:
         self.policy_num = self.m // 3
         self.reality = reality
         self.lr = lr  # learning from consensus
-        self.subgroup_size = subgroup_size
+        self.group_size = group_size
         self.consensus = [0] * self.policy_num
         self.consensus_payoff = 0
         self.teams = []
@@ -38,7 +36,8 @@ class DAO:
         # team = Team(policy_num=self.policy_num)
         for i in range(self.n):
             individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
-            individual.connections = list(range((i // self.subgroup_size) * self.subgroup_size, ((i // self.subgroup_size) + 1) * self.subgroup_size))
+            individual.connections = list(range((i // self.group_size) * self.group_size, ((i // self.group_size) + 1) * self.group_size))
+            individual.group_id = i // self.group_size
             self.individuals.append(individual)
         self.performance_across_time = []
         self.diversity_across_time = []
@@ -63,8 +62,8 @@ class DAO:
             threshold = threshold_ratio * sum([individual.token for individual in self.individuals])
             for i in range(self.policy_num):
                 policy_list = [individual.policy[i] * individual.token for individual in self.individuals]
-                positive_count = sum([individual.token for individual in self.individuals if individual.policy[i] == 1])
-                negative_count = sum([individual.token for individual in self.individuals if individual.policy[i] == -1])
+                positive_count = sum([individual.token for individual in self.individuals if individual.policy == 1])
+                negative_count = sum([individual.token for individual in self.individuals if individual.policy == -1])
                 if (positive_count > threshold) and sum(policy_list) > 0:
                     new_consensus.append(1)
                 elif (negative_count > threshold) and sum(policy_list) < 0:
@@ -73,7 +72,8 @@ class DAO:
                     new_consensus.append(0)
         self.consensus = new_consensus.copy()
         self.consensus_payoff = self.reality.get_policy_payoff(policy=self.consensus)
-        # Adjust the superior majority view and then learn from it
+
+        # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
         for individual in self.individuals:
             connected_group = [self.individuals[i] for i in individual.connections]
             superior_belief_pool = []
@@ -129,8 +129,6 @@ class DAO:
         if len(adjusted_majority_view) != self.m:
             raise ValueError("The length of majority view should be m")
         for index in range(self.policy_num):
-            # if self.consensus[index] == 0:  # if do nothing in case of zero, cannot enable sufficient search
-            #     continue
             if sum(adjusted_majority_view[index*3: (index+1)*3]) != self.consensus[index]:
                 adjusted_majority_view[index * 3: (index + 1) * 3] = self.reality.policy_2_belief(policy=self.consensus[index])
                 # adjusted_majority_view[index * 3: (index + 1) * 3] = [0, 0, 0]
@@ -146,29 +144,21 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 90
+    m = 60
     s = 1
-    n = 420
+    n = 350
     search_loop = 200
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s, version="Rushed")
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
+    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     # dao.teams[0].individuals[0].belief = reality.real_code.copy()
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
-    for individual in dao.individuals:
-        individual.token = np.random.pareto(a=2)
-
-    for period in range(search_loop):
-        if (period + 1) % 20 == 0:
-            reality.change(reality_change_rate=0.2)
-            for agent in dao.individuals:
-                agent.payoff = reality.get_payoff(belief=agent.belief)
-        dao.search(threshold_ratio=0.6, enable_token=True)
-        print(period)
-        # print(period, dao.consensus)
+    for _ in range(search_loop):
+        dao.search(threshold_ratio=0.6)
+        print(dao.consensus)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].payoff)
     import matplotlib.pyplot as plt
     x = range(search_loop)

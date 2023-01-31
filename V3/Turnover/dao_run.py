@@ -21,7 +21,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
+    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     for period in range(search_loop):
         dao.turnover(turnover_rate=0.1)
         dao.search(threshold_ratio=0.6)
