@@ -13,23 +13,26 @@ import time
 
 
 class Hierarchy:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, subgroup_size=None, p1=0.1, p2=0.9):
+    def __init__(self, m=None, s=None, n=None, reality=None, lr=None,
+                 group_size=None, p1=0.1, p2=0.9, manager_num=50):
         """
         :param m: problem space
         :param s: the first complexity
         :param t: the second complexity
         :param n: the number of agents
         :param reality: to provide feedback
-        :param confirm: the extent to which agents confirm to their superior
         """
         self.m = m  # state length
         self.s = s  # lower-level interdependency
-        self.n = n  # the number of subunits under this superior
+        self.n = n
+        self.manager_num = manager_num
+        self.group_size = group_size
         if self.m % self.s != 0:
             raise ValueError("m is not dividable by s")
+        if self.manager_num * self.group_size != self.n:
+            raise ValueError("the number of managers should be coherent with n and group_size")
         self.policy_num = self.m // 3
         self.lr = lr  # learning rate
-        self.subgroup_size = subgroup_size
         self.reality = reality
         self.superior = Superior(policy_num=self.policy_num, reality=self.reality, manager_num=50, p1=p1, p2=p2)
         # n is the number of managers, instead of employers;  In March's paper, n=50
@@ -37,7 +40,8 @@ class Hierarchy:
         self.individuals = []
         for i in range(self.n):
             individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
-            individual.connections = list(range((i // self.subgroup_size) * self.subgroup_size, ((i // self.subgroup_size) + 1) * self.subgroup_size))
+            individual.connections = list(range((i // self.group_size) * self.group_size, ((i // self.group_size) + 1) * self.group_size))
+            individual.group_id = i // self.group_size
             self.individuals.append(individual)
         # DVs
         self.performance_across_time = []
@@ -59,11 +63,13 @@ class Hierarchy:
                 individual.superior_majority_view = majority_view
             else:
                 individual.superior_majority_view = None
-        # Adjust the superior majority view according to supervision and then learn from it
+        # Every team confirm to their focal manager, and adjust their majority view (the learning resource)
         for individual in self.individuals:
+            focal_manager = self.superior.managers[individual.group_id]
             if individual.superior_majority_view:  # only those have better reference will learn / update their belief
                 individual.superior_majority_view = \
-                    self.adjust_majority_view(majority_view=individual.superior_majority_view)
+                    self.adjust_majority_view(majority_view=individual.superior_majority_view,
+                                              supervision_view=focal_manager.policy)
                 individual.learning_from_belief(belief=individual.superior_majority_view)
         performance_list = [individual.payoff for individual in self.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
@@ -97,13 +103,21 @@ class Hierarchy:
                 acc += 1
         return acc
 
-    def adjust_majority_view(self, majority_view=None):
+    def adjust_majority_view(self, majority_view=None, supervision_view=None):
+        """
+        In this version, team members will adjust the belief according to the focal manager
+        Different from the fucntion in DAO class
+        :param majority_view: the original majority view
+        :return: the confirmed majority view
+        """
         adjusted_majority_view = majority_view.copy()
         if len(adjusted_majority_view) != self.m:
             raise ValueError("The length of majority view should be m")
         for index in range(self.policy_num):
-            if sum(adjusted_majority_view[index*3: (index+1)*3]) != self.superior.code[index]:
-                adjusted_majority_view[index * 3: (index + 1) * 3] = self.reality.policy_2_belief(policy=self.superior.code[index])
+            if supervision_view[index] == 0:
+                continue
+            if sum(adjusted_majority_view[index * 3: (index + 1) * 3]) != supervision_view[index]:
+                adjusted_majority_view[index * 3: (index + 1) * 3] = self.reality.policy_2_belief(policy=supervision_view[index])
         return adjusted_majority_view
 
     def turnover(self, turnover_rate=None):
@@ -128,7 +142,7 @@ if __name__ == '__main__':
     p2 = 0.9  # code learning from belief
     search_iteration = 200
     reality = Reality(m=m, s=s)
-    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr,subgroup_size=group_size, p1=p1, p2=p2)
+    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=p2)
     for i in range(search_iteration):
         hierarchy.search()
         print(i)

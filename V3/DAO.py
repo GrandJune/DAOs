@@ -11,13 +11,12 @@ import numpy as np
 
 
 class DAO:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, subgroup_size=None):
+    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, group_size=None):
         """
         :param m: problem space
         :param s: the first complexity
         :param n: the number of agents
         :param reality: to provide feedback
-        :param confirm: the extent to which agents confirm to their superior
         """
         self.m = m  # state length
         self.s = s  # lower-level interdependency
@@ -29,7 +28,7 @@ class DAO:
         self.policy_num = self.m // 3
         self.reality = reality
         self.lr = lr  # learning from consensus
-        self.subgroup_size = subgroup_size
+        self.group_size = group_size
         self.consensus = [0] * self.policy_num
         self.consensus_payoff = 0
         self.teams = []
@@ -37,7 +36,8 @@ class DAO:
         # team = Team(policy_num=self.policy_num)
         for i in range(self.n):
             individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
-            individual.connections = list(range((i // self.subgroup_size) * self.subgroup_size, ((i // self.subgroup_size) + 1) * self.subgroup_size))
+            individual.connections = list(range((i // self.group_size) * self.group_size, ((i // self.group_size) + 1) * self.group_size))
+            individual.group_id = i // self.group_size
             self.individuals.append(individual)
         self.performance_across_time = []
         self.diversity_across_time = []
@@ -151,7 +151,7 @@ if __name__ == '__main__':
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s, version="Rushed")
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
+    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     # dao.teams[0].individuals[0].belief = reality.real_code.copy()
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)
