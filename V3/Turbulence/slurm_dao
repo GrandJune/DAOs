@@ -1,7 +1,9 @@
 #!/bin/bash
 #SBATCH --time=3-00:00:00
 #SBATCH --job-name=Tb_D
-#SBATCH --mem=50gb
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=junyili@u.nus.edu
+#SBATCH --mem=100gb
 #SBATCH --partition=long
 #SBATCH --cpus-per-task=50
 #SBATCH --nodes=1
