@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time     : 7/19/2022 19:05
 # @Author   : Junyi
-# @FileName: Superior.py
+# @FileName: Hierarchy.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 from Individual import Individual
@@ -9,6 +9,7 @@ import numpy as np
 import math
 from Reality import Reality
 from Superior import Superior
+from Team import Team
 import time
 
 
@@ -37,12 +38,15 @@ class Hierarchy:
         self.superior = Superior(policy_num=self.policy_num, reality=self.reality, manager_num=50, p1=p1, p2=p2)
         # n is the number of managers, instead of employers;  In March's paper, n=50
         # p1, p2 is set to be the best one in March's paper
-        self.individuals = []
-        for i in range(self.n):
-            individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
-            individual.connections = list(range((i // self.group_size) * self.group_size, ((i // self.group_size) + 1) * self.group_size))
-            individual.group_id = i // self.group_size
-            self.individuals.append(individual)
+        self.teams = []
+        for i in range(self.n // self.group_size):
+            team = Team(m=self.m, index=i, policy_num=self.policy_num, reality=self.reality)
+            for _ in range(self.group_size):
+                individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
+                team.individuals.append(individual)
+            team.manager = self.superior.managers[i]
+            # team.get_policy(token=False)  # Do not need team having its own policy
+            self.teams.append(team)
         # DVs
         self.performance_across_time = []
         self.diversity_across_time = []
@@ -52,46 +56,23 @@ class Hierarchy:
         # Supervision Formation
         self.superior.search()
         # Autonomous team learning
-        for individual in self.individuals:
-            connected_group = [self.individuals[i] for i in individual.connections]
-            superior_belief_pool = []
-            for each in connected_group:
-                if each.payoff > individual.payoff:
-                    superior_belief_pool.append(each.belief)
-            if len(superior_belief_pool) != 0:
-                majority_view = self.get_majority_view(superior_belief_pool)
-                individual.superior_majority_view = majority_view
-            else:
-                individual.superior_majority_view = None
-        # Every team confirm to their focal manager, and adjust their majority view (the learning resource)
-        for individual in self.individuals:
-            focal_manager = self.superior.managers[individual.group_id]
-            if individual.superior_majority_view:  # only those have better reference will learn / update their belief
-                individual.superior_majority_view = \
-                    self.adjust_majority_view(majority_view=individual.superior_majority_view,
-                                              supervision_view=focal_manager.policy)
-                individual.learning_from_belief(belief=individual.superior_majority_view)
-        performance_list = [individual.payoff for individual in self.individuals]
+        for team in self.teams:
+            team.get_majority_view()
+            team.follow_supervision(supervision=team.manager.policy)
+        performance_list = []
+        for team in self.teams:
+            performance_list += [individual.payoff for individual in team.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.diversity_across_time.append(self.get_diversity())
 
-    def get_majority_view(self, superior_belief=None):
-        majority_view = []
-        for i in range(self.m):
-            temp = [belief[i] for belief in superior_belief]
-            if sum(temp) > 0:
-                majority_view.append(1)
-            elif sum(temp) < 0:
-                majority_view.append(-1)
-            else:
-                majority_view.append(0)
-        return majority_view
-
     def get_diversity(self):
         diversity = 0
-        belief_pool = [individual.belief for individual in self.individuals]
-        for index, individual in enumerate(self.individuals):
-            selected_pool = belief_pool[index+1::]
+        individuals = []
+        for team in self.teams:
+            individuals += team.individuals
+        belief_pool = [individual.belief for individual in individuals]
+        for index, individual in enumerate(individuals):
+            selected_pool = belief_pool[index + 1::]
             one_pair_diversity = [self.get_distance(individual.belief, belief) for belief in selected_pool]
             diversity += sum(one_pair_diversity)
         return diversity / self.m / (self.n - 1) / self.n * 2
@@ -103,32 +84,12 @@ class Hierarchy:
                 acc += 1
         return acc
 
-    def adjust_majority_view(self, majority_view=None, supervision_view=None):
-        """
-        In this version, team members will adjust the belief according to the focal manager
-        Different from the fucntion in DAO class
-        :param majority_view: the original majority view
-        :return: the confirmed majority view
-        """
-        adjusted_majority_view = majority_view.copy()
-        if len(adjusted_majority_view) != self.m:
-            raise ValueError("The length of majority view should be m")
-        for index in range(self.policy_num):
-            if supervision_view[index] == 0:
-                continue
-            if sum(adjusted_majority_view[index * 3: (index + 1) * 3]) != supervision_view[index]:
-                adjusted_majority_view[index * 3: (index + 1) * 3] = self.reality.policy_2_belief(policy=supervision_view[index])
-        return adjusted_majority_view
-
     def turnover(self, turnover_rate=None):
         if turnover_rate:
-            changed_agent_number = math.ceil(turnover_rate * self.n)  # N here refers to the number of individuals
-            selected_index = np.random.choice(range(self.n), changed_agent_number)
-            for index in selected_index:
-                individual = self.individuals[index]
-                individual.turnover()
-            self.superior.turnover(turnover_rate=turnover_rate)
-
+            for team in self.teams:
+                for individual in team.individuals:
+                    if np.random.uniform(0, 1) < turnover_rate:
+                        individual.turnover()
 
 
 if __name__ == '__main__':
