@@ -81,11 +81,9 @@ class Superior:
 
     def turnover(self, turnover_rate=None):
         if turnover_rate:
-            changed_agent_number = math.ceil(turnover_rate * self.manager_num)  # N here refers to the number of managers
-            selected_index = np.random.choice(range(self.manager_num), changed_agent_number)
-            for index in selected_index:
-                manager = self.managers[index]
-                manager.turnover()
+            for manager in self.managers:
+                if np.random.uniform(0, 1) < turnover_rate:
+                    manager.turnover()
 
 
 if __name__ == '__main__':

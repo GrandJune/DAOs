@@ -77,6 +77,7 @@ class DAO:
                     new_consensus.append(-1)
                 else:
                     new_consensus.append(0)
+        self.consensus = new_consensus
         self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
         # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
         for team in self.teams:
@@ -117,10 +118,10 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 60
+    m = 30
     s = 1
-    n = 350
-    search_loop = 200
+    n = 280
+    search_loop = 100
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s, version="Rushed")
@@ -130,7 +131,7 @@ if __name__ == '__main__':
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
     for _ in range(search_loop):
-        dao.search(threshold_ratio=0.6)
+        dao.search(threshold_ratio=0.5)
         print(dao.consensus)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].payoff)
     import matplotlib.pyplot as plt
@@ -141,7 +142,7 @@ if __name__ == '__main__':
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("DAO_performance.png", transparent=True, dpi=1200)
+    # plt.savefig("DAO_performance.png", transparent=True, dpi=1200)
     plt.show()
 
 

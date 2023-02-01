@@ -5,20 +5,19 @@
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import math
-
 from Individual import Individual
+from Team import Team
 from Reality import Reality
 import numpy as np
 
 
 class DAO:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, subgroup_size=None):
+    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, group_size=None):
         """
         :param m: problem space
         :param s: the first complexity
         :param n: the number of agents
         :param reality: to provide feedback
-        :param confirm: the extent to which agents confirm to their superior
         """
         self.m = m  # state length
         self.s = s  # lower-level interdependency
@@ -30,27 +29,30 @@ class DAO:
         self.policy_num = self.m // 3
         self.reality = reality
         self.lr = lr  # learning from consensus
-        self.subgroup_size = subgroup_size
+        self.group_size = group_size
         self.consensus = [0] * self.policy_num
         self.consensus_payoff = 0
         self.teams = []
-        self.individuals = []
-        # team = Team(policy_num=self.policy_num)
-        for i in range(self.n):
-            individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
-            individual.connections = list(range((i // self.subgroup_size) * self.subgroup_size, ((i // self.subgroup_size) + 1) * self.subgroup_size))
-            self.individuals.append(individual)
+        for i in range(self.n // self.group_size):
+            team = Team(m=self.m, index=i, policy_num=self.policy_num, reality=self.reality)
+            for _ in range(self.group_size):
+                individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
+                team.individuals.append(individual)
+            team.get_policy(token=False)
+            self.teams.append(team)
         self.performance_across_time = []
         self.diversity_across_time = []
         self.consensus_performance_across_time = []
 
-    def search(self, threshold_ratio=None, enable_token=False):
+    def search(self, threshold_ratio=None, token=False):
         # Consensus Formation
         new_consensus = []
-        if not enable_token:
-            threshold = threshold_ratio * self.n
+        if not token:
+            threshold = threshold_ratio * (self.n // self.group_size)
+            for team in self.teams:
+                team.get_policy(token=False)
             for i in range(self.policy_num):
-                policy_list = [individual.policy[i] for individual in self.individuals]
+                policy_list = [team.policy[i] for team in self.teams]
                 positive_count = sum([1 for each in policy_list if each == 1])
                 negative_count = sum([1 for each in policy_list if each == -1])
                 if (positive_count > threshold) and sum(policy_list) > 0:
@@ -59,60 +61,43 @@ class DAO:
                     new_consensus.append(-1)
                 else:
                     new_consensus.append(0)
-        else:  # with token
-            threshold = threshold_ratio * sum([individual.token for individual in self.individuals])
+
+        else:  # With token
+            for team in self.teams:
+                team.update_token()
+                team.get_policy(token=False)  # within the teams, still use simple majority
+            threshold = threshold_ratio * sum([team.token for team in self.teams])
             for i in range(self.policy_num):
-                policy_list = [individual.policy[i] * individual.token for individual in self.individuals]
-                positive_count = sum([individual.token for individual in self.individuals if individual.policy[i] == 1])
-                negative_count = sum([individual.token for individual in self.individuals if individual.policy[i] == -1])
-                if (positive_count > threshold) and sum(policy_list) > 0:
+                policy_sum = sum([team.policy[i] for team in self.teams])
+                positive_count = sum([team.token for team in self.teams if team.policy[i] == 1])
+                negative_count = sum([team.token for team in self.teams if team.policy[i] == -1])
+                if (positive_count > threshold) and policy_sum > 0:
                     new_consensus.append(1)
-                elif (negative_count > threshold) and sum(policy_list) < 0:
+                elif (negative_count > threshold) and policy_sum < 0:
                     new_consensus.append(-1)
                 else:
                     new_consensus.append(0)
-        self.consensus = new_consensus.copy()
-        self.consensus_payoff = self.reality.get_policy_payoff(policy=self.consensus)
-        # Adjust the superior majority view and then learn from it
-        for individual in self.individuals:
-            connected_group = [self.individuals[i] for i in individual.connections]
-            superior_belief_pool = []
-            for each in connected_group:
-                if each.payoff > individual.payoff:
-                    superior_belief_pool.append(each.belief)
-            if len(superior_belief_pool) != 0:
-                majority_view = self.get_majority_view(superior_belief_pool)
-                individual.superior_majority_view = majority_view
-            else:
-                individual.superior_majority_view = None
-
-        for individual in self.individuals:
-            if individual.superior_majority_view:  # only those have better reference will learn / update their belief
-                individual.superior_majority_view = \
-                    self.adjust_majority_view(majority_view=individual.superior_majority_view)
-                individual.learning_from_belief(belief=individual.superior_majority_view)
-        performance_list = [individual.payoff for individual in self.individuals]
+        self.consensus = new_consensus
+        self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
+        # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
+        for team in self.teams:
+            team.get_majority_view()
+            team.follow_consensus(consensus=new_consensus)
+        performance_list = []
+        for team in self.teams:
+            performance_list += [individual.payoff for individual in team.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
 
-    def get_majority_view(self, belief_pool=None):
-        majority_view = []
-        for i in range(self.m):
-            temp = [belief[i] for belief in belief_pool]
-            if sum(temp) > 0:
-                majority_view.append(1)
-            elif sum(temp) < 0:
-                majority_view.append(-1)
-            else:
-                majority_view.append(0)
-        return majority_view
-
     def get_diversity(self):
         diversity = 0
-        belief_pool = [individual.belief for individual in self.individuals]
-        for index, individual in enumerate(self.individuals):
-            selected_pool = belief_pool[index+1::]
+        individuals = []
+        for team in self.teams:
+            individuals += team.individuals
+        belief_pool = [individual.belief for individual in individuals]
+        for index, individual in enumerate(individuals):
+            selected_pool = belief_pool[index + 1::]
             one_pair_diversity = [self.get_distance(individual.belief, belief) for belief in selected_pool]
             diversity += sum(one_pair_diversity)
         return diversity / self.m / (self.n - 1) / self.n * 2
@@ -124,25 +109,12 @@ class DAO:
                 acc += 1
         return acc
 
-    def adjust_majority_view(self, majority_view=None):
-        adjusted_majority_view = majority_view.copy()
-        if len(adjusted_majority_view) != self.m:
-            raise ValueError("The length of majority view should be m")
-        for index in range(self.policy_num):
-            # if self.consensus[index] == 0:  # if do nothing in case of zero, cannot enable sufficient search
-            #     continue
-            if sum(adjusted_majority_view[index*3: (index+1)*3]) != self.consensus[index]:
-                adjusted_majority_view[index * 3: (index + 1) * 3] = self.reality.policy_2_belief(policy=self.consensus[index])
-                # adjusted_majority_view[index * 3: (index + 1) * 3] = [0, 0, 0]
-        return adjusted_majority_view
-
     def turnover(self, turnover_rate=None):
         if turnover_rate:
-            changed_agent_number = math.ceil(turnover_rate * self.n)
-            selected_index = np.random.choice(range(self.n), changed_agent_number)
-            for index in selected_index:
-                individual = self.individuals[index]
-                individual.turnover()
+            for team in self.teams:
+                for individual in team.individuals:
+                    if np.random.uniform(0, 1) < turnover_rate:
+                        individual.turnover()
 
 
 if __name__ == '__main__':
@@ -153,17 +125,14 @@ if __name__ == '__main__':
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s, version="Rushed")
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
+    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     # dao.teams[0].individuals[0].belief = reality.real_code.copy()
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
-    for individual in dao.individuals:
-        individual.token = np.random.pareto(a=2)
-
-    for period in range(search_loop):
-        dao.search(threshold_ratio=0.6, enable_token=True)
-        print(period, dao.consensus)
+    for _ in range(search_loop):
+        dao.search(threshold_ratio=0.5)
+        print(dao.consensus)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].payoff)
     import matplotlib.pyplot as plt
     x = range(search_loop)
@@ -173,7 +142,7 @@ if __name__ == '__main__':
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("DAO_performance.png", transparent=True, dpi=1200)
+    # plt.savefig("DAO_performance.png", transparent=True, dpi=1200)
     plt.show()
 
 

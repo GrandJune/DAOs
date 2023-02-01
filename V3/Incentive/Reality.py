@@ -23,25 +23,36 @@ class Reality:
 
     def get_payoff(self, belief=None):
         ress = 0
-        if self.version == "Rushed":
-            for i in range(self.m // self.s):
-                if np.array_equiv(belief[i * self.s: (i + 1) * self.s], self.real_code[i * self.s: (i + 1) * self.s]):
-                    ress += 1
-            ress = ress * self.s / self.m
-        elif self.version == "Penalty":
-            for i in range(self.policy_num):
-                temp = 0
-                for j in range(self.s):
-                    temp += belief[i * self.s + j] * self.real_code[i * self.s + j]
-                ress += temp
-            ress /= self.m
+        if self.s == 1:
+            if self.version == "Rushed":
+                for a, b in zip(self.real_code, belief):
+                    if a == b:
+                        ress += 1
+                ress /= self.m
+            elif self.version == "Penalty":
+                for i in range(self.m):
+                    ress += self.real_code[i] * belief[i]
+                ress /= self.m
+        else:
+            if self.version == "Rushed":
+                for i in range(self.m // self.s):
+                    if np.array_equiv(belief[i * self.s: (i + 1) * self.s], self.real_code[i * self.s: (i + 1) * self.s]):
+                        ress += 1
+                ress = ress * self.s / self.m
+            elif self.version == "Penalty":
+                for i in range(self.policy_num):
+                    temp = 0
+                    for j in range(self.s):
+                        temp += belief[i * self.s + j] * self.real_code[i * self.s + j]
+                    ress += temp
+                ress /= self.m
         return ress
 
-    def get_policy_payoff(self, policy=None, mode="Normal"):
-        if mode == "Penalty":
+    def get_policy_payoff(self, policy=None):
+        if self.version == "Penalty":
             temp = [a * b for a, b in zip(self.real_policy, policy)]
             return sum(temp) / len(policy)
-        elif mode == "Normal":
+        elif self.version == "Rushed":
             res = 0
             for a, b in zip(self.real_policy, policy):
                 if a == b:
@@ -95,10 +106,10 @@ if __name__ == '__main__':
     s = 1
     version = "Rushed"
     reality = Reality(m=m, s=s, version=version)
-    # belief = reality.real_code.copy()
-    # belief[-1] *= -1
-    # payoff = reality.get_payoff(belief=belief)
-    # print(payoff)
+    belief = reality.real_code.copy()
+    belief[-1] *= -1
+    payoff = reality.get_payoff(belief=belief)
+    print(payoff)
     # print(reality.cell_num)
     # belief = reality.policy_2_belief(policy=1)
     # print(belief)

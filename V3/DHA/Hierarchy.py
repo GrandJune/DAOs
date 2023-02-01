@@ -94,14 +94,14 @@ class Hierarchy:
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
+    m = 30
     s = 1
     n = 350  # 50 managers, each manager control one autonomous team; 50*7=350
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     p1 = 0.1  # belief learning from code
     p2 = 0.9  # code learning from belief
-    search_iteration = 200
+    search_iteration = 100
     reality = Reality(m=m, s=s)
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=p2)
     for i in range(search_iteration):
