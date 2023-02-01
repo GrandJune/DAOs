@@ -30,7 +30,7 @@ class DAO:
         self.reality = reality
         self.lr = lr  # learning from consensus
         self.group_size = group_size
-        self.consensus = [0] * self.policy_num
+        self.consensus = [0] * self.m  # remove the aggregation in the consensus part (clear up the impact from abstraction)
         self.consensus_payoff = 0
         self.teams = []
         for i in range(self.n // self.group_size):
@@ -38,7 +38,7 @@ class DAO:
             for _ in range(self.group_size):
                 individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
-            team.get_policy(token=False)
+            team.form_belief(token=False)
             self.teams.append(team)
         self.performance_across_time = []
         self.diversity_across_time = []
@@ -50,14 +50,14 @@ class DAO:
         if not token:
             threshold = threshold_ratio * (self.n // self.group_size)
             for team in self.teams:
-                team.get_policy(token=False)
-            for i in range(self.policy_num):
-                policy_list = [team.policy[i] for team in self.teams]
-                positive_count = sum([1 for each in policy_list if each == 1])
-                negative_count = sum([1 for each in policy_list if each == -1])
-                if (positive_count > threshold) and sum(policy_list) > 0:
+                team.form_belief(token=False)
+            for i in range(self.m):
+                team_opinion = [team.belief[i] for team in self.teams]
+                positive_count = sum([1 for each in team_opinion if each == 1])
+                negative_count = sum([1 for each in team_opinion if each == -1])
+                if (positive_count > threshold) and sum(team_opinion) > 0:
                     new_consensus.append(1)
-                elif (negative_count > threshold) and sum(policy_list) < 0:
+                elif (negative_count > threshold) and sum(team_opinion) < 0:
                     new_consensus.append(-1)
                 else:
                     new_consensus.append(0)
@@ -65,24 +65,24 @@ class DAO:
         else:  # With token
             for team in self.teams:
                 team.update_token()
-                team.get_policy(token=False)  # within the teams, still use simple majority
+                team.form_belief(token=False)  # within the teams, still use simple majority
             threshold = threshold_ratio * sum([team.token for team in self.teams])
-            for i in range(self.policy_num):
-                policy_sum = sum([team.policy[i] for team in self.teams])
-                positive_count = sum([team.token for team in self.teams if team.policy[i] == 1])
-                negative_count = sum([team.token for team in self.teams if team.policy[i] == -1])
-                if (positive_count > threshold) and policy_sum > 0:
+            for i in range(self.m):
+                team_sum = sum([team.belief[i] for team in self.teams])
+                positive_count = sum([team.token for team in self.teams if team.belief[i] == 1])
+                negative_count = sum([team.token for team in self.teams if team.belief[i] == -1])
+                if (positive_count > threshold) and team_sum > 0:
                     new_consensus.append(1)
-                elif (negative_count > threshold) and policy_sum < 0:
+                elif (negative_count > threshold) and team_sum < 0:
                     new_consensus.append(-1)
                 else:
                     new_consensus.append(0)
         self.consensus = new_consensus
-        self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
+        self.consensus_payoff = self.reality.get_payoff(belief=new_consensus)
         # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
         for team in self.teams:
             team.get_majority_view()
-            team.follow_consensus(consensus=new_consensus)
+            team.follow_consensus(consensus=self.consensus)
         performance_list = []
         for team in self.teams:
             performance_list += [individual.payoff for individual in team.individuals]
@@ -118,7 +118,7 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 30
+    m = 60
     s = 1
     n = 280
     search_loop = 100
@@ -130,9 +130,9 @@ if __name__ == '__main__':
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
-    for _ in range(search_loop):
-        dao.search(threshold_ratio=0.5)
-        print(dao.consensus)
+    for period in range(search_loop):
+        dao.search(threshold_ratio=0.6)
+        print(period, dao.consensus)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].payoff)
     import matplotlib.pyplot as plt
     x = range(search_loop)
@@ -143,6 +143,15 @@ if __name__ == '__main__':
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
     # plt.savefig("DAO_performance.png", transparent=True, dpi=1200)
+    plt.show()
+    plt.clf()
+
+    # Diversity
+    plt.plot(x, dao.diversity_across_time, "k-", label="DAO")
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Diversity', fontweight='bold', fontsize=10)
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    # plt.savefig("DAO_diversity.png", transparent=True, dpi=1200)
     plt.show()
 
 
