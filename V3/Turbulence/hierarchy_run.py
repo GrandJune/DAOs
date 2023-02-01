@@ -23,10 +23,9 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=0.1, p2=0.9)
     for period in range(search_loop):
         reality.change(reality_change_rate=0.1)
-        for agent in hierarchy.individuals:
-            agent.payoff = reality.get_payoff(belief=agent.belief)
-        for agent in hierarchy.superior.managers:
-            agent.payoff = reality.get_policy_payoff(policy=agent.policy)
+        for team in hierarchy.teams:
+            for individual in team.individuals:
+                individual.payoff = reality.get_payoff(belief=individual.belief)
         hierarchy.superior.code_payoff = reality.get_policy_payoff(policy=hierarchy.superior.code)
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time, hierarchy.diversity_across_time]
@@ -35,13 +34,13 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 90
+    m = 60
     s = 1
-    n = 420
+    n = 350
     lr = 0.3
     hyper_iteration = 1
     repetition = 50
-    search_loop = 5000
+    search_loop = 2000
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
     # after taking an average across repetitions

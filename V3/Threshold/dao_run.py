@@ -21,9 +21,9 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
+    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     for _ in range(search_loop):
-        dao.search(threshold_ratio=threshold_ratio)
+        dao.search(threshold_ratio=threshold_ratio, token=False, incentive=False)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time, dao.diversity_across_time]
     sema.release()
 
@@ -31,12 +31,12 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 90
+    m = 60
     s = 1
-    n = 420
+    n = 350
     lr = 0.3
     repetition = 50
-    search_loop = 2000
+    search_loop = 1000
     threshold_ratio_list = np.arange(0.40, 0.71, 0.01)
     group_size = 7  # the smallest group size in Fang's model: 7
 

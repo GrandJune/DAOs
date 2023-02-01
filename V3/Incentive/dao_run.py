@@ -17,16 +17,17 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None, promotion=None,
+def func(m=None, s=None, n=None, group_size=None, lr=None, incentive=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
+    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     # initially with equal token
-    for individual in dao.individuals:
-        individual.token = 1
+    for team in dao.teams:
+        for individual in team.individuals:
+            individual.token = 1
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.6, enable_token=True, promotion=promotion)
+        dao.search(threshold_ratio=0.6, token=True, incentive=incentive)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time, dao.diversity_across_time]
     sema.release()
 
@@ -39,7 +40,7 @@ if __name__ == '__main__':
     lr = 0.3
     hyper_iteration = 4
     repetition = 50
-    promotion_list = [False, True]
+    incentive_list = [False, True]
     search_loop = 2000
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
@@ -50,7 +51,7 @@ if __name__ == '__main__':
     performance_across_para_hyper = []
     consensus_across_para_hyper = []
     diversity_across_para_hyper = []
-    for promotion in promotion_list:
+    for incentive in incentive_list:
         # before taking an average across repetitions
         performance_across_hyper = []
         consensus_across_hyper = []
@@ -69,7 +70,7 @@ if __name__ == '__main__':
             for loop in range(repetition):
                 sema.acquire()
                 p = mp.Process(target=func,
-                               args=(m, s, n, group_size, lr, promotion, search_loop, loop, return_dict, sema))
+                               args=(m, s, n, group_size, lr, incentive, search_loop, loop, return_dict, sema))
                 jobs.append(p)
                 p.start()
             for proc in jobs:

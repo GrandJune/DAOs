@@ -21,12 +21,12 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
-    autonomy = Autonomy(m=m, s=s, n=n, reality=reality, subgroup_size=group_size, lr=lr)
+    autonomy = Autonomy(m=m, s=s, n=n, reality=reality, group_size=group_size, lr=lr)
     for period in range(search_loop):
-        if (period + 1) % 200 == 0:
-            reality.change(reality_change_rate=0.2)
-            for agent in autonomy.individuals:
-                agent.payoff = reality.get_payoff(belief=agent.belief)
+        reality.change(reality_change_rate=0.1)
+        for team in autonomy.teams:
+            for individual in team.individuals:
+                individual.payoff = reality.get_payoff(belief=individual.belief)
         autonomy.search()
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time]
     sema.release()
@@ -34,13 +34,13 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 90
+    m = 60
     s = 1
-    n = 420
+    n = 350
     lr = 0.3
     hyper_iteration = 1
     repetition = 50
-    search_loop = 5000
+    search_loop = 2000
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
     # after taking an average across repetitions

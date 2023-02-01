@@ -21,16 +21,18 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, asymmetry=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, subgroup_size=group_size)
+    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     # pre-assign the token according to the asymmetry degree
     if asymmetry == 0:
-        for individual in dao.individuals:
-            individual.token = 1
+        for team in dao.teams:
+            for individual in team.individuals:
+                individual.token = 1
     else:
-        for individual in dao.individuals:
-            individual.token = np.random.pareto(a=asymmetry)
+        for team in dao.teams:
+            for individual in team.individuals:
+                individual.token = np.random.pareto(a=asymmetry)
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.6, enable_token=True)
+        dao.search(threshold_ratio=0.5, token=True)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time, dao.diversity_across_time]
     sema.release()
 
@@ -39,9 +41,9 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 60
     s = 1
-    n = 420
+    n = 350
     lr = 0.3
-    hyper_iteration = 4
+    hyper_iteration = 1
     repetition = 50
     search_loop = 1000
     group_size = 7  # the smallest group size in Fang's model: 7

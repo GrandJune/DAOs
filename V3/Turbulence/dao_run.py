@@ -26,12 +26,12 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
         # Christina Fang use a regular turbulence in her paper; This periodic turbulence suggest that hierarchy out-perform DAO in our previous results
         # Thus we try a more random turbulence;
         reality.change(reality_change_rate=0.1)
-        for agent in dao.individuals:
-            agent.payoff = reality.get_payoff(belief=agent.belief)
-        dao.search(threshold_ratio=0.6)
+        for team in dao.teams:
+            for individual in team.individuals:
+                individual.payoff = reality.get_payoff(belief=individual.belief)
+        dao.search(threshold_ratio=0.5)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time, dao.diversity_across_time]
     sema.release()
-
 
 
 if __name__ == '__main__':
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     lr = 0.3
     hyper_iteration = 1
     repetition = 50
-    search_loop = 5000
+    search_loop = 2000
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
     # after taking an average across repetitions
