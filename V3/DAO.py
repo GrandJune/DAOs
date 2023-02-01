@@ -38,7 +38,7 @@ class DAO:
             for _ in range(self.group_size):
                 individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
-            team.form_belief(token=False)
+            team.form_policy(token=False)
             self.teams.append(team)
         self.performance_across_time = []
         self.diversity_across_time = []
@@ -47,30 +47,31 @@ class DAO:
     def search(self, threshold_ratio=None, token=False):
         # Consensus Formation
         new_consensus = []
+        individuals = []
+        for team in self.teams:
+            individuals += team.individuals
+        for individual in individuals:
+            individual.policy = self.reality.belief_2_policy(belief=individual.belief)
+
         if not token:
-            threshold = threshold_ratio * (self.n // self.group_size)
-            for team in self.teams:
-                team.form_belief(token=False)
-            for i in range(self.m):
-                team_opinion = [team.belief[i] for team in self.teams]
-                positive_count = sum([1 for each in team_opinion if each == 1])
-                negative_count = sum([1 for each in team_opinion if each == -1])
-                if (positive_count > threshold) and sum(team_opinion) > 0:
+            threshold = threshold_ratio * self.n
+            for i in range(self.policy_num):
+                crowd_opinion = [individual.policy[i] for individual in individuals]
+                positive_count = sum([1 for each in crowd_opinion if each == 1])
+                negative_count = sum([1 for each in crowd_opinion if each == -1])
+                if (positive_count > threshold) and sum(crowd_opinion) > 0:
                     new_consensus.append(1)
-                elif (negative_count > threshold) and sum(team_opinion) < 0:
+                elif (negative_count > threshold) and sum(crowd_opinion) < 0:
                     new_consensus.append(-1)
                 else:
                     new_consensus.append(0)
 
         else:  # With token
-            for team in self.teams:
-                team.update_token()
-                team.form_belief(token=False)  # within the teams, still use simple majority
-            threshold = threshold_ratio * sum([team.token for team in self.teams])
-            for i in range(self.m):
+            threshold = threshold_ratio * sum([individual.token for individual in individuals])
+            for i in range(self.policy_num):
                 team_sum = sum([team.belief[i] for team in self.teams])
-                positive_count = sum([team.token for team in self.teams if team.belief[i] == 1])
-                negative_count = sum([team.token for team in self.teams if team.belief[i] == -1])
+                positive_count = sum([individual.token for individual in individuals if individual.policy[i] == 1])
+                negative_count = sum([individual.token for individual in individuals if individual.policy[i] == -1])
                 if (positive_count > threshold) and team_sum > 0:
                     new_consensus.append(1)
                 elif (negative_count > threshold) and team_sum < 0:
@@ -78,7 +79,7 @@ class DAO:
                 else:
                     new_consensus.append(0)
         self.consensus = new_consensus
-        self.consensus_payoff = self.reality.get_payoff(belief=new_consensus)
+        self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
         # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
         for team in self.teams:
             team.get_majority_view()
@@ -121,7 +122,7 @@ if __name__ == '__main__':
     m = 60
     s = 1
     n = 280
-    search_loop = 100
+    search_loop = 200
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s, version="Rushed")
@@ -142,7 +143,7 @@ if __name__ == '__main__':
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    # plt.savefig("DAO_performance.png", transparent=True, dpi=1200)
+    plt.savefig("DAO_performance.png", transparent=True, dpi=1200)
     plt.show()
     plt.clf()
 
@@ -151,7 +152,7 @@ if __name__ == '__main__':
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Diversity', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    # plt.savefig("DAO_diversity.png", transparent=True, dpi=1200)
+    plt.savefig("DAO_diversity.png", transparent=True, dpi=1200)
     plt.show()
 
 

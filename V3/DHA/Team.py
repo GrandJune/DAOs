@@ -86,11 +86,13 @@ class Team:
             adjusted_majority_view = individual.superior_majority_view.copy()
             if len(adjusted_majority_view) != self.m:
                 raise ValueError("The length of majority view should be m")
-            for i in range(self.m):
-                if consensus[i] == 0:
+            for index in range(self.policy_num):
+                if consensus[index] == 0:
                     continue
                 else:
-                    adjusted_majority_view[i] = consensus[i]
+                    if sum(adjusted_majority_view[index * 3: (index + 1) * 3]) != consensus[index]:
+                        adjusted_majority_view[index * 3: (index + 1) * 3] = self.reality.policy_2_belief(
+                            policy=consensus[index])
             individual.learning_from_belief(belief=adjusted_majority_view)
 
     def follow_supervision(self, supervision=None):
