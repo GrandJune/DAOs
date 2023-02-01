@@ -94,9 +94,9 @@ class Autonomy:
 
 
 if __name__ == '__main__':
-    m = 30
+    m = 60
     s = 1
-    n = 280
+    n = 350
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     # according to the practice, such a subdivision of an organization, such a size of autonomous team cannot be large.

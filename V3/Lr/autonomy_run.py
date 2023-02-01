@@ -33,50 +33,70 @@ if __name__ == '__main__':
     m = 60
     s = 1
     n = 350
-    lr = 0.3
-    hyper_iteration = 1
+    lr_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     repetition = 50
     concurrency = 50
-    search_loop = 1000
+    search_loop = 500
     group_size = 7  # the smallest group size in Fang's model: 7
-    performance_across_time_hyper = []
-    diversity_across_time_hyper = []
-    for hyper_loop in range(hyper_iteration):
+    # DVs
+    performance_across_para = []
+    deviation_across_para = []
+    diversity_across_para = []
+
+    performance_across_para_time = []
+    diversity_across_para_time = []
+    for lr in lr_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
-        jobs = []
         return_dict = manager.dict()
+        jobs = []
         for loop in range(repetition):
             sema.acquire()
-            p = mp.Process(target=func, args=(m, s, n, group_size, lr, search_loop, loop, return_dict, sema))
+            p = mp.Process(target=func,
+                           args=(m, s, n, group_size, lr, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
             proc.join()
         results = return_dict.values()  # Don't need dict index, since it is repetition.
-        performance_across_time = [result[0] for result in results]
-        diversity_across_time = [result[1] for result in results]
 
-        # emerge the hyper_loop
-        performance_across_time_hyper += performance_across_time
-        diversity_across_time_hyper += diversity_across_time
+        # remove the time dimension, only keep the last value
+        performance_across_repeat = [result[0][-1] for result in results]
+        diversity_across_repeat = [result[1][-1] for result in results]
+        deviation_across_repeat = np.std(performance_across_repeat)
 
-    performance_across_time_final = []
-    diversity_across_time_final = []
-    for index in range(search_loop):
-        temp_performance = sum([result[index] for result in performance_across_time_hyper]) / len(performance_across_time_hyper)
-        temp_diversity = sum([result[index] for result in diversity_across_time_hyper]) / len(diversity_across_time_hyper)
-        performance_across_time_final.append(temp_performance)
-        diversity_across_time_final.append(temp_diversity)
-    with open("autonomy_performance_across_time", 'wb') as out_file:
-        pickle.dump(performance_across_time_final, out_file)
-    with open("autonomy_diversity_across_time", 'wb') as out_file:
-        pickle.dump(diversity_across_time_final, out_file)
+        # take an average across repetition, only one value for one parameter
+        performance_across_para.append(sum(performance_across_repeat) / len(performance_across_repeat))
+        diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
+        deviation_across_para.append(deviation_across_repeat)
 
-    # save the original data to assess the iteration
-    with open("autonomy_original_performance", 'wb') as out_file:
-        pickle.dump(performance_across_time_hyper, out_file)
-    with open("autonomy_original_diversity", 'wb') as out_file:
-        pickle.dump(diversity_across_time_hyper, out_file)
-    t1 = time.time()
-    print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
+        # keep the time dimension
+        performance_across_repeat_time = [result[0] for result in results]
+        diversity_across_repeat_time = [result[1] for result in results]
+
+        # take an average across repetition, for each time iteration, integrate into [loop] values for one parameter
+        performance_across_time = []  # under the same parameter
+        superior_performance_across_time = []
+        diversity_across_time = []
+        for time in range(search_loop):
+            temp_performance = [performance_list[time] for performance_list in performance_across_repeat_time]
+            performance_across_time.append(sum(temp_performance) / len(temp_performance))
+            temp_diversity = [diversity_list[time] for diversity_list in diversity_across_repeat_time]
+            diversity_across_time.append(sum(temp_diversity) / len(temp_diversity))
+        # retain the time dimension
+        performance_across_para_time.append(performance_across_time)
+        diversity_across_para_time.append(diversity_across_time)
+
+    # save the without-time data
+    with open("autonomy_performance_across_lr", 'wb') as out_file:
+        pickle.dump(performance_across_para, out_file)
+    with open("autonomy_diversity_across_lr", 'wb') as out_file:
+        pickle.dump(diversity_across_para, out_file)
+    with open("autonomy_deviation_across_lr", 'wb') as out_file:
+        pickle.dump(deviation_across_para, out_file)
+
+    # save the with-time data
+    with open("autonomy_performance_across_lr_time", 'wb') as out_file:
+        pickle.dump(performance_across_para_time, out_file)
+    with open("autonomy_diversity_across_lr_time", 'wb') as out_file:
+        pickle.dump(diversity_across_para_time, out_file)
