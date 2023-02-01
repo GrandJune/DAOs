@@ -31,8 +31,8 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 60
     s = 1
-    n = 350
-    lr_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    n_list = [280, 350, 420, 490]
+    lr = 0.3
     repetition = 50
     concurrency = 50
     search_loop = 500
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     performance_across_para_time = []
     diversity_across_para_time = []
     superior_performance_across_para_time = []
-    for lr in lr_list:
+    for n in n_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
         return_dict = manager.dict()
@@ -99,21 +99,21 @@ if __name__ == '__main__':
         diversity_across_para_time.append(diversity_across_time)
 
     # save the without-time data
-    with open("hierarchy_performance_across_lr", 'wb') as out_file:
+    with open("hierarchy_performance_across_n", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("superior_performance_across_lr", 'wb') as out_file:
+    with open("superior_performance_across_n", 'wb') as out_file:
         pickle.dump(superior_performance_across_para, out_file)
-    with open("hierarchy_diversity_across_lr", 'wb') as out_file:
+    with open("hierarchy_diversity_across_n", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("hierarchy_deviation_across_lr", 'wb') as out_file:
+    with open("hierarchy_deviation_across_n", 'wb') as out_file:
         pickle.dump(deviation_across_para, out_file)
 
     # save the with-time data
-    with open("hierarchy_performance_across_lr_time", 'wb') as out_file:
+    with open("hierarchy_performance_across_n_time", 'wb') as out_file:
         pickle.dump(performance_across_para_time, out_file)
-    with open("superior_performance_across_lr_time", 'wb') as out_file:
+    with open("superior_performance_across_n_time", 'wb') as out_file:
         pickle.dump(superior_performance_across_para_time, out_file)
-    with open("hierarchy_diversity_across_lr_time", 'wb') as out_file:
+    with open("hierarchy_diversity_across_n_time", 'wb') as out_file:
         pickle.dump(diversity_across_para_time, out_file)
 
     t1 = time.time()

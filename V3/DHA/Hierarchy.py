@@ -35,7 +35,8 @@ class Hierarchy:
         self.policy_num = self.m // 3
         self.lr = lr  # learning rate
         self.reality = reality
-        self.superior = Superior(policy_num=self.policy_num, reality=self.reality, manager_num=50, p1=p1, p2=p2)
+        manager_num = self.n // self.group_size
+        self.superior = Superior(policy_num=self.policy_num, reality=self.reality, manager_num=manager_num, p1=p1, p2=p2)
         # n is the number of managers, instead of employers;  In March's paper, n=50
         # p1, p2 is set to be the best one in March's paper
         self.teams = []
