@@ -30,11 +30,11 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
+    m = 90
     s = 1
     n = 350
     lr = 0.3
-    hyper_iteration = 1
+    hyper_iteration = 4
     repetition = 50
     concurrency = 50
     search_loop = 1000
@@ -56,7 +56,6 @@ if __name__ == '__main__':
         results = return_dict.values()  # Don't need dict index, since it is repetition.
         performance_across_time = [result[0] for result in results]
         diversity_across_time = [result[1] for result in results]
-
         # emerge the hyper_loop
         performance_across_time_hyper += performance_across_time
         diversity_across_time_hyper += diversity_across_time

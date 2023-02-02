@@ -31,12 +31,12 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
+    m = 90
     s = 1
     n = 350
     lr = 0.3
     repetition = 50
-    search_loop = 1000
+    search_loop = 2000
     threshold_ratio_list = np.arange(0.40, 0.71, 0.01)
     group_size = 7  # the smallest group size in Fang's model: 7
 

@@ -30,12 +30,12 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
+    m = 90
     s = 1
     n = 350
     lr = 0.3
     threshold_ratio = 0.5
-    hyper_iteration = 1
+    hyper_iteration = 4
     repetition = 50
     concurrency = 50
     search_loop = 1000
@@ -59,8 +59,8 @@ if __name__ == '__main__':
         performance_across_time = [result[0] for result in results]
         consensus_performance_across_time = [result[1] for result in results]
         diversity_across_time = [result[2] for result in results]
-        for each in performance_across_time:
-            print(hyper_loop, each[-1])
+        # for each in performance_across_time:
+        #     print(hyper_loop, each[-1])
         # emerge the hyper_loop
         performance_across_time_hyper += performance_across_time
         consensus_performance_across_time_hyper += consensus_performance_across_time

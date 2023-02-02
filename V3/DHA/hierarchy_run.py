@@ -29,11 +29,11 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
+    m = 90
     s = 1
     n = 350
     lr = 0.3
-    hyper_iteration = 1
+    hyper_iteration = 4
     repetition = 50
     concurrency = 50
     search_loop = 1000
