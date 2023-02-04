@@ -23,7 +23,8 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
     reality = Reality(m=m, s=s)
     autonomy = Autonomy(m=m, s=s, n=n, reality=reality, group_size=group_size, lr=lr)
     for period in range(search_loop):
-        reality.change(reality_change_rate=0.1)
+        if (period + 1) % 200 == 0:
+            reality.change(reality_change_rate=0.1)
         for team in autonomy.teams:
             for individual in team.individuals:
                 individual.payoff = reality.get_payoff(belief=individual.belief)
@@ -34,11 +35,11 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
+    m = 90
     s = 1
     n = 350
     lr = 0.3
-    hyper_iteration = 1
+    hyper_iteration = 4
     repetition = 50
     search_loop = 2000
     group_size = 7  # the smallest group size in Fang's model: 7
