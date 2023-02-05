@@ -24,7 +24,8 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
     autonomy = Autonomy(m=m, s=s, n=n, reality=reality, group_size=group_size, lr=lr)
     for _ in range(search_loop):
         autonomy.search()
-    return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time, autonomy.variance_across_time]
+    return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time, autonomy.variance_across_time,
+                         autonomy.variance_across_time, autonomy.percentile_10_across_time, autonomy.percentile_90_across_time]
     sema.release()
 
 
@@ -42,6 +43,8 @@ if __name__ == '__main__':
     performance_across_time_hyper = []
     diversity_across_time_hyper = []
     variance_across_time_hyper = []
+    percentile_10_across_time_hyper = []
+    percentile_90_across_time_hyper = []
     for hyper_loop in range(hyper_iteration):
         sema = Semaphore(concurrency)
         manager = mp.Manager()
@@ -55,24 +58,30 @@ if __name__ == '__main__':
         for proc in jobs:
             proc.join()
         results = return_dict.values()  # Don't need dict index, since it is repetition.
-        performance_across_time = [result[0] for result in results]
-        diversity_across_time = [result[1] for result in results]
-        variance_across_time = [result[2] for result in results]
         # emerge the hyper_loop
-        performance_across_time_hyper += performance_across_time
-        diversity_across_time_hyper += diversity_across_time
-        variance_across_time_hyper += variance_across_time
+        performance_across_time_hyper.append([result[0] for result in results])
+        diversity_across_time_hyper.append([result[1] for result in results])
+        variance_across_time_hyper.append([result[2] for result in results])
+        percentile_10_across_time_hyper.append([result[3] for result in results])
+        percentile_90_across_time_hyper.append([result[4] for result in results])
 
     performance_across_time_final = []
     diversity_across_time_final = []
     variance_across_time_final = []
+    percentile_10_across_time_final = []
+    percentile_90_across_time_final = []
     for index in range(search_loop):
         temp_performance = sum([result[index] for result in performance_across_time_hyper]) / len(performance_across_time_hyper)
         temp_diversity = sum([result[index] for result in diversity_across_time_hyper]) / len(diversity_across_time_hyper)
         temp_variance = sum([result[index] for result in variance_across_time_hyper]) / len(variance_across_time_hyper)
+        temp_percentile_10 = sum([result[index] for result in percentile_10_across_time_hyper]) / len(percentile_10_across_time_hyper)
+        temp_percentile_90 = sum([result[index] for result in percentile_90_across_time_hyper]) / len(percentile_90_across_time_hyper)
+
         performance_across_time_final.append(temp_performance)
         diversity_across_time_final.append(temp_diversity)
         variance_across_time_final.append(temp_variance)
+        percentile_10_across_time_final.append(temp_percentile_10)
+        percentile_90_across_time_final.append(temp_percentile_90)
 
     with open("autonomy_performance_across_time", 'wb') as out_file:
         pickle.dump(performance_across_time_final, out_file)
@@ -80,6 +89,11 @@ if __name__ == '__main__':
         pickle.dump(diversity_across_time_final, out_file)
     with open("autonomy_variance_across_time", 'wb') as out_file:
         pickle.dump(variance_across_time_final, out_file)
+    with open("autonomy_percentile_10_across_time", 'wb') as out_file:
+        pickle.dump(percentile_10_across_time_final, out_file)
+    with open("autonomy_percentile_90_across_time", 'wb') as out_file:
+        pickle.dump(percentile_90_across_time_final, out_file)
+
     # save the original data to assess the iteration
     with open("autonomy_original_performance", 'wb') as out_file:
         pickle.dump(performance_across_time_hyper, out_file)
@@ -87,5 +101,10 @@ if __name__ == '__main__':
         pickle.dump(diversity_across_time_hyper, out_file)
     with open("autonomy_original_variance", 'wb') as out_file:
         pickle.dump(variance_across_time_hyper, out_file)
+    with open("autonomy_original_percentile_10", 'wb') as out_file:
+        pickle.dump(percentile_10_across_time_hyper, out_file)
+    with open("autonomy_original_percentile_90", 'wb') as out_file:
+        pickle.dump(percentile_90_across_time_hyper, out_file)
+
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))

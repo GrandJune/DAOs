@@ -21,7 +21,7 @@ class Team:
         self.belief = [0] * self.m
         self.token = None
 
-    def form_policy(self, token=False):
+    def form_team_policy(self, token=False):
         for individual in self.individuals:
             individual.policy = self.reality.belief_2_policy(belief=individual.belief)
         if token:
@@ -43,7 +43,7 @@ class Team:
                 else:
                     self.policy[i] = 0
 
-    def form_belief(self, token=False):
+    def form_team_belief(self, token=False):
         if token:
             for i in range(self.m):
                 tendency = sum([individual.belief[i] * individual.token for individual in self.individuals])
@@ -66,7 +66,7 @@ class Team:
     def update_token(self,):
         self.token = sum([individual.token for individual in self.individuals])
 
-    def get_majority_view(self):
+    def form_individual_majority_view(self):
         for individual in self.individuals:
             superior_belief_pool = [other.belief for other in self.individuals
                                     if other.payoff > individual.payoff]
@@ -81,32 +81,20 @@ class Team:
                     majority_view.append(0)
             individual.superior_majority_view = majority_view
 
-    def follow_consensus(self, consensus=None):
+    def confirm(self, policy=None):
+        # individual first confirm to the consensus
         for individual in self.individuals:
-            adjusted_majority_view = individual.superior_majority_view.copy()
-            if len(adjusted_majority_view) != self.m:
-                raise ValueError("The length of majority view should be m")
             for index in range(self.policy_num):
-                if consensus[index] == 0:
+                if policy[index] == 0:
                     continue
                 else:
-                    if sum(adjusted_majority_view[index * 3: (index + 1) * 3]) != consensus[index]:
-                        adjusted_majority_view[index * 3: (index + 1) * 3] = self.reality.policy_2_belief(
-                            policy=consensus[index])
-            individual.learning_from_belief(belief=adjusted_majority_view)
+                    if sum(individual.belief[index * 3: (index + 1) * 3]) != policy[index]:
+                        individual.belief[index * 3: (index + 1) * 3] = self.reality.policy_2_belief(
+                            policy=policy[index])
 
-    def follow_supervision(self, supervision=None):
+    def learn(self):
         for individual in self.individuals:
-            adjusted_majority_view = individual.superior_majority_view.copy()
-            if len(adjusted_majority_view) != self.m:
-                raise ValueError("The length of majority view should be m")
-            for index in range(self.policy_num):
-                if supervision[index] == 0:
-                    continue
-                if sum(adjusted_majority_view[index * 3: (index + 1) * 3]) != supervision[index]:
-                    adjusted_majority_view[index * 3: (index + 1) * 3] = self.reality.policy_2_belief(
-                        policy=supervision[index])
-            individual.learning_from_belief(belief=adjusted_majority_view)
+            individual.learning_from_belief(belief=individual.superior_majority_view)
 
 if __name__ == '__main__':
     # test

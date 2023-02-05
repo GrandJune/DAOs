@@ -28,10 +28,13 @@ class Hierarchy:
         self.n = n
         self.manager_num = manager_num
         self.group_size = group_size
+        self.confirmation = False  # whether or the lower-level individual initially confirm to the upper-level
+        self.confirmation_rate = 0.5
         if self.m % self.s != 0:
             raise ValueError("m is not dividable by s")
         if self.manager_num * self.group_size != self.n:
-            raise ValueError("the number of managers should be coherent with n and group_size")
+            print("auto-adjust the unfit manager_num")
+            self.manager_num = self.n // self.group_size
         self.policy_num = self.m // 3
         self.lr = lr  # learning rate
         self.reality = reality
@@ -46,10 +49,17 @@ class Hierarchy:
                 individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
             team.manager = self.superior.managers[i]
+            if self.confirmation:
+                for individual in team.individuals:
+                    if np.random.uniform(0, 1) <  self.confirmation_rate:
+                        individual.confirm_to_()
             # team.get_policy(token=False)  # Do not need team having its own policy
             self.teams.append(team)
         # DVs
         self.performance_across_time = []
+        self.variance_across_time = []
+        self.percentile_10_across_time = []
+        self.percentile_90_across_time = []
         self.diversity_across_time = []
         self.superior_performance_across_time = []
 
@@ -58,12 +68,16 @@ class Hierarchy:
         self.superior.search()
         # Autonomous team learning
         for team in self.teams:
-            team.get_majority_view()
-            team.follow_supervision(supervision=team.manager.policy)
+            team.confirm(policy=team.manager.policy)
+            team.form_individual_majority_view()
+            team.learn()
         performance_list = []
         for team in self.teams:
             performance_list += [individual.payoff for individual in team.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
+        self.variance_across_time.append(np.std(performance_list))
+        self.percentile_10_across_time.append(np.percentile(performance_list, 10))
+        self.percentile_90_across_time.append(np.percentile(performance_list, 90))
         self.diversity_across_time.append(self.get_diversity())
 
     def get_diversity(self):
@@ -95,7 +109,7 @@ class Hierarchy:
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 30
+    m = 60
     s = 1
     n = 350  # 50 managers, each manager control one autonomous team; 50*7=350
     lr = 0.3
@@ -110,13 +124,15 @@ if __name__ == '__main__':
         print(i)
     import matplotlib.pyplot as plt
     x = range(search_iteration)
-    plt.plot(x, hierarchy.performance_across_time, "k-", label="Hierarchy")
-    plt.plot(x, hierarchy.superior.performance_average_across_time, "k--", label="Superior")
-    # plt.title('Diversity Decrease')
+    plt.plot(x, hierarchy.performance_across_time, "k-", label="Mean")
+    plt.plot(x, hierarchy.percentile_90_across_time, "k--", label="90th Percentile")
+    plt.plot(x, hierarchy.percentile_10_across_time, "k:", label="10th Percentile")
+    plt.plot(x, hierarchy.superior.performance_average_across_time, "r-", label="Superior")
+    plt.title('Performance')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Hierarchy_performance.png", transparent=True, dpi=1200)
+    plt.savefig("Hierarchy_performance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
@@ -124,9 +140,20 @@ if __name__ == '__main__':
     plt.plot(x, hierarchy.diversity_across_time, "k-", label="Hierarchy")
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Diversity', fontweight='bold', fontsize=10)
+    plt.title('Diversity')
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Hierarchy_diversity.png", transparent=True, dpi=1200)
+    plt.savefig("Hierarchy_diversity.png", transparent=False, dpi=1200)
     plt.show()
+    plt.clf()
+
+    plt.plot(x, hierarchy.variance_across_time, "k-", label="Hierarchy")
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Variance', fontweight='bold', fontsize=10)
+    plt.title('Variance')
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    plt.savefig("Hierarchy_variance.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))

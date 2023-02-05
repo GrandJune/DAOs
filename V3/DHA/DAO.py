@@ -131,7 +131,7 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 60
+    m = 90
     s = 1
     n = 350
     search_loop = 100
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.55)
+        dao.search(threshold_ratio=0.5)
         print(period, dao.consensus)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].payoff)
     import matplotlib.pyplot as plt
@@ -158,7 +158,7 @@ if __name__ == '__main__':
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("DAO_performance.png", transparent=False, dpi=1200)
+    # plt.savefig("DAO_performance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
@@ -168,7 +168,7 @@ if __name__ == '__main__':
     plt.ylabel('Diversity', fontweight='bold', fontsize=10)
     plt.title('Diversity')
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("DAO_diversity.png", transparent=False, dpi=1200)
+    # plt.savefig("DAO_diversity.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
@@ -178,7 +178,7 @@ if __name__ == '__main__':
     plt.ylabel('Variance', fontweight='bold', fontsize=10)
     plt.title('Variance')
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
+    # plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 

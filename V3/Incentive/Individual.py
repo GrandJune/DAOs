@@ -15,6 +15,7 @@ class Individual:
         self.s = s
         self.lr = lr  # learning rate, learning from (adjusted) majority view
         self.token = None  # should introduce more dimensions of token
+        self.active = True  # whether the agent is active in voting/learning
         self.connections = []  # for autonomy, to seek for superior subgroup
         self.group_id = None
         self.reality = reality
@@ -30,7 +31,9 @@ class Individual:
         if len(belief) != self.m:
             raise ValueError("Learning from a wrong belief (not autonomous majority view)")
         for i in range(self.m):
-            if belief[i] != 0:
+            if belief[i] == 0:
+                continue
+            elif belief[i] != self.belief[i]:
                 if np.random.uniform(0, 1) < self.lr:
                     self.belief[i] = belief[i]
             else:
@@ -51,7 +54,6 @@ if __name__ == '__main__':
     s = 1
     n = 10
     lr = 0.3
-    auto_lr = 0.5
     version = "Rushed"
     loop = 100
     reality = Reality(m=m, s=s, version=version)

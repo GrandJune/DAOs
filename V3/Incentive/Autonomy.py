@@ -37,22 +37,26 @@ class Autonomy:
             for _ in range(self.group_size):
                 individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
-            team.get_policy(token=False)
             self.teams.append(team)
         self.performance_across_time = []
+        self.percentile_10_across_time = []
+        self.percentile_90_across_time = []
         self.diversity_across_time = []
+        self.variance_across_time = []
 
     def search(self):
         # For autonomy, only learn from an isolated subgroup, according to Fang (2010)'s paper
         # Autonomous team learning
         for team in self.teams:
-            team.get_majority_view()
-            for individual in team.individuals:
-                individual.learning_from_belief(belief=individual.superior_majority_view)
+            team.form_individual_majority_view()
+            team.learn()
         performance_list = []
         for team in self.teams:
             performance_list += [individual.payoff for individual in team.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
+        self.variance_across_time.append(np.std(performance_list))
+        self.percentile_10_across_time.append(np.percentile(performance_list, 10))
+        self.percentile_90_across_time.append(np.percentile(performance_list, 90))
         self.diversity_across_time.append(self.get_diversity())
 
     def get_majority_view(self, superior_belief=None):
@@ -95,25 +99,49 @@ class Autonomy:
 
 
 if __name__ == '__main__':
-    m = 30
+    m = 60
     s = 1
-    n = 280
+    n = 350
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     # according to the practice, such a subdivision of an organization, such a size of autonomous team cannot be large.
     reality = Reality(m=m, s=s)
     autonomy = Autonomy(m=m, s=s, n=n, group_size=group_size, reality=reality, lr=lr)
-    for _ in range(100):
+    for period in range(100):
         autonomy.search()
+        print(period)
     import matplotlib.pyplot as plt
+
     x = range(100)
     plt.plot(x, autonomy.performance_across_time, "k-", label="Autonomy")
-    # plt.title('Diversity Decrease')
+    plt.plot(x, autonomy.percentile_10_across_time, "k--", label="10th percentile")
+    plt.plot(x, autonomy.percentile_90_across_time, "k:", label="90th percentile")
+    plt.title('Performance')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Autonomy_performance.png", transparent=True, dpi=1200)
+    plt.savefig("Autonomy_performance.png", transparent=False, dpi=1200)
     plt.show()
+    plt.clf()
+
+    plt.plot(x, autonomy.diversity_across_time, "k-", label="Mean")
+    plt.title('Diversity')
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Diversity', fontweight='bold', fontsize=10)
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    plt.savefig("Autonomy_diversity.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
+
+    plt.plot(x, autonomy.variance_across_time, "k-", label="Autonomy")
+    plt.title('Variance')
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Variance', fontweight='bold', fontsize=10)
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    plt.savefig("Autonomy_variance.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
+
     print("END")
 
 

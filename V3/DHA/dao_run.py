@@ -34,20 +34,20 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     s = 1
-    n = 700
+    n = 350
     lr = 0.3
-    threshold_ratio = 0.6
-    hyper_iteration = 1
+    threshold_ratio = 0.5
+    hyper_iteration = 4
     repetition = 50
     concurrency = 50
-    search_loop = 1000
+    search_loop = 100
     group_size = 7  # the smallest group size in Fang's model: 7
-    performance_across_time_hyper = []
-    consensus_performance_across_time_hyper = []
-    diversity_across_time_hyper = []
-    variance_across_time_hyper = []
-    percentile_10_across_time_hyper = []
-    percentile_90_across_time_hyper = []
+    performance_hyper = []
+    consensus_hyper = []
+    diversity_hyper = []
+    variance_hyper = []
+    percentile_10_hyper = []
+    percentile_90_hyper = []
     for hyper_loop in range(hyper_iteration):
         sema = Semaphore(concurrency)
         manager = mp.Manager()
@@ -61,69 +61,59 @@ if __name__ == '__main__':
         for proc in jobs:
             proc.join()
         results = return_dict.values()  # Don't need dict index, since it is repetition.
-        performance_across_time = [result[0] for result in results]
-        consensus_performance_across_time = [result[1] for result in results]
-        diversity_across_time = [result[2] for result in results]
-        variance_across_time = [result[3] for result in results]
-        percentile_10_across_time = [result[4] for result in results]
-        percentile_90_across_time = [result[5] for result in results]
-        # for each in performance_across_time:
-        #     print(hyper_loop, each[-1])
-        # emerge the hyper_loop
-        performance_across_time_hyper += performance_across_time
-        consensus_performance_across_time_hyper += consensus_performance_across_time
-        diversity_across_time_hyper += diversity_across_time
-        variance_across_time_hyper += variance_across_time
-        percentile_10_across_time_hyper += percentile_10_across_time
-        percentile_90_across_time_hyper += percentile_90_across_time
+        performance_hyper.append([result[0] for result in results])
+        consensus_hyper.append([result[1] for result in results])
+        diversity_hyper.append([result[2] for result in results])
+        variance_hyper.append([result[3] for result in results])
+        percentile_10_hyper.append([result[4] for result in results])
+        percentile_90_hyper.append([result[5] for result in results])
 
-
-    performance_across_time_final = []
-    consensus_performance_across_time_final = []
-    diversity_across_time_final = []
-    variance_across_time_final = []
-    percentile_10_across_time_final = []
-    percentile_90_across_time_final = []
+    performance_final = []
+    consensus_final = []
+    diversity_final = []
+    variance_final = []
+    percentile_10_final = []
+    percentile_90_final = []
     for index in range(search_loop):
-        temp_performance = sum([result[index] for result in performance_across_time_hyper]) / len(performance_across_time_hyper)
-        temp_consensus = sum([result[index] for result in consensus_performance_across_time_hyper]) / len(consensus_performance_across_time_hyper)
-        temp_diversity = sum([result[index] for result in diversity_across_time_hyper]) / len(diversity_across_time_hyper)
-        temp_variance = sum([result[index] for result in variance_across_time_hyper]) / len(variance_across_time_hyper)
-        temp_percentile_10 = sum([result[index] for result in percentile_10_across_time_hyper]) / len(percentile_10_across_time_hyper)
-        temp_percentile_90 = sum([result[index] for result in percentile_90_across_time_hyper]) / len(percentile_90_across_time_hyper)
-        performance_across_time_final.append(temp_performance)
-        consensus_performance_across_time_final.append(temp_consensus)
-        diversity_across_time_final.append(temp_diversity)
-        variance_across_time_final.append(temp_variance)
-        percentile_10_across_time_final.append(temp_percentile_10)
-        percentile_90_across_time_final.append(temp_percentile_90)
+        temp_performance = sum([result[index] for result in performance_hyper]) / len(performance_hyper)
+        temp_consensus = sum([result[index] for result in consensus_hyper]) / len(consensus_hyper)
+        temp_diversity = sum([result[index] for result in diversity_hyper]) / len(diversity_hyper)
+        temp_variance = sum([result[index] for result in variance_hyper]) / len(variance_hyper)
+        temp_percentile_10 = sum([result[index] for result in percentile_10_hyper]) / len(percentile_10_hyper)
+        temp_percentile_90 = sum([result[index] for result in percentile_90_hyper]) / len(percentile_90_hyper)
+        performance_final.append(temp_performance)
+        consensus_final.append(temp_consensus)
+        diversity_final.append(temp_diversity)
+        variance_final.append(temp_variance)
+        percentile_10_final.append(temp_percentile_10)
+        percentile_90_final.append(temp_percentile_90)
 
     with open("dao_performance_across_time", 'wb') as out_file:
-        pickle.dump(performance_across_time_final, out_file)
+        pickle.dump(performance_final, out_file)
     with open("dao_consensus_performance_across_time", 'wb') as out_file:
-        pickle.dump(consensus_performance_across_time_final, out_file)
+        pickle.dump(consensus_final, out_file)
     with open("dao_diversity_across_time", 'wb') as out_file:
-        pickle.dump(diversity_across_time_final, out_file)
+        pickle.dump(diversity_final, out_file)
     with open("dao_variance_across_time", 'wb') as out_file:
-        pickle.dump(variance_across_time_final, out_file)
+        pickle.dump(variance_final, out_file)
     with open("dao_percentile_10_across_time", 'wb') as out_file:
-        pickle.dump(percentile_10_across_time_final, out_file)
+        pickle.dump(percentile_10_final, out_file)
     with open("dao_percentile_90_across_time", 'wb') as out_file:
-        pickle.dump(percentile_90_across_time_final, out_file)
+        pickle.dump(percentile_90_final, out_file)
 
     # save the original data to assess the iteration
     with open("dao_original_performance", 'wb') as out_file:
-        pickle.dump(performance_across_time_hyper, out_file)
+        pickle.dump(performance_hyper, out_file)
     with open("dao_original_consensus_performance", 'wb') as out_file:
-        pickle.dump(consensus_performance_across_time_hyper, out_file)
+        pickle.dump(consensus_hyper, out_file)
     with open("dao_original_diversity", 'wb') as out_file:
-        pickle.dump(diversity_across_time_hyper, out_file)
+        pickle.dump(diversity_hyper, out_file)
     with open("dao_original_variance", 'wb') as out_file:
-        pickle.dump(variance_across_time_hyper, out_file)
+        pickle.dump(variance_hyper, out_file)
     with open("dao_original_percentile_10", 'wb') as out_file:
-        pickle.dump(percentile_10_across_time_hyper, out_file)
+        pickle.dump(percentile_10_hyper, out_file)
     with open("dao_original_percentile_90", 'wb') as out_file:
-        pickle.dump(percentile_90_across_time_hyper, out_file)
+        pickle.dump(percentile_90_hyper, out_file)
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
 
