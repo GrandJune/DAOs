@@ -29,12 +29,12 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, p1=None, search_loop=
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
+    m = 90
     s = 1
     n = 350
     lr = 0.3
-    repetition = 50
-    search_loop = 200
+    repetition = 100
+    search_loop = 500
     p1_list = np.arange(0.1, 1.0, 0.1)
     group_size = 7  # the smallest group size in Fang's model: 7
     # DVs

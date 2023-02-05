@@ -22,7 +22,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
     reality = Reality(m=m, s=s)
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=0.1, p2=0.9)
     for period in range(search_loop):
-        hierarchy.turnover(turnover_rate=0.05)
+        hierarchy.turnover(turnover_rate=0.01)
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time, hierarchy.diversity_across_time]
     sema.release()
@@ -30,7 +30,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
+    m = 90
     s = 1
     n = 350
     lr = 0.3

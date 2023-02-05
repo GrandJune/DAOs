@@ -30,13 +30,13 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
+    m = 90
     s = 1
-    n_list = [280, 350, 420, 490]
+    n_list = [280, 350, 420, 630]
     lr = 0.3
-    repetition = 50
+    repetition = 100
     concurrency = 50
-    search_loop = 500
+    search_loop = 200
     group_size = 7  # the smallest group size in Fang's model: 7
     threshold_ratio = 0.5
     # DVs
