@@ -61,12 +61,12 @@ if __name__ == '__main__':
         for proc in jobs:
             proc.join()
         results = return_dict.values()  # Don't need dict index, since it is repetition.
-        performance_hyper.append([result[0] for result in results])
-        consensus_hyper.append([result[1] for result in results])
-        diversity_hyper.append([result[2] for result in results])
-        variance_hyper.append([result[3] for result in results])
-        percentile_10_hyper.append([result[4] for result in results])
-        percentile_90_hyper.append([result[5] for result in results])
+        performance_hyper += [result[0] for result in results]
+        consensus_hyper += [result[1] for result in results]
+        diversity_hyper += [result[2] for result in results]
+        variance_hyper += [result[3] for result in results]
+        percentile_10_hyper += [result[4] for result in results]
+        percentile_90_hyper += [result[5] for result in results]
 
     performance_final = []
     consensus_final = []

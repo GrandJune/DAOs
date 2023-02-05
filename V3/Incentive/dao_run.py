@@ -90,12 +90,12 @@ if __name__ == '__main__':
             for proc in jobs:
                 proc.join()
             results = return_dict.values()  # Don't need dict index, since it is repetition.
-            performance_across_hyper.append([result[0] for result in results])
-            consensus_across_hyper.append([result[1] for result in results])
-            diversity_across_hyper.append([result[2] for result in results])
-            variance_across_hyper.append([result[3] for result in results])
-            percentile_10_across_hyper.append([result[4] for result in results])
-            percentile_90_across_hyper.append([result[5] for result in results])
+            performance_across_hyper += [result[0] for result in results]
+            consensus_across_hyper += [result[1] for result in results]
+            diversity_across_hyper += [result[2] for result in results]
+            variance_across_hyper += [result[3] for result in results]
+            percentile_10_across_hyper += [result[4] for result in results]
+            percentile_90_across_hyper += [result[5] for result in results]
         for period in range(search_loop):
             performance_temp = [performance_list[period] for performance_list in performance_across_hyper]
             consensus_temp = [consensus_list[period] for consensus_list in consensus_across_hyper]

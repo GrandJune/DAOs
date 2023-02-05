@@ -59,11 +59,11 @@ if __name__ == '__main__':
             proc.join()
         results = return_dict.values()  # Don't need dict index, since it is repetition.
         # emerge the hyper_loop
-        performance_across_time_hyper.append([result[0] for result in results])
-        diversity_across_time_hyper.append([result[1] for result in results])
-        variance_across_time_hyper.append([result[2] for result in results])
-        percentile_10_across_time_hyper.append([result[3] for result in results])
-        percentile_90_across_time_hyper.append([result[4] for result in results])
+        performance_across_time_hyper += [result[0] for result in results]
+        diversity_across_time_hyper += [result[1] for result in results]
+        variance_across_time_hyper += [result[2] for result in results]
+        percentile_10_across_time_hyper += [result[3] for result in results]
+        percentile_90_across_time_hyper += [result[4] for result in results]
 
     performance_across_time_final = []
     diversity_across_time_final = []
