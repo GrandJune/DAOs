@@ -61,7 +61,7 @@ class Reality:
         return policy
 
     def policy_2_belief(self, policy=None):
-        temp = list(product([1, -1], repeat=3))
+        temp = list(product([1, -1, 0], repeat=3))  # add back zero; a fair comparison to initialization; cold re-start
         if policy == 1:
             temp = [each for each in temp if sum(each) > 0]
         elif policy == -1:
@@ -102,12 +102,18 @@ if __name__ == '__main__':
     # print(reality.cell_num)
     # belief = reality.policy_2_belief(policy=1)
     # print(belief)
-    print("real_policy: ", reality.real_policy)
-    test_belief = np.random.choice((1, -1), m//3, p=[0.5, 0.5])
-    print("test_policy: ", test_belief, reality.get_policy_payoff(policy=test_belief))
+    # print("real_policy: ", reality.real_policy)
+    # test_belief = np.random.choice((1, -1), m//3, p=[0.5, 0.5])
+    # print("test_policy: ", test_belief, reality.get_policy_payoff(policy=test_belief))
     # print("test_belief: ", test_belief)
     # print(reality.get_payoff(belief=test_belief))
     # test_policy = reality.belief_2_policy(belief=test_belief)
     # print("test_policy: ", test_policy)
+
+
+    # for i in range(10):
+    #     test_belief = reality.policy_2_belief(policy=1)
+    #     print(test_belief)
+
 
 
