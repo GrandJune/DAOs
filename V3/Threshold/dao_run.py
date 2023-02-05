@@ -87,14 +87,14 @@ if __name__ == '__main__':
         performance_across_time = []  # under the same parameter
         consensus_performance_across_time = []
         diversity_across_time = []
-        for time in range(search_loop):
-            temp_performance = [performance_list[time] for performance_list in performance_across_repeat_time]
+        for iteration in range(search_loop):
+            temp_performance = [performance_list[iteration] for performance_list in performance_across_repeat_time]
             performance_across_time.append(sum(temp_performance) / len(temp_performance))
 
-            temp_consensus = [consensus_list[time] for consensus_list in consensus_performance_across_repeat_time]
+            temp_consensus = [consensus_list[iteration] for consensus_list in consensus_performance_across_repeat_time]
             consensus_performance_across_time.append(sum(temp_consensus) / len(temp_consensus))
 
-            temp_diversity = [diversity_list[time] for diversity_list in diversity_across_repeat_time]
+            temp_diversity = [diversity_list[iteration] for diversity_list in diversity_across_repeat_time]
             diversity_across_time.append(sum(temp_diversity) / len(temp_diversity))
         # retain the time dimension
         performance_across_para_time.append(performance_across_time)
@@ -134,5 +134,6 @@ if __name__ == '__main__':
     plt.legend(handles, labels, numpoints=1)
     plt.savefig("Performance_across_threshold.png", transparent=True, dpi=500)
     plt.clf()
+
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))

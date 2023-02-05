@@ -30,7 +30,9 @@ class Individual:
         if len(belief) != self.m:
             raise ValueError("Learning from a wrong belief (not autonomous majority view)")
         for i in range(self.m):
-            if belief[i] != 0:
+            if belief[i] == 0:
+                continue
+            elif belief[i] != self.belief[i]:
                 if np.random.uniform(0, 1) < self.lr:
                     self.belief[i] = belief[i]
             else:

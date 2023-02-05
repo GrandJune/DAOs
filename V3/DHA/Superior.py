@@ -17,8 +17,8 @@ class Superior:
         :param m: problem dimension (the length of policy directives, i.e., m // s)
         :param n: group size, 50 in March's model
         :param reality: policy reality
-        :param p1: code learning from belief
-        :param p2: belief learning from code
+        :param p1: belief learning from code
+        :param p2: code learning from belief
         """
         self.policy_num = policy_num  # policy length
         self.manager_num = manager_num  # the number of subunits under this superior
