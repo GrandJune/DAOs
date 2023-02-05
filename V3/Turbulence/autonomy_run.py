@@ -24,7 +24,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
     autonomy = Autonomy(m=m, s=s, n=n, reality=reality, group_size=group_size, lr=lr)
     for period in range(search_loop):
         if (period + 1) % 200 == 0:
-            reality.change(reality_change_rate=0.2)
+            reality.change(reality_change_rate=0.1)
         for team in autonomy.teams:
             for individual in team.individuals:
                 individual.payoff = reality.get_payoff(belief=individual.belief)
