@@ -27,6 +27,9 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
         # Thus we try a more random turbulence;
         if (period + 1) % 100 == 0:
             reality.change(reality_change_rate=0.1)
+            for team in dao.teams:
+                for individual in team.individuals:
+                    individual.payoff = reality.get_payoff(belief=individual.belief)
         for team in dao.teams:
             for individual in team.individuals:
                 individual.payoff = reality.get_payoff(belief=individual.belief)

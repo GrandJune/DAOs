@@ -101,6 +101,7 @@ class Reality:
             self.real_policy = self.belief_2_policy(belief=self.real_code)
 
 
+
 if __name__ == '__main__':
     m = 30
     s = 1
