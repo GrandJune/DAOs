@@ -38,7 +38,7 @@ if __name__ == '__main__':
     hyper_iteration = 4
     repetition = 50
     concurrency = 50
-    search_loop = 1000
+    search_loop = 100
     group_size = 7  # the smallest group size in Fang's model: 7
     performance_across_time_hyper = []
     diversity_across_time_hyper = []

@@ -8,6 +8,15 @@
       <sourceFolder url="file://$MODULE_DIR$/Consensus" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Marlo2022" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Consensus_v1/DAOs" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V3" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/Christina2010" />
+      <excludeFolder url="file://$MODULE_DIR$/Consensus" />
+      <excludeFolder url="file://$MODULE_DIR$/March1991" />
+      <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />
+      <excludeFolder url="file://$MODULE_DIR$/Identity" />
+      <excludeFolder url="file://$MODULE_DIR$/Consensus_v1" />
+      <excludeFolder url="file://$MODULE_DIR$/.pytest_cache" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
