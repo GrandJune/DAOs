@@ -89,16 +89,16 @@ if __name__ == '__main__':
         performance_temp = [performance_list[period] for performance_list in performance_hyper]
         consensus_temp = [consensus_list[period] for consensus_list in consensus_hyper]
         diversity_temp = [diversity_list[period] for diversity_list in diversity_hyper]
-        temp_variance = sum([result[period] for result in variance_hyper]) / len(variance_hyper)
-        temp_percentile_10 = sum([result[period] for result in percentile_10_hyper]) / len(percentile_10_hyper)
-        temp_percentile_90 = sum([result[period] for result in percentile_90_hyper]) / len(percentile_90_hyper)
+        variance_temp = sum([result[period] for result in variance_hyper]) / len(variance_hyper)
+        percentile_10_temp = sum([result[period] for result in percentile_10_hyper]) / len(percentile_10_hyper)
+        percentile_90_temp = sum([result[period] for result in percentile_90_hyper]) / len(percentile_90_hyper)
 
         performance_final.append(sum(performance_temp) / len(performance_temp))
         consensus_final.append(sum(consensus_temp) / len(consensus_temp))
         diversity_final.append(sum(diversity_temp) / len(diversity_temp))
-        variance_final.append(temp_variance)
-        percentile_10_final.append(temp_percentile_10)
-        percentile_90_final.append(temp_percentile_90)
+        variance_final.append(variance_temp)
+        percentile_10_final.append(percentile_10_temp)
+        percentile_90_final.append(percentile_90_temp)
 
     # after taking an average across repetitions
     with open("dao_performance", 'wb') as out_file:
