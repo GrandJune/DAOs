@@ -31,7 +31,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
                     individual.payoff = reality.get_payoff(belief=individual.belief)
             # update the manager payoff
             for manager in hierarchy.superior.managers:
-                manager.payoff = reality.get_policy_payoff(policy=manager.payoff)
+                manager.payoff = reality.get_policy_payoff(policy=manager.policy)
             # update the code payoff
             hierarchy.superior.code_payoff = reality.get_policy_payoff(policy=hierarchy.superior.code)
         # Then turnover

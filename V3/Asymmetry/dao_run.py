@@ -20,6 +20,7 @@ import math
 def func(m=None, s=None, n=None, group_size=None, lr=None, asymmetry=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
+    mode = 1
     reality = Reality(m=m, s=s)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     # pre-assign the token according to the asymmetry degree
@@ -30,7 +31,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, asymmetry=None,
     else:
         for team in dao.teams:
             for individual in team.individuals:
-                individual.token = np.random.pareto(a=asymmetry)
+                individual.token = (np.random.pareto(a=asymmetry) + 1) * mode
     for period in range(search_loop):
         dao.search(threshold_ratio=0.5, token=True)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
@@ -50,7 +51,7 @@ if __name__ == '__main__':
     search_loop = 100
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
-    asymmetry_list = [0, 1, 2, 4]  # smaller asymmetry is associated with higher wealth inequality
+    asymmetry_list = [0, 1, 2, 3, 4]  # smaller asymmetry is associated with higher wealth inequality
     # after taking an average across repetitions
     performance_across_para = []
     consensus_across_para = []
