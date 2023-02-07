@@ -64,6 +64,7 @@ class Hierarchy:
         self.superior_performance_across_time = []
 
     def search(self):
+        self.reality.update_aggregation_rule()
         # Supervision Formation
         self.superior.search()
         # Autonomous team learning

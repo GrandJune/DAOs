@@ -48,6 +48,7 @@ class DAO:
 
     def search(self, threshold_ratio=None, token=False, incentive=None):
         # Consensus Formation
+        self.reality.update_aggregation_rule()
         new_consensus = []
         individuals = []
         for team in self.teams:
@@ -131,11 +132,11 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 90
+    m = 30
     s = 1
     n = 350
     search_loop = 100
-    lr = 0.3
+    lr = 0.9
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s, version="Rushed")
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
@@ -144,9 +145,12 @@ if __name__ == '__main__':
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.5)
-        print(period, dao.consensus)
-        # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].payoff)
+        dao.search(threshold_ratio=0.6)
+        print(period, dao.consensus, reality.real_policy, reality.real_code)
+        # print(reality.aggregation_rule)
+        # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].policy,
+        #       dao.teams[0].individuals[0].payoff)
+        print("---")
     import matplotlib.pyplot as plt
     x = range(search_loop)
 
