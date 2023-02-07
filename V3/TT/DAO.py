@@ -134,7 +134,7 @@ if __name__ == '__main__':
     m = 60
     s = 1
     n = 350
-    search_loop = 100
+    search_loop = 301
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s, version="Rushed")
@@ -144,7 +144,15 @@ if __name__ == '__main__':
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.55)
+        # Turbulence first
+        if (period + 1) % 100 == 0:
+            reality.change(reality_change_rate=0.1)
+            for team in dao.teams:
+                for individual in team.individuals:
+                    individual.payoff = reality.get_payoff(belief=individual.belief)
+        # Then turnover
+        dao.turnover(turnover_rate=0.1)
+        dao.search(threshold_ratio=0.5, token=False, incentive=False)
         print(period, dao.consensus)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].payoff)
     import matplotlib.pyplot as plt
