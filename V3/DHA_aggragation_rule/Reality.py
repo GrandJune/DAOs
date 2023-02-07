@@ -4,6 +4,7 @@
 # @FileName: Reality.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
+import random
 import time
 import numpy as np
 import math
@@ -11,7 +12,7 @@ from itertools import product
 
 
 class Reality:
-    def __init__(self, m=None, s=None, version="Rushed"):
+    def __init__(self, m=None, s=None, version="Rushed", gamma=3):
         self.m = m
         self.s = s
         if m % 3 != 0:
@@ -19,6 +20,9 @@ class Reality:
         self.version = version
         self.policy_num = self.m // 3
         self.real_code = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
+        self.gamma = gamma
+        self.aggregation_rule = []
+        self.update_aggregation_rule()
         self.real_policy = self.belief_2_policy(belief=self.real_code)
 
     def get_payoff(self, belief=None):
@@ -61,18 +65,18 @@ class Reality:
 
     def belief_2_policy(self, belief=None):
         policy = []
-        for i in range(self.policy_num):
-            temp = sum(belief[i * 3: (i + 1) * 3])
-            if temp < 0:
-                policy.append(-1)
-            elif temp > 0:
+        for indices in self.aggregation_rule:
+            indicator = sum([belief[i] for i in indices])
+            if indicator > 0:
                 policy.append(1)
+            elif indicator < 0:
+                policy.append(-1)
             else:
                 policy.append(0)
         return policy
 
     def policy_2_belief(self, policy=None):
-        temp = list(product([1, -1], repeat=3))
+        temp = list(product([1, -1], repeat=self.gamma))
         if policy == 1:
             temp = [each for each in temp if sum(each) > 0]
         elif policy == -1:
@@ -98,8 +102,25 @@ class Reality:
             for index in range(self.m):
                 if np.random.uniform(0, 1) < reality_change_rate:
                     self.real_code[index] *= -1
+            self.update_aggregation_rule()
             self.real_policy = self.belief_2_policy(belief=self.real_code)
 
+    def update_aggregation_rule(self):
+        indices = random.sample(range(self.m), self.m)
+        lst = list(range(self.m))
+        self.aggregation_rule = [[lst[indices[j]] for j in range(i, i + self.gamma)] for i in range(0, self.m, self.gamma)]
+        self.update_policy()
+
+    def update_policy(self):
+        self.real_policy = []
+        for indices in self.aggregation_rule:
+            indicator = sum([self.real_code[i] for i in indices])
+            if indicator > 0:
+                self.real_policy.append(1)
+            elif indicator < 0:
+                self.real_policy.append(-1)
+            else:
+                self.real_policy.append(0)
 
 if __name__ == '__main__':
     m = 30
@@ -121,4 +142,6 @@ if __name__ == '__main__':
     # test_policy = reality.belief_2_policy(belief=test_belief)
     # print("test_policy: ", test_policy)
 
+    reality.update_aggregation_rule()
+    print(reality.aggregation_rule)
 

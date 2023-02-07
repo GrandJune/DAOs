@@ -15,7 +15,7 @@ import time
 
 class Hierarchy:
     def __init__(self, m=None, s=None, n=None, reality=None, lr=None,
-                 group_size=None, p1=0.1, p2=0.9, manager_num=50):
+                 group_size=None, p1=0.1, p2=0.9, manager_num=50, gamma=3):
         """
         :param m: problem space
         :param s: the first complexity
@@ -35,7 +35,8 @@ class Hierarchy:
         if self.manager_num * self.group_size != self.n:
             print("auto-adjust the unfit manager_num")
             self.manager_num = self.n // self.group_size
-        self.policy_num = self.m // 3
+        self.policy_num = self.m // gamma
+        self.gamma = gamma
         self.lr = lr  # learning rate
         self.reality = reality
         manager_num = self.n // self.group_size
@@ -64,6 +65,7 @@ class Hierarchy:
         self.superior_performance_across_time = []
 
     def search(self):
+        # self.reality.update_aggregation_rule()
         # Supervision Formation
         self.superior.search()
         # Autonomous team learning
@@ -113,12 +115,14 @@ if __name__ == '__main__':
     s = 1
     n = 350  # 50 managers, each manager control one autonomous team; 50*7=350
     lr = 0.3
+    gamma = 5
     group_size = 7  # the smallest group size in Fang's model: 7
     p1 = 0.1  # belief learning from code
     p2 = 0.9  # code learning from belief
     search_iteration = 100
-    reality = Reality(m=m, s=s)
-    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=p2)
+    reality = Reality(m=m, s=s, gamma=gamma)
+    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr,
+                          group_size=group_size, p1=p1, p2=p2, gamma=gamma)
     for i in range(search_iteration):
         hierarchy.search()
         print(i)
