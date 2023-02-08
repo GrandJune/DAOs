@@ -45,6 +45,7 @@ class Autonomy:
         self.variance_across_time = []
 
     def search(self):
+        self.reality.update_aggregation_rule()
         # For autonomy, only learn from an isolated subgroup, according to Fang (2010)'s paper
         # Autonomous team learning
         for team in self.teams:

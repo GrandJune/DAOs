@@ -12,7 +12,8 @@ import numpy as np
 
 
 class DAO:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, group_size=None):
+    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, group_size=None,
+                 gamma=3):
         """
         :param m: problem space
         :param s: the first complexity
@@ -24,9 +25,10 @@ class DAO:
         self.n = n  # the number of subunits under this superior
         if self.m % self.s != 0:
             raise ValueError("m is not dividable by s")
-        if self.m % 3 != 0:
-            raise ValueError("m is not dividable by 3")
-        self.policy_num = self.m // 3
+        if self.m % gamma != 0:
+            raise ValueError("m is not dividable by {0}".format(gamma))
+        self.policy_num = self.m // gamma
+        self.gamma = gamma
         self.reality = reality
         self.lr = lr  # learning from consensus
         self.group_size = group_size
@@ -48,6 +50,7 @@ class DAO:
 
     def search(self, threshold_ratio=None, token=False, incentive=None):
         # Consensus Formation
+        # self.reality.update_aggregation_rule()
         new_consensus = []
         individuals = []
         for team in self.teams:
@@ -131,30 +134,26 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 60
+    m = 30
     s = 1
     n = 350
-    search_loop = 301
+    search_loop = 100
     lr = 0.3
+    gamma = 5
     group_size = 7  # the smallest group size in Fang's model: 7
-    reality = Reality(m=m, s=s, version="Rushed")
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
+    reality = Reality(m=m, s=s, version="Rushed", gamma=5)
+    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, gamma=5)
     # dao.teams[0].individuals[0].belief = reality.real_code.copy()
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
     for period in range(search_loop):
-        # Turbulence first
-        if (period + 1) % 100 == 0:
-            reality.change(reality_change_rate=0.1)
-            for team in dao.teams:
-                for individual in team.individuals:
-                    individual.payoff = reality.get_payoff(belief=individual.belief)
-        # Then turnover
-        dao.turnover(turnover_rate=0.1)
-        dao.search(threshold_ratio=0.5, token=False, incentive=False)
-        print(period, dao.consensus)
-        # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].payoff)
+        dao.search(threshold_ratio=0.6)
+        print(period, dao.consensus, reality.real_policy, reality.real_code)
+        # print(reality.aggregation_rule)
+        # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].policy,
+        #       dao.teams[0].individuals[0].payoff)
+        print("---")
     import matplotlib.pyplot as plt
     x = range(search_loop)
 
@@ -166,7 +165,7 @@ if __name__ == '__main__':
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("DAO_performance.png", transparent=False, dpi=1200)
+    # plt.savefig("DAO_performance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
@@ -176,7 +175,7 @@ if __name__ == '__main__':
     plt.ylabel('Diversity', fontweight='bold', fontsize=10)
     plt.title('Diversity')
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("DAO_diversity.png", transparent=False, dpi=1200)
+    # plt.savefig("DAO_diversity.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
@@ -186,7 +185,7 @@ if __name__ == '__main__':
     plt.ylabel('Variance', fontweight='bold', fontsize=10)
     plt.title('Variance')
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
+    # plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
