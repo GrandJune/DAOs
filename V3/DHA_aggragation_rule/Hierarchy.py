@@ -17,11 +17,16 @@ class Hierarchy:
     def __init__(self, m=None, s=None, n=None, reality=None, lr=None,
                  group_size=None, p1=0.1, p2=0.9, manager_num=50, gamma=3):
         """
-        :param m: problem space
-        :param s: the first complexity
-        :param t: the second complexity
-        :param n: the number of agents
-        :param reality: to provide feedback
+        :param m: problem dimension
+        :param s:
+        :param n: the number of lower-level individuals
+        :param reality:
+        :param lr: learning rate of lower-level individuals
+        :param group_size:
+        :param p1: belief learning from code
+        :param p2: code learning from belief
+        :param manager_num:the number of upper-level managers
+        :param gamma: aggregation degree
         """
         self.m = m  # state length
         self.s = s  # lower-level interdependency
