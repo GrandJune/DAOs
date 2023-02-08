@@ -25,6 +25,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
         # Turbulence first
         if (period + 1) % 100 == 0:
             reality.change(reality_change_rate=0.1)
+            reality.update_aggregation_rule()
             # update the individual payoff
             for team in hierarchy.teams:
                 for individual in team.individuals:
@@ -51,7 +52,7 @@ if __name__ == '__main__':
     lr = 0.3
     hyper_iteration = 1
     repetition = 50
-    search_loop = 2000
+    search_loop = 1000
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
     # after taking an average across repetitions
