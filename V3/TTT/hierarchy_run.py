@@ -37,6 +37,8 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
             hierarchy.superior.code_payoff = reality.get_policy_payoff(policy=hierarchy.superior.code)
         # Then turnover
         hierarchy.turnover(turnover_rate=0.01)
+        # For Robustness, also change the members in the manager group
+        hierarchy.superior.turnover(turnover_rate=0.01)
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
                          hierarchy.diversity_across_time, hierarchy.variance_across_time,
