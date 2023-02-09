@@ -115,7 +115,6 @@ if __name__ == '__main__':
     with open("hierarchy_original_percentile_90", 'wb') as out_file:
         pickle.dump(percentile_90_across_time_hyper, out_file)
 
-
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
 

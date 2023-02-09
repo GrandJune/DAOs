@@ -12,7 +12,7 @@ from itertools import product
 
 
 class Reality:
-    def __init__(self, m=None, s=None, version="Rushed", gamma=3):
+    def __init__(self, m=None, s=None, version="Rushed", alpha=3):
         self.m = m
         self.s = s
         if m % 3 != 0:
@@ -20,7 +20,7 @@ class Reality:
         self.version = version
         self.policy_num = self.m // 3
         self.real_code = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
-        self.gamma = gamma
+        self.alpha = alpha  # aggregation degree, 3 by default
         self.aggregation_rule = []
         self.update_aggregation_rule()
         self.real_policy = self.belief_2_policy(belief=self.real_code)
@@ -76,7 +76,7 @@ class Reality:
         return policy
 
     def policy_2_belief(self, policy=None):
-        temp = list(product([1, -1], repeat=self.gamma))
+        temp = list(product([1, -1], repeat=self.alpha))
         if policy == 1:
             temp = [each for each in temp if sum(each) > 0]
         elif policy == -1:
@@ -108,7 +108,7 @@ class Reality:
     def update_aggregation_rule(self):
         indices = random.sample(range(self.m), self.m)
         lst = list(range(self.m))
-        self.aggregation_rule = [[lst[indices[j]] for j in range(i, i + self.gamma)] for i in range(0, self.m, self.gamma)]
+        self.aggregation_rule = [[lst[indices[j]] for j in range(i, i + self.alpha)] for i in range(0, self.m, self.alpha)]
         self.update_policy()
 
     def update_policy(self):
