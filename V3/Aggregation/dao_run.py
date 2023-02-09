@@ -17,11 +17,11 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
+def func(m=None, s=None, n=None, group_size=None, lr=None, alpha=None, threshold_ratio=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
+    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, alpha=alpha)
     for _ in range(search_loop):
         dao.search(threshold_ratio=threshold_ratio)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
@@ -32,10 +32,11 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 90
+    m = 105  # 1 * 3 * 5 * 7 = 105
     s = 1
     n = 350
-    lr_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    lr = 0.3
+    alpha_list = [1, 3, 5, 7]
     repetition = 100
     concurrency = 50
     search_loop = 500
@@ -55,14 +56,14 @@ if __name__ == '__main__':
     variance_across_para_time = []
     percentile_10_across_para_time = []
     percentile_90_across_para_time = []
-    for lr in lr_list:
+    for alpha in alpha_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
         return_dict = manager.dict()
         jobs = []
         for loop in range(repetition):
             sema.acquire()
-            p = mp.Process(target=func, args=(m, s, n, group_size, lr, threshold_ratio, search_loop, loop, return_dict, sema))
+            p = mp.Process(target=func, args=(m, s, n, group_size, lr, alpha, threshold_ratio, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:

@@ -17,7 +17,7 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None,
+def func(m=None, s=None, n=None, group_size=None, lr=None, alpha=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
@@ -31,10 +31,11 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 90
+    m = 105  # 1 * 3 * 5 * 7 = 105
     s = 1
     n = 350
-    lr_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    lr = 0.3
+    alpha_list = [1, 3, 5, 7]  # alpha does not matter for autonomy
     repetition = 100
     concurrency = 50
     search_loop = 500
@@ -51,7 +52,7 @@ if __name__ == '__main__':
     variance_across_para_time = []
     percentile_10_across_para_time = []
     percentile_90_across_para_time = []
-    for lr in lr_list:
+    for alpha in alpha_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
         return_dict = manager.dict()
@@ -59,7 +60,7 @@ if __name__ == '__main__':
         for loop in range(repetition):
             sema.acquire()
             p = mp.Process(target=func,
-                           args=(m, s, n, group_size, lr, search_loop, loop, return_dict, sema))
+                           args=(m, s, n, group_size, lr, alpha, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
@@ -116,27 +117,27 @@ if __name__ == '__main__':
         percentile_90_across_para_time.append(percentile_90_across_time)
 
     # save the without-time data
-    with open("autonomy_performance_across_lr", 'wb') as out_file:
+    with open("autonomy_performance_across_alpha", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("autonomy_diversity_across_lr", 'wb') as out_file:
+    with open("autonomy_diversity_across_alpha", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("autonomy_deviation_across_lr", 'wb') as out_file:
+    with open("autonomy_deviation_across_alpha", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
-    with open("autonomy_percentile_10_across_lr", 'wb') as out_file:
+    with open("autonomy_percentile_10_across_alpha", 'wb') as out_file:
         pickle.dump(percentile_10_across_para, out_file)
-    with open("autonomy_percentile_90_across_lr", 'wb') as out_file:
+    with open("autonomy_percentile_90_across_alpha", 'wb') as out_file:
         pickle.dump(percentile_90_across_para, out_file)
 
     # save the with-time data
-    with open("autonomy_performance_across_lr_time", 'wb') as out_file:
+    with open("autonomy_performance_across_alpha_time", 'wb') as out_file:
         pickle.dump(performance_across_para_time, out_file)
-    with open("autonomy_diversity_across_lr_time", 'wb') as out_file:
+    with open("autonomy_diversity_across_alpha_time", 'wb') as out_file:
         pickle.dump(diversity_across_para_time, out_file)
-    with open("autonomy_variance_across_lr_time", 'wb') as out_file:
+    with open("autonomy_variance_across_alpha_time", 'wb') as out_file:
         pickle.dump(variance_across_para_time, out_file)
-    with open("autonomy_percentile_10_across_lr_time", 'wb') as out_file:
+    with open("autonomy_percentile_10_across_alpha_time", 'wb') as out_file:
         pickle.dump(percentile_10_across_para_time, out_file)
-    with open("autonomy_percentile_10_across_lr_time", 'wb') as out_file:
+    with open("autonomy_percentile_10_across_alpha_time", 'wb') as out_file:
         pickle.dump(percentile_90_across_para_time, out_file)
 
     t1 = time.time()

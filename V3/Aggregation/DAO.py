@@ -32,7 +32,7 @@ class DAO:
         self.reality = reality
         self.lr = lr  # learning from consensus
         self.group_size = group_size
-        self.consensus = [0] * self.m  # remove the aggregation in the consensus part (clear up the impact from abstraction)
+        self.consensus = [0] * self.policy_num
         self.consensus_payoff = 0
         self.teams = []
         for i in range(self.n // self.group_size):

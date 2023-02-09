@@ -31,10 +31,10 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 90
+    m = 105  # 1 * 3 * 5 * 7 = 105
     s = 1
     n = 350
-    lr_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    alpha_list = [1, 3, 5, 7]
     repetition = 100
     concurrency = 50
     search_loop = 500
