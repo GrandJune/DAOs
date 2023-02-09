@@ -129,31 +129,31 @@ if __name__ == '__main__':
         percentile_90_across_para_time.append(percentile_90_across_time)
 
     # save the without-time data (ready for figure)
-    with open("dao_performance_across_lr", 'wb') as out_file:
+    with open("dao_performance_across_alpha", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("consensus_performance_across_lr", 'wb') as out_file:
+    with open("consensus_performance_across_alpha", 'wb') as out_file:
         pickle.dump(consensus_performance_across_para, out_file)
-    with open("dao_diversity_across_lr", 'wb') as out_file:
+    with open("dao_diversity_across_alpha", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("dao_variance_across_lr", 'wb') as out_file:
+    with open("dao_variance_across_alpha", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
-    with open("dao_percentile_10_across_lr", 'wb') as out_file:
+    with open("dao_percentile_10_across_alpha", 'wb') as out_file:
         pickle.dump(percentile_10_across_para, out_file)
-    with open("dao_percentile_90_across_lr", 'wb') as out_file:
+    with open("dao_percentile_90_across_alpha", 'wb') as out_file:
         pickle.dump(percentile_90_across_para, out_file)
 
     # save the with-time data
-    with open("dao_performance_across_lr_time", 'wb') as out_file:
+    with open("dao_performance_across_alpha_time", 'wb') as out_file:
         pickle.dump(performance_across_para_time, out_file)
-    with open("consensus_performance_across_lr_time", 'wb') as out_file:
+    with open("consensus_performance_across_alpha_time", 'wb') as out_file:
         pickle.dump(consensus_performance_across_para_time, out_file)
-    with open("dao_diversity_across_lr_time", 'wb') as out_file:
+    with open("dao_diversity_across_alpha_time", 'wb') as out_file:
         pickle.dump(diversity_across_para_time, out_file)
-    with open("dao_variance_across_lr_time", 'wb') as out_file:
+    with open("dao_variance_across_alpha_time", 'wb') as out_file:
         pickle.dump(variance_across_para_time, out_file)
-    with open("dao_percentile_10_across_lr_time", 'wb') as out_file:
+    with open("dao_percentile_10_across_alpha_time", 'wb') as out_file:
         pickle.dump(percentile_10_across_para_time, out_file)
-    with open("dao_percentile_90_across_lr_time", 'wb') as out_file:
+    with open("dao_percentile_90_across_alpha_time", 'wb') as out_file:
         pickle.dump(percentile_90_across_para_time, out_file)
 
     t1 = time.time()
