@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# @Time     : 10/9/2022 22:52
+# @Time     : 10/13/2022 15:20
 # @Author   : Junyi
-# @FileName: dao_run.py
+# @FileName: hierarchy_run.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import numpy as np
@@ -17,28 +17,32 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None,
-         search_loop=None, loop=None, return_dict=None, sema=None):
+def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
+    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=0.1, p2=0.9)
     for period in range(search_loop):
-        # First turbulence
+        # Turbulence first
         if (period + 1) % 100 == 0:
             reality.change(reality_change_rate=0.1)
             reality.update_aggregation_rule()
-            for team in dao.teams:
+            # update the individual payoff
+            for team in hierarchy.teams:
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
-        for team in dao.teams:
-            for individual in team.individuals:
-                individual.payoff = reality.get_payoff(belief=individual.belief)
+            # update the manager payoff
+            for manager in hierarchy.superior.managers:
+                manager.payoff = reality.get_policy_payoff(policy=manager.policy)
+            # update the code payoff
+            hierarchy.superior.code_payoff = reality.get_policy_payoff(policy=hierarchy.superior.code)
         # Then turnover
-        dao.turnover(turnover_rate=0.01)
-        dao.search(threshold_ratio=0.5)
-    return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
-                         dao.diversity_across_time, dao.variance_across_time, dao.percentile_10_across_time,
-                         dao.percentile_90_across_time]
+        hierarchy.turnover(turnover_rate=0.01)
+        # For Robustness, also change the members in the manager group
+        hierarchy.superior.turnover(turnover_rate=0.01)
+        hierarchy.search()
+    return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
+                         hierarchy.diversity_across_time, hierarchy.variance_across_time,
+                         hierarchy.percentile_10_across_time, hierarchy.percentile_90_across_time]
     sema.release()
 
 
@@ -91,45 +95,44 @@ if __name__ == '__main__':
         performance_temp = [performance_list[period] for performance_list in performance_hyper]
         consensus_temp = [consensus_list[period] for consensus_list in consensus_hyper]
         diversity_temp = [diversity_list[period] for diversity_list in diversity_hyper]
-        variance_temp = sum([result[period] for result in variance_hyper]) / len(variance_hyper)
-        percentile_10_temp = sum([result[period] for result in percentile_10_hyper]) / len(percentile_10_hyper)
-        percentile_90_temp = sum([result[period] for result in percentile_90_hyper]) / len(percentile_90_hyper)
+        variance_temp = [variance_list[period] for variance_list in variance_hyper]
+        percentile_10_temp = [percentile_10_list[period] for percentile_10_list in percentile_10_hyper]
+        percentile_90_temp = [percentile_90_list[period] for percentile_90_list in percentile_90_hyper]
 
         performance_final.append(sum(performance_temp) / len(performance_temp))
         consensus_final.append(sum(consensus_temp) / len(consensus_temp))
         diversity_final.append(sum(diversity_temp) / len(diversity_temp))
-        variance_final.append(variance_temp)
-        percentile_10_final.append(percentile_10_temp)
-        percentile_90_final.append(percentile_90_temp)
+        variance_final.append(sum(variance_temp) / len(variance_temp))
+        percentile_10_final.append(sum(percentile_10_temp) / len(percentile_10_temp))
+        percentile_90_final.append(sum(percentile_90_temp) / len(percentile_90_temp))
 
     # after taking an average across repetitions
-    with open("dao_performance", 'wb') as out_file:
+    with open("hierarchy_performance", 'wb') as out_file:
         pickle.dump(performance_final, out_file)
-    with open("dao_consensus_performance", 'wb') as out_file:
+    with open("hierarchy_superior_performance", 'wb') as out_file:
         pickle.dump(consensus_final, out_file)
-    with open("dao_diversity", 'wb') as out_file:
+    with open("hierarchy_diversity", 'wb') as out_file:
         pickle.dump(diversity_final, out_file)
-    with open("dao_variance", 'wb') as out_file:
+    with open("hierarchy_variance", 'wb') as out_file:
         pickle.dump(variance_final, out_file)
-    with open("dao_percentile_10", 'wb') as out_file:
+    with open("hierarchy_percentile_10", 'wb') as out_file:
         pickle.dump(percentile_10_final, out_file)
-    with open("dao_percentile_90", 'wb') as out_file:
+    with open("hierarchy_percentile_90", 'wb') as out_file:
         pickle.dump(percentile_90_final, out_file)
 
     # before taking an average across repetitions
-    with open("dao_original_performance", 'wb') as out_file:
+    with open("hierarchy_original_performance", 'wb') as out_file:
         pickle.dump(performance_hyper, out_file)
-    with open("dao_original_consensus_performance", 'wb') as out_file:
+    with open("hierarchy_original_superior_performance", 'wb') as out_file:
         pickle.dump(consensus_hyper, out_file)
-    with open("dao_original_diversity", 'wb') as out_file:
+    with open("hierarchy_original_diversity", 'wb') as out_file:
         pickle.dump(diversity_hyper, out_file)
-    with open("dao_original_variance", 'wb') as out_file:
+    with open("hierarchy_original_variance", 'wb') as out_file:
         pickle.dump(variance_hyper, out_file)
-    with open("dao_original_percentile_10", 'wb') as out_file:
+    with open("hierarchy_original_percentile_10", 'wb') as out_file:
         pickle.dump(percentile_10_hyper, out_file)
-    with open("dao_original_percentile_90", 'wb') as out_file:
+    with open("hierarchy_original_percentile_90", 'wb') as out_file:
         pickle.dump(percentile_90_hyper, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
-
