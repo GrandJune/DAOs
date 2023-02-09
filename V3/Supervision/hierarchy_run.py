@@ -17,13 +17,16 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None, p1=None, search_loop=None, loop=None, return_dict=None, sema=None):
+def func(m=None, s=None, n=None, group_size=None, lr=None, p1=None,
+         search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=0.9)
     for _ in range(search_loop):
         hierarchy.search()
-    return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time, hierarchy.diversity_across_time]
+    return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
+                         hierarchy.diversity_across_time, hierarchy.variance_across_time,
+                         hierarchy.percentile_10_across_time, hierarchy.percentile_90_across_time]
     sema.release()
 
 
@@ -33,20 +36,25 @@ if __name__ == '__main__':
     s = 1
     n = 350
     lr = 0.3
-    repetition = 100
+    repetition = 50
     search_loop = 500
-    p1_list = np.arange(0.1, 1.0, 0.1)
+    concurrency = 50
+    p1_list = np.arange(0.1, 1.0, 0.05)
     group_size = 7  # the smallest group size in Fang's model: 7
     # DVs
     performance_across_para = []
     superior_performance_across_para = []
-    deviation_across_para = []
     diversity_across_para = []
+    variance_across_para = []
+    percentile_10_across_para = []
+    percentile_90_across_para = []
 
     performance_across_para_time = []
-    diversity_across_para_time = []
     superior_performance_across_para_time = []
-    concurrency = 50
+    diversity_across_para_time = []
+    variance_across_para_time = []
+    percentile_10_across_para_time = []
+    percentile_90_across_para_time = []
     for p1 in p1_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
@@ -66,70 +74,88 @@ if __name__ == '__main__':
         performance_across_repeat = [result[0][-1] for result in results]
         superior_performance_across_repeat = [result[1][-1] for result in results]
         diversity_across_repeat = [result[2][-1] for result in results]
-        deviation_across_repeat = np.std(performance_across_repeat)
+        variance_across_repeat = [result[3][-1] for result in results]
+        percentile_10_across_repeat = [result[4][-1] for result in results]
+        percentile_90_across_repeat = [result[5][-1] for result in results]
 
         # take an average across repetition, only one value for one parameter
         performance_across_para.append(sum(performance_across_repeat) / len(performance_across_repeat))
-        superior_performance_across_para.append(sum(superior_performance_across_repeat) / len(superior_performance_across_repeat))
+        superior_performance_across_para.append(
+            sum(superior_performance_across_repeat) / len(superior_performance_across_repeat))
         diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
-        deviation_across_para.append(deviation_across_repeat)
+        variance_across_para.append(sum(variance_across_repeat) / len(variance_across_repeat))
+        percentile_10_across_para.append(sum(percentile_10_across_repeat) / len(percentile_10_across_repeat))
+        percentile_90_across_para.append(sum(percentile_90_across_repeat) / len(percentile_90_across_repeat))
 
         # keep the time dimension
         performance_across_repeat_time = [result[0] for result in results]
         superior_performance_across_repeat_time = [result[1] for result in results]
         diversity_across_repeat_time = [result[2] for result in results]
+        variance_across_repeat_time = [result[3] for result in results]
+        percentile_10_across_repeat_time = [result[4] for result in results]
+        percentile_90_across_repeat_time = [result[5] for result in results]
 
         # take an average across repetition, for each time iteration, integrate into 600 values for one parameter
         performance_across_time = []  # under the same parameter
         superior_performance_across_time = []
         diversity_across_time = []
-        for time in range(search_loop):
-            temp_performance = [performance_list[time] for performance_list in performance_across_repeat_time]
+        variance_across_time = []
+        percentile_10_across_time = []
+        percentile_90_across_time = []
+        for period in range(search_loop):
+            temp_performance = [performance_list[period] for performance_list in performance_across_repeat_time]
             performance_across_time.append(sum(temp_performance) / len(temp_performance))
-
-            temp_superior_performance = [performance_list[time] for performance_list in superior_performance_across_repeat_time]
+            temp_superior_performance = [performance_list[period] for performance_list in
+                                         superior_performance_across_repeat_time]
             superior_performance_across_time.append(sum(temp_superior_performance) / len(temp_superior_performance))
 
-            temp_diversity = [diversity_list[time] for diversity_list in diversity_across_repeat_time]
+            temp_diversity = [diversity_list[period] for diversity_list in diversity_across_repeat_time]
             diversity_across_time.append(sum(temp_diversity) / len(temp_diversity))
+
+            temp_variance = [variance_list[period] for variance_list in variance_across_repeat_time]
+            variance_across_time.append(sum(temp_variance) / len(temp_variance))
+
+            temp_percentile_10 = [result[period] for result in percentile_10_across_repeat_time]
+            percentile_10_across_time.append(sum(temp_percentile_10) / len(temp_percentile_10))
+
+            temp_percentile_90 = [result[period] for result in percentile_90_across_repeat_time]
+            percentile_90_across_time.append(sum(temp_percentile_90) / len(temp_percentile_10))
         # retain the time dimension
         performance_across_para_time.append(performance_across_time)
         superior_performance_across_para_time.append(superior_performance_across_time)
         diversity_across_para_time.append(diversity_across_time)
+        variance_across_para_time.append(variance_across_time)
+        percentile_10_across_para_time.append(percentile_10_across_time)
+        percentile_90_across_para_time.append(percentile_90_across_time)
 
     # save the without-time data
-    with open("hierarchy_performance_across_threshold", 'wb') as out_file:
+    with open("hierarchy_performance_across_p1", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("superior_performance_across_threshold", 'wb') as out_file:
+    with open("superior_performance_across_p1", 'wb') as out_file:
         pickle.dump(superior_performance_across_para, out_file)
-    with open("hierarchy_diversity_across_threshold", 'wb') as out_file:
+    with open("hierarchy_diversity_across_p1", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("hierarchy_deviation_across_threshold", 'wb') as out_file:
-        pickle.dump(deviation_across_para, out_file)
+    with open("hierarchy_variance_across_p1", 'wb') as out_file:
+        pickle.dump(variance_across_para, out_file)
+    with open("hierarchy_percentile_10_across_p1", 'wb') as out_file:
+        pickle.dump(percentile_10_across_para, out_file)
+    with open("hierarchy_percentile_90_across_p1", 'wb') as out_file:
+        pickle.dump(percentile_90_across_para, out_file)
 
     # save the with-time data
-    with open("hierarchy_performance_across_threshold_time", 'wb') as out_file:
+    with open("hierarchy_performance_across_p1_time", 'wb') as out_file:
         pickle.dump(performance_across_para_time, out_file)
-    with open("superior_performance_across_threshold_time", 'wb') as out_file:
+    with open("superior_performance_across_p1_time", 'wb') as out_file:
         pickle.dump(superior_performance_across_para_time, out_file)
-    with open("hierarchy_diversity_across_threshold_time", 'wb') as out_file:
+    with open("hierarchy_diversity_across_p1_time", 'wb') as out_file:
         pickle.dump(diversity_across_para_time, out_file)
+    with open("hierarchy_variance_across_p1_time", 'wb') as out_file:
+        pickle.dump(variance_across_para_time, out_file)
+    with open("hierarchy_percentile_10_across_p1_time", 'wb') as out_file:
+        pickle.dump(percentile_10_across_para_time, out_file)
+    with open("hierarchy_percentile_90_across_p1_time", 'wb') as out_file:
+        pickle.dump(percentile_90_across_para_time, out_file)
 
-    import matplotlib.pyplot as plt
-    from matplotlib import container
-
-    x = p1_list
-    fig, (ax1) = plt.subplots(1, 1)
-    ax1.errorbar(x, performance_across_para, yerr=deviation_across_para, color="k", fmt="--", capsize=5, capthick=0.8,
-                 ecolor="k", label="Hierarchy")
-    plt.xlabel('P1', fontweight='bold', fontsize=10)
-    plt.ylabel('Performance', fontweight='bold', fontsize=10)
-    plt.xticks(x)
-    handles, labels = ax1.get_legend_handles_labels()
-    handles = [h[0] if isinstance(h, container.ErrorbarContainer) else h for h in handles]
-    plt.legend(handles, labels, numpoints=1)
-    plt.savefig("Performance_across_P1.png", transparent=True, dpi=500)
-    plt.clf()
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
 
