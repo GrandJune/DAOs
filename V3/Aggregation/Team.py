@@ -88,10 +88,9 @@ class Team:
                 if policy[index] == 0:
                     continue
                 else:
-                    if sum([individual.belief[i] for i in self.reality.aggregation_rule[index]]) != policy[index]:
-                        replacement = self.reality.policy_2_belief(policy=policy[index])
-                        for i, bit in zip(self.reality.aggregation_rule[index], replacement):
-                            individual.belief[i] = bit
+                    if sum(individual.belief[index * 3: (index + 1) * 3]) != policy[index]:
+                        individual.belief[index * 3: (index + 1) * 3] = self.reality.policy_2_belief(
+                            policy=policy[index])
 
     def learn(self):
         for individual in self.individuals:
