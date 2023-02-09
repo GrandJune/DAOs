@@ -88,17 +88,17 @@ if __name__ == '__main__':
         percentile_10_across_time_final.append(temp_percentile_10)
         percentile_90_across_time_final.append(temp_percentile_90)
 
-    with open("hierarchy_performance_across_time", 'wb') as out_file:
+    with open("hierarchy_performance", 'wb') as out_file:
         pickle.dump(performance_across_time_final, out_file)
-    with open("hierarchy_superior_performance_across_time", 'wb') as out_file:
+    with open("hierarchy_superior_performance", 'wb') as out_file:
         pickle.dump(superior_performance_across_time_final, out_file)
-    with open("hierarchy_diversity_across_time", 'wb') as out_file:
+    with open("hierarchy_diversity", 'wb') as out_file:
         pickle.dump(diversity_across_time_final, out_file)
-    with open("hierarchy_variance_across_time", 'wb') as out_file:
+    with open("hierarchy_variance", 'wb') as out_file:
         pickle.dump(variance_across_time_final, out_file)
-    with open("hierarchy_percentile_10_across_time", 'wb') as out_file:
+    with open("hierarchy_percentile_10", 'wb') as out_file:
         pickle.dump(percentile_10_across_time_final, out_file)
-    with open("hierarchy_percentile_90_across_time", 'wb') as out_file:
+    with open("hierarchy_percentile_90", 'wb') as out_file:
         pickle.dump(percentile_90_across_time_final, out_file)
 
     # save the original data to assess the iteration

@@ -46,7 +46,7 @@ class DAO:
         self.diversity_across_time = []
         self.consensus_performance_across_time = []
 
-    def search(self, threshold_ratio=None, token=False, incentive=None):
+    def search(self, threshold_ratio=None, token=False, incentive=False):
         # Consensus Formation
         new_consensus = []
         individuals = []
@@ -93,8 +93,7 @@ class DAO:
 
         if incentive:
             for individual in individuals:
-                if np.random.uniform(0, 1) < individual.payoff:
-                    individual.token += 1
+                individual.token = individual.payoff
 
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.percentile_10_across_time.append(np.percentile(performance_list, 10))
