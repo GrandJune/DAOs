@@ -74,12 +74,12 @@ class DAO:
         else:  # With token
             threshold = threshold_ratio * sum([individual.token for individual in individuals])
             for i in range(self.policy_num):
-                team_sum = sum([team.belief[i] for team in self.teams])
+                overall_sum = sum([individual.policy[i] * individual.token for individual in individuals])
                 positive_count = sum([individual.token for individual in individuals if individual.policy[i] == 1])
                 negative_count = sum([individual.token for individual in individuals if individual.policy[i] == -1])
-                if (positive_count > threshold) and team_sum > 0:
+                if (positive_count > threshold) and overall_sum > 0:
                     new_consensus.append(1)
-                elif (negative_count > threshold) and team_sum < 0:
+                elif (negative_count > threshold) and overall_sum < 0:
                     new_consensus.append(-1)
                 else:
                     new_consensus.append(0)
@@ -96,8 +96,7 @@ class DAO:
 
         if incentive:
             for individual in individuals:
-                if np.random.uniform(0, 1) < individual.payoff:
-                    individual.token += 1
+                individual.token = individual.payoff
 
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.percentile_10_across_time.append(np.percentile(performance_list, 10))
