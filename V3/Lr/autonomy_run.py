@@ -40,24 +40,13 @@ if __name__ == '__main__':
     search_loop = 500
     group_size = 7  # the smallest group size in Fang's model: 7
     # DVs
-    # after taking an average across repetitions
     performance_across_para = []
-    consensus_across_para = []
     diversity_across_para = []
     variance_across_para = []
     percentile_10_across_para = []
     percentile_90_across_para = []
-    # before taking an average across repetitions
-    performance_hyper = []
-    consensus_hyper = []
-    diversity_hyper = []
-    variance_hyper = []
-    percentile_10_hyper = []
-    percentile_90_hyper = []
-    # retian the time dimension
-    # before taking an average across repetitions
+
     performance_across_para_time = []
-    consensus_across_para_time = []
     diversity_across_para_time = []
     variance_across_para_time = []
     percentile_10_across_para_time = []
@@ -78,18 +67,18 @@ if __name__ == '__main__':
         results = return_dict.values()  # Don't need dict index, since it is repetition.
 
         # remove the time dimension, only keep the last value
-        performance_hyper += [result[0][-1] for result in results]
-        diversity_hyper += [result[1][-1] for result in results]
-        variance_hyper += [result[2][-1] for result in results]
-        percentile_10_hyper += [result[3][-1] for result in results]
-        percentile_90_hyper += [result[4][-1] for result in results]
+        performance_across_repeat = [result[0][-1] for result in results]
+        diversity_across_repeat = [result[1][-1] for result in results]
+        variance_across_repeat = [result[2][-1] for result in results]
+        percentile_10_across_repeat = [result[3][-1] for result in results]
+        percentile_90_across_repeat = [result[4][-1] for result in results]
 
         # take an average across repetition, only one value for one parameter
-        performance_across_para.append(sum(performance_hyper) / len(performance_hyper))
-        diversity_across_para.append(sum(diversity_hyper) / len(diversity_hyper))
-        variance_across_para.append(sum(variance_hyper) / len(variance_hyper))
-        percentile_10_across_para.append(sum(percentile_10_hyper) / len(percentile_10_hyper))
-        percentile_90_across_para.append(sum(percentile_90_hyper) / len(percentile_90_hyper))
+        performance_across_para.append(sum(performance_across_repeat) / len(performance_across_repeat))
+        diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
+        variance_across_para.append(sum(variance_across_repeat) / len(variance_across_repeat))
+        percentile_10_across_para.append(sum(percentile_10_across_repeat) / len(percentile_10_across_repeat))
+        percentile_90_across_para.append(sum(percentile_90_across_repeat) / len(percentile_90_across_repeat))
 
         # keep the time dimension
         performance_across_repeat_time = [result[0] for result in results]
