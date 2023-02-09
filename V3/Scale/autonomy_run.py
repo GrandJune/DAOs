@@ -33,7 +33,7 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     s = 1
-    n_list = [280, 350, 420, 630]
+    n_list = [280, 350, 420, 490]
     lr = 0.3
     repetition = 100
     concurrency = 50
