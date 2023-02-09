@@ -13,7 +13,7 @@ import numpy as np
 
 class DAO:
     def __init__(self, m=None, s=None, n=None, reality=None, lr=None, group_size=None,
-                 gamma=3):
+                 alpha=3):
         """
         :param m: problem space
         :param s: the first complexity
@@ -25,10 +25,10 @@ class DAO:
         self.n = n  # the number of subunits under this superior
         if self.m % self.s != 0:
             raise ValueError("m is not dividable by s")
-        if self.m % gamma != 0:
-            raise ValueError("m is not dividable by {0}".format(gamma))
-        self.policy_num = self.m // gamma
-        self.gamma = gamma
+        if self.m % alpha != 0:
+            raise ValueError("m is not dividable by {0}".format(alpha))
+        self.policy_num = self.m // alpha
+        self.alpha = alpha  # The aggregation degree
         self.reality = reality
         self.lr = lr  # learning from consensus
         self.group_size = group_size
@@ -139,10 +139,10 @@ if __name__ == '__main__':
     n = 350
     search_loop = 100
     lr = 0.3
-    gamma = 5
+    alpha = 5
     group_size = 7  # the smallest group size in Fang's model: 7
-    reality = Reality(m=m, s=s, version="Rushed", gamma=5)
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, gamma=5)
+    reality = Reality(m=m, s=s, version="Rushed", alpha=5)
+    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, alpha=5)
     # dao.teams[0].individuals[0].belief = reality.real_code.copy()
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)

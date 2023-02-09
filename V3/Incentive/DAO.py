@@ -12,7 +12,8 @@ import numpy as np
 
 
 class DAO:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, group_size=None):
+    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, group_size=None,
+                 alpha=3):
         """
         :param m: problem space
         :param s: the first complexity
@@ -24,9 +25,10 @@ class DAO:
         self.n = n  # the number of subunits under this superior
         if self.m % self.s != 0:
             raise ValueError("m is not dividable by s")
-        if self.m % 3 != 0:
-            raise ValueError("m is not dividable by 3")
-        self.policy_num = self.m // 3
+        if self.m % alpha != 0:
+            raise ValueError("m is not dividable by {0}".format(alpha))
+        self.policy_num = self.m // alpha
+        self.alpha = alpha  # The aggregation degree
         self.reality = reality
         self.lr = lr  # learning from consensus
         self.group_size = group_size
@@ -46,8 +48,9 @@ class DAO:
         self.diversity_across_time = []
         self.consensus_performance_across_time = []
 
-    def search(self, threshold_ratio=None, token=False, incentive=False):
+    def search(self, threshold_ratio=None, token=False, incentive=None):
         # Consensus Formation
+        # self.reality.update_aggregation_rule()
         new_consensus = []
         individuals = []
         for team in self.teams:
@@ -93,7 +96,8 @@ class DAO:
 
         if incentive:
             for individual in individuals:
-                individual.token = individual.payoff
+                if np.random.uniform(0, 1) < individual.payoff:
+                    individual.token += 1
 
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.percentile_10_across_time.append(np.percentile(performance_list, 10))
@@ -130,22 +134,26 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 60
+    m = 30
     s = 1
     n = 350
     search_loop = 100
     lr = 0.3
+    alpha = 5
     group_size = 7  # the smallest group size in Fang's model: 7
-    reality = Reality(m=m, s=s, version="Rushed")
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
+    reality = Reality(m=m, s=s, version="Rushed", alpha=5)
+    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, alpha=5)
     # dao.teams[0].individuals[0].belief = reality.real_code.copy()
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.55)
-        print(period, dao.consensus)
-        # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].payoff)
+        dao.search(threshold_ratio=0.6)
+        print(period, dao.consensus, reality.real_policy, reality.real_code)
+        # print(reality.aggregation_rule)
+        # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].policy,
+        #       dao.teams[0].individuals[0].payoff)
+        print("---")
     import matplotlib.pyplot as plt
     x = range(search_loop)
 
@@ -157,7 +165,7 @@ if __name__ == '__main__':
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("DAO_performance.png", transparent=False, dpi=1200)
+    # plt.savefig("DAO_performance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
@@ -167,7 +175,7 @@ if __name__ == '__main__':
     plt.ylabel('Diversity', fontweight='bold', fontsize=10)
     plt.title('Diversity')
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("DAO_diversity.png", transparent=False, dpi=1200)
+    # plt.savefig("DAO_diversity.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
@@ -177,7 +185,7 @@ if __name__ == '__main__':
     plt.ylabel('Variance', fontweight='bold', fontsize=10)
     plt.title('Variance')
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
+    # plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
