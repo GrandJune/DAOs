@@ -14,7 +14,7 @@ import time
 
 
 class Hierarchy:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None,
+    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, alpha=3,
                  group_size=None, p1=0.1, p2=0.9, manager_num=50):
         """
         :param m: problem space
@@ -35,7 +35,8 @@ class Hierarchy:
         if self.manager_num * self.group_size != self.n:
             print("auto-adjust the unfit manager_num")
             self.manager_num = self.n // self.group_size
-        self.policy_num = self.m // 3
+        self.alpha = alpha
+        self.policy_num = self.m // self.alpha
         self.lr = lr  # learning rate
         self.reality = reality
         manager_num = self.n // self.group_size
