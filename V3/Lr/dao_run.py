@@ -123,6 +123,9 @@ if __name__ == '__main__':
         performance_across_para_time.append(performance_across_time)
         consensus_performance_across_para_time.append(consensus_performance_across_time)
         diversity_across_para_time.append(diversity_across_time)
+        variance_across_para_time.append(variance_across_time)
+        percentile_10_across_para_time.append(percentile_10_across_time)
+        percentile_90_across_para_time.append(percentile_90_across_time)
 
     # save the without-time data (ready for figure)
     with open("dao_performance_across_lr", 'wb') as out_file:

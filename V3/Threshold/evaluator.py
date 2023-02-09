@@ -10,15 +10,15 @@ import pickle
 import numpy as np
 
 
-data_folder = r"E:\data\dao-0127\V3\Threshold"
+data_folder = r"E:\data\dao-0127\DAO\Threshold"
 dao_performance_file = data_folder + r"\dao_performance_across_threshold"
-dao_deviation_file = data_folder + r"\dao_deviation_across_threshold"
-dao_diversity_file = data_folder + r"\dao_diversity_across_threshold"
 dao_consensus_file = data_folder + r"\dao_consensus_performance_across_threshold"
+dao_diversity_file = data_folder + r"\dao_diversity_across_threshold"
+dao_variance_file = data_folder + r"\dao_variance_across_threshold"
 with open(dao_performance_file, 'rb') as infile:
     dao_performance = pickle.load(infile)
-with open(dao_deviation_file, 'rb') as infile:
-    dao_deviation = pickle.load(infile)
+with open(dao_variance_file, 'rb') as infile:
+    dao_variance = pickle.load(infile)
 with open(dao_diversity_file, 'rb') as infile:
     dao_diversity = pickle.load(infile)
 with open(dao_consensus_file, 'rb') as infile:
@@ -27,7 +27,7 @@ with open(dao_consensus_file, 'rb') as infile:
 x = np.arange(0.40, 0.71, 0.01)
 fig, (ax1) = plt.subplots(1, 1)
 ax1.plot(x, dao_consensus, "k--", label="Consensus")
-ax1.errorbar(x, dao_performance, yerr=dao_deviation, color="k", fmt="-", capsize=5, capthick=0.8, ecolor="g", label="DAO")
+# ax1.errorbar(x, dao_performance, yerr=dao_variance, color="k", fmt="-", capsize=5, capthick=0.8, ecolor="g", label="DAO")
 plt.xlabel('Threshold', fontweight='bold', fontsize=10)
 plt.ylabel('Performance', fontweight='bold', fontsize=10)
 # plt.xticks(x)
@@ -51,7 +51,7 @@ plt.clf()
 
 # Deviation
 fig, (ax1) = plt.subplots(1, 1)
-ax1.plot(x, dao_deviation, "k--", label="Deviation")
+ax1.plot(x, dao_variance, "k--", label="Deviation")
 plt.xlabel('Threshold', fontweight='bold', fontsize=10)
 plt.ylabel('Deviation', fontweight='bold', fontsize=10)
 # plt.xticks(x)
