@@ -20,7 +20,7 @@ import math
 def func(m=None, s=None, n=None, group_size=None, lr=None, asymmetry=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
-    mode = 1
+    mode = 10
     reality = Reality(m=m, s=s)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     # pre-assign the token according to the asymmetry degree
