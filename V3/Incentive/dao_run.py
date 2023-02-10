@@ -27,7 +27,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, incentive=None,
         for individual in team.individuals:
             individual.token = 1
     for _ in range(search_loop):
-        dao.search(threshold_ratio=0.5, token=True, incentive=incentive)
+        dao.search(threshold_ratio=0.6, token=True, incentive=incentive)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time, dao.percentile_10_across_time,
                          dao.percentile_90_across_time]
