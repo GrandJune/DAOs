@@ -99,7 +99,7 @@ class Autonomy:
 
 
 if __name__ == '__main__':
-    m = 60
+    m = 90
     s = 1
     n = 350
     lr = 0.3

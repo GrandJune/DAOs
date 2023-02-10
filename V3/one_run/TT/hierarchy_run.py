@@ -54,7 +54,7 @@ if __name__ == '__main__':
     repetition = 1
     search_loop = 1000
     group_size = 7  # the smallest group size in Fang's model: 7
-    concurrency = 50
+    concurrency = 1
     # after taking an average across repetitions
     performance_final = []
     consensus_final = []
