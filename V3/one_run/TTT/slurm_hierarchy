@@ -3,8 +3,8 @@
 #SBATCH --job-name=TTT_H
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=50gb
+#SBATCH --mem=5gb
 #SBATCH --partition=long
-#SBATCH --cpus-per-task=50
+#SBATCH --cpus-per-task=10
 #SBATCH --nodes=1
 python hierarchy_run.py
