@@ -32,13 +32,30 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, asymmetry=None,
         for team in dao.teams:
             for individual in team.individuals:
                 individual.token = (np.random.pareto(a=asymmetry) + 1) * mode
+
+        # calculate the Gini index of the generated token
+        token_list = []
+        for team in dao.teams:
+            token_list += [individual.token for individual in team.individuals]
+        gini_coef = gini(array=token_list)
+        print("Asymmetry={0}, Gini={1}".format(asymmetry, gini_coef))
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.5, token=True)
+        dao.search(threshold_ratio=0.5, token=True, incentive=False)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time, dao.percentile_10_across_time,
                          dao.percentile_90_across_time]
     sema.release()
 
+
+def gini(array):
+    array = sorted(array)
+    n = len(array)
+    coefficient = 0
+    for i, value in enumerate(array):
+        coefficient += (2 * i + 1) * value
+    coefficient /= n * sum(array)
+    coefficient -= (n + 1) / n
+    return coefficient
 
 if __name__ == '__main__':
     t0 = time.time()
@@ -46,12 +63,12 @@ if __name__ == '__main__':
     s = 1
     n = 350
     lr = 0.3
-    hyper_iteration = 4
+    hyper_iteration = 1
     repetition = 50
-    search_loop = 500
+    search_loop = 100
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
-    asymmetry_list = [0, 1, 2, 3, 4]  # smaller asymmetry is associated with higher wealth inequality
+    asymmetry_list = [0, 1, 2]  # smaller asymmetry is associated with higher wealth inequality
     # after taking an average across repetitions
     performance_across_para = []
     consensus_across_para = []

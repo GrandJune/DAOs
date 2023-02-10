@@ -7,20 +7,24 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def gini(x):
-    """Compute Gini coefficient of array of values"""
-    diffsum = 0
-    for i, xi in enumerate(x[:-1], 1):
-        diffsum += np.sum(np.abs(xi - x[i:]))
-    return diffsum / (len(x)**2 * np.mean(x))
+def gini(array):
+    array = sorted(array)
+    n = len(array)
+    coefficient = 0
+    for i, value in enumerate(array):
+        coefficient += (2 * i + 1) * value
+    coefficient /= n * sum(array)
+    coefficient -= (n + 1) / n
+    return coefficient
 
 
-asymmetry_list = [2]
+
+asymmetry_list = [1, 2, 3, 4]
 mode = 1
 xx = []
 for asymmetry in asymmetry_list:
     x = []
-    for _ in range(100):
+    for _ in range(1000):
         x.append((np.random.pareto(a=asymmetry) + 1) * mode)
     xx.append(x)
 
@@ -40,5 +44,6 @@ for count, bins, asymmetry, color in zip(count_list, bins_list, asymmetry_list, 
     # plt.xticks((0, 6))
 plt.show()
 
-
-
+for x in xx:
+    gini_index = gini(x)
+    print("Gini Index: ", gini_index)
