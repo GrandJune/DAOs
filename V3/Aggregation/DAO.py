@@ -38,7 +38,7 @@ class DAO:
         for i in range(self.n // self.group_size):
             team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
-                individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
+                individual = Individual(m=self.m, s=self.s, alpha=self.alpha, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
             self.teams.append(team)
         self.performance_across_time = []
@@ -86,8 +86,8 @@ class DAO:
         self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
         # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
         for team in self.teams:
-            team.confirm(policy=self.consensus)
             team.form_individual_majority_view()
+            team.adjust_majority_view_2_consensus(policy=self.consensus)
             team.learn()
         performance_list = []
         for team in self.teams:

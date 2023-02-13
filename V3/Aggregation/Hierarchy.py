@@ -46,7 +46,7 @@ class Hierarchy:
         for i in range(self.n // self.group_size):
             team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
-                individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
+                individual = Individual(m=self.m, s=self.s, alpha=self.alpha, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
             team.manager = self.superior.managers[i]
             if self.confirmation:
