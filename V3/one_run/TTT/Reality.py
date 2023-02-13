@@ -21,8 +21,6 @@ class Reality:
         self.policy_num = self.m // 3
         self.real_code = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
         self.alpha = alpha  # aggregation degree, 3 by default
-        self.aggregation_rule = []
-        self.update_aggregation_rule()
         self.real_policy = self.belief_2_policy(belief=self.real_code)
 
     def get_payoff(self, belief=None):
@@ -65,12 +63,12 @@ class Reality:
 
     def belief_2_policy(self, belief=None):
         policy = []
-        for indices in self.aggregation_rule:
-            indicator = sum([belief[i] for i in indices])
-            if indicator > 0:
-                policy.append(1)
-            elif indicator < 0:
+        for i in range(self.policy_num):
+            temp = sum(belief[i * self.alpha: (i + 1) * self.alpha])
+            if temp < 0:
                 policy.append(-1)
+            elif temp > 0:
+                policy.append(1)
             else:
                 policy.append(0)
         return policy
@@ -102,25 +100,8 @@ class Reality:
             for index in range(self.m):
                 if np.random.uniform(0, 1) < reality_change_rate:
                     self.real_code[index] *= -1
-            self.update_aggregation_rule()
             self.real_policy = self.belief_2_policy(belief=self.real_code)
 
-    def update_aggregation_rule(self):
-        indices = random.sample(range(self.m), self.m)
-        lst = list(range(self.m))
-        self.aggregation_rule = [[lst[indices[j]] for j in range(i, i + self.alpha)] for i in range(0, self.m, self.alpha)]
-        self.update_policy()
-
-    def update_policy(self):
-        self.real_policy = []
-        for indices in self.aggregation_rule:
-            indicator = sum([self.real_code[i] for i in indices])
-            if indicator > 0:
-                self.real_policy.append(1)
-            elif indicator < 0:
-                self.real_policy.append(-1)
-            else:
-                self.real_policy.append(0)
 
 if __name__ == '__main__':
     m = 30
@@ -141,7 +122,4 @@ if __name__ == '__main__':
     # print(reality.get_payoff(belief=test_belief))
     # test_policy = reality.belief_2_policy(belief=test_belief)
     # print("test_policy: ", test_policy)
-
-    reality.update_aggregation_rule()
-    print(reality.aggregation_rule)
 

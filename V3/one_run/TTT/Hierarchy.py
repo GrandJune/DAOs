@@ -15,7 +15,7 @@ import time
 
 class Hierarchy:
     def __init__(self, m=None, s=None, n=None, reality=None, lr=None, alpha=3,
-                 group_size=None, p1=0.1, p2=0.9, manager_num=50):
+                 group_size=None, p1=0.1, p2=0.9, manager_num=50, confirmation=True):
         """
         :param m: problem space
         :param s: the first complexity
@@ -28,8 +28,7 @@ class Hierarchy:
         self.n = n
         self.manager_num = manager_num
         self.group_size = group_size
-        self.confirmation = False  # whether or the lower-level individual initially confirm to the upper-level
-        self.confirmation_rate = 0.5
+        self.confirmation = confirmation  # whether or the lower-level individual initially confirm to the upper-level
         if self.m % self.s != 0:
             raise ValueError("m is not dividable by s")
         if self.manager_num * self.group_size != self.n:
@@ -47,14 +46,11 @@ class Hierarchy:
         for i in range(self.n // self.group_size):
             team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
-                individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
+                individual = Individual(m=self.m, s=self.s, alpha=self.alpha, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
             team.manager = self.superior.managers[i]
             if self.confirmation:
-                for individual in team.individuals:
-                    if np.random.uniform(0, 1) <  self.confirmation_rate:
-                        individual.confirm_to_()
-            # team.get_policy(token=False)  # Do not need team having its own policy
+                team.confirm(policy=team.manager.policy)
             self.teams.append(team)
         # DVs
         self.performance_across_time = []

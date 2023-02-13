@@ -38,7 +38,7 @@ class DAO:
         for i in range(self.n // self.group_size):
             team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
-                individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
+                individual = Individual(m=self.m, s=self.s, alpha=self.alpha, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
             self.teams.append(team)
         self.performance_across_time = []
@@ -50,7 +50,6 @@ class DAO:
 
     def search(self, threshold_ratio=None, token=False, incentive=None):
         # Consensus Formation
-        # self.reality.update_aggregation_rule()
         new_consensus = []
         individuals = []
         for team in self.teams:
@@ -87,8 +86,8 @@ class DAO:
         self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
         # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
         for team in self.teams:
-            team.confirm(policy=self.consensus)
             team.form_individual_majority_view()
+            team.adjust_majority_view_2_consensus(policy=self.consensus)
             team.learn()
         performance_list = []
         for team in self.teams:
@@ -149,7 +148,6 @@ if __name__ == '__main__':
     for period in range(search_loop):
         dao.search(threshold_ratio=0.5)
         print(period, dao.consensus, reality.real_policy, reality.real_code)
-        # print(reality.aggregation_rule)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].policy,
         #       dao.teams[0].individuals[0].payoff)
         print("---")

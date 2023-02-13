@@ -10,26 +10,25 @@ from Reality import Reality
 
 
 class Individual:
-    def __init__(self, m=None, s=None, reality=None, lr=None):
+    def __init__(self, m=None, s=None, reality=None, lr=None, alpha=3):
         self.m = m
         self.s = s
+        self.alpha = alpha
+        self.policy_num = self.m // self.alpha
         self.lr = lr  # learning rate, learning from (adjusted) majority view
         self.token = None  # should introduce more dimensions of token
         self.active = True  # whether the agent is active in voting/learning
-        self.connections = []  # for autonomy, to seek for superior subgroup
-        self.group_id = None
+
         self.reality = reality
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
         # self.belief = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
         self.payoff = self.reality.get_payoff(belief=self.belief)
-        self.policy_num = self.m // 3
         self.policy = self.reality.belief_2_policy(belief=self.belief)  # a fake policy for voting
-        # self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
         self.superior_majority_view = None
 
     def learning_from_belief(self, belief=None):
         if len(belief) != self.m:
-            raise ValueError("Learning from a wrong belief (not autonomous majority view)")
+            raise ValueError("Belief length {0} is not equal to {1}".format(len(belief), self.m))
         for i in range(self.m):
             if belief[i] == 0:
                 continue
@@ -40,7 +39,6 @@ class Individual:
                 pass  # retain the previous belief
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)
-        # self.policy_payoff = self.reality.get_policy_payoff(policy=self.policy)
 
     def turnover(self):
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
