@@ -12,7 +12,7 @@ from Team import Team
 
 
 class Autonomy:
-    def __init__(self, m=None, s=None, n=None, reality=None, group_size=None, lr=None):
+    def __init__(self, m=None, s=None, n=None, reality=None, group_size=None, lr=None, alpha=None):
         """
         :param m: problem space
         :param s: the first complexity
@@ -30,10 +30,11 @@ class Autonomy:
             raise ValueError("N must be divisible by subgroup size")
         if self.m % self.s != 0:
             raise ValueError("m is not dividable by s")
-        self.policy_num = self.m // self.s
+        self.alpha = alpha
+        self.policy_num = self.m // self.alpha
         self.teams = []
         for i in range(self.n // self.group_size):
-            team = Team(m=self.m, index=i, policy_num=self.policy_num, reality=self.reality)
+            team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
                 individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)

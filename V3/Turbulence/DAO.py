@@ -36,7 +36,7 @@ class DAO:
         self.consensus_payoff = 0
         self.teams = []
         for i in range(self.n // self.group_size):
-            team = Team(m=self.m, index=i, policy_num=self.policy_num, reality=self.reality)
+            team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
                 individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
@@ -147,7 +147,7 @@ if __name__ == '__main__':
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.6)
+        dao.search(threshold_ratio=0.5)
         print(period, dao.consensus, reality.real_policy, reality.real_code)
         # print(reality.aggregation_rule)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].policy,

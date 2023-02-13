@@ -45,7 +45,7 @@ class Hierarchy:
         # p1, p2 is set to be the best one in March's paper
         self.teams = []
         for i in range(self.n // self.group_size):
-            team = Team(m=self.m, index=i, policy_num=self.policy_num, reality=self.reality)
+            team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
                 individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
