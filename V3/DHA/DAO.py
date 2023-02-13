@@ -132,15 +132,15 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 30
+    m = 90
     s = 1
     n = 350
     search_loop = 50
     lr = 0.3
     alpha = 3
     group_size = 7  # the smallest group size in Fang's model: 7
-    reality = Reality(m=m, s=s, version="Rushed", alpha=5)
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, alpha=5)
+    reality = Reality(m=m, s=s, version="Rushed", alpha=alpha)
+    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, alpha=alpha)
     # dao.teams[0].individuals[0].belief = reality.real_code.copy()
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)

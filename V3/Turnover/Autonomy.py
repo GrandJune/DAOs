@@ -12,7 +12,7 @@ from Team import Team
 
 
 class Autonomy:
-    def __init__(self, m=None, s=None, n=None, reality=None, group_size=None, lr=None, alpha=None):
+    def __init__(self, m=None, s=None, n=None, reality=None, group_size=None, lr=None, alpha=3):
         """
         :param m: problem space
         :param s: the first complexity
