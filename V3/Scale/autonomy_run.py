@@ -131,7 +131,7 @@ if __name__ == '__main__':
         pickle.dump(performance_across_para, out_file)
     with open("autonomy_diversity_across_n", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("autonomy_deviation_across_n", 'wb') as out_file:
+    with open("autonomy_variance_across_n", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
     with open("autonomy_percentile_10_across_n", 'wb') as out_file:
         pickle.dump(percentile_10_across_para, out_file)
