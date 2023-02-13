@@ -25,7 +25,7 @@ with open(diversity_file, 'rb') as infile:
 with open(superior_file, 'rb') as infile:
     superior = pickle.load(infile)
 
-p1_list = np.arange(0.1, 1.0, 0.05)
+p1_list = np.arange(0.1, 1.0, 0.1)
 fig, (ax1) = plt.subplots(1, 1)
 ax1.errorbar(p1_list, performance, yerr=deviation, color="g", fmt="-", capsize=5, capthick=0.8, ecolor="g", label="Hierarchy")
 plt.xlabel('P1', fontweight='bold', fontsize=10)

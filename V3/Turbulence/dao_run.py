@@ -23,8 +23,6 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
     reality = Reality(m=m, s=s)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     for period in range(search_loop):
-        # Christina Fang use a regular turbulence in her paper; This periodic turbulence suggest that hierarchy out-perform DAO in our previous results
-        # Thus we try a more random turbulence;
         if (period + 1) % 100 == 0:
             reality.change(reality_change_rate=0.1)
             for team in dao.teams:
@@ -48,7 +46,7 @@ if __name__ == '__main__':
     lr = 0.3
     hyper_iteration = 4
     repetition = 50
-    search_loop = 2000
+    search_loop = 1000
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
     # after taking an average across repetitions

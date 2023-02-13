@@ -36,10 +36,10 @@ if __name__ == '__main__':
     s = 1
     n = 350
     lr = 0.3
-    repetition = 50
-    search_loop = 500
+    repetition = 200
+    search_loop = 200
     concurrency = 50
-    p1_list = np.arange(0.1, 1.0, 0.05)
+    p1_list = np.arange(0.1, 1.0, 0.1)
     group_size = 7  # the smallest group size in Fang's model: 7
     # DVs
     performance_across_para = []
