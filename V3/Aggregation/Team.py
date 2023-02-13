@@ -83,7 +83,7 @@ class Team:
             individual.superior_majority_view = majority_view
 
     def adjust_majority_view_2_consensus(self, policy=None):
-        for individual in team.individuals:
+        for individual in self.individuals:
             for index in range(self.policy_num):
                 if policy[index] == 0:
                     continue

@@ -18,9 +18,9 @@ class Reality:
         if m % 3 != 0:
             raise ValueError("m is not dividable by 3")
         self.version = version
-        self.policy_num = self.m // 3
         self.real_code = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
         self.alpha = alpha  # aggregation degree, 3 by default
+        self.policy_num = self.m // self.alpha
         self.real_policy = self.belief_2_policy(belief=self.real_code)
 
     def get_payoff(self, belief=None):
