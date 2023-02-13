@@ -50,7 +50,6 @@ class DAO:
 
     def search(self, threshold_ratio=None, token=False, incentive=None):
         # Consensus Formation
-        # self.reality.update_aggregation_rule()
         new_consensus = []
         individuals = []
         for team in self.teams:
@@ -149,7 +148,6 @@ if __name__ == '__main__':
     for period in range(search_loop):
         dao.search(threshold_ratio=0.5)
         print(period, dao.consensus, reality.real_policy, reality.real_code)
-        # print(reality.aggregation_rule)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].policy,
         #       dao.teams[0].individuals[0].payoff)
         print("---")

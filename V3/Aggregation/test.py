@@ -1,7 +1,9 @@
-import matplotlib.pyplot as plt
-import numpy as np
-
-
+# -*- coding: utf-8 -*-
+# @Time     : 2/13/2023 16:22
+# @Author   : Junyi
+# @FileName: test.py
+# @Software  : PyCharm
+# Observing PEP 8 coding style
 alpha = 3
 m = 12
 indices = range(m)
