@@ -36,7 +36,7 @@ class Autonomy:
         for i in range(self.n // self.group_size):
             team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
-                individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr)
+                individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr, alpha=self.alpha)
                 team.individuals.append(individual)
             self.teams.append(team)
         self.performance_across_time = []

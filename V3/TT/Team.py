@@ -82,6 +82,17 @@ class Team:
                     majority_view.append(0)
             individual.superior_majority_view = majority_view
 
+    def adjust_majority_view_2_consensus(self, policy=None):
+        for individual in team.individuals:
+            for index in range(self.policy_num):
+                if policy[index] == 0:
+                    continue
+                else:
+                    if sum(individual.superior_majority_view
+                           [index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
+                        individual.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
+                            self.reality.policy_2_belief(policy=policy[index])
+
     def confirm(self, policy=None):
         # individual first confirm to the consensus
         for individual in self.individuals:
