@@ -85,7 +85,7 @@ if __name__ == '__main__':
         consensus_performance_across_para.append(
             sum(consensus_performance_across_repeat) / len(consensus_performance_across_repeat))
         diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
-        variance_across_para.append(variance_across_repeat)
+        variance_across_para.append(sum(variance_across_repeat) / len(variance_across_repeat))
         percentile_10_across_para.append(sum(percentile_10_across_repeat) / len(percentile_10_across_repeat))
         percentile_90_across_para.append(sum(percentile_90_across_repeat) / len(percentile_90_across_repeat))
 
