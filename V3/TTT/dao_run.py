@@ -26,7 +26,6 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
         # First turbulence
         if (period + 1) % 100 == 0:
             reality.change(reality_change_rate=0.1)
-            reality.update_aggregation_rule()
             for team in dao.teams:
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
