@@ -24,7 +24,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     for period in range(search_loop):
         dao.turnover(turnover_rate=0.01)
-        dao.search(threshold_ratio=0.5, token=False, incentive=False)
+        dao.search(threshold_ratio=0.5, token=False)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time, dao.percentile_10_across_time,
                          dao.percentile_90_across_time]

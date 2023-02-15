@@ -48,7 +48,7 @@ class DAO:
         self.diversity_across_time = []
         self.consensus_performance_across_time = []
 
-    def search(self, threshold_ratio=None, token=False, incentive=None):
+    def search(self, threshold_ratio=None, token=False):
         # Consensus Formation
         new_consensus = []
         individuals = []
@@ -93,9 +93,47 @@ class DAO:
         for team in self.teams:
             performance_list += [individual.payoff for individual in team.individuals]
 
-        if incentive:
-            for individual in individuals:
-                individual.token = individual.payoff
+        self.performance_across_time.append(sum(performance_list) / len(performance_list))
+        self.percentile_10_across_time.append(np.percentile(performance_list, 10))
+        self.percentile_90_across_time.append(np.percentile(performance_list, 90))
+        self.variance_across_time.append(np.std(performance_list))
+        self.diversity_across_time.append(self.get_diversity())
+        self.consensus_performance_across_time.append(self.consensus_payoff)
+
+    def incentive_search(self, threshold_ratio=None, incentive=1):
+        new_consensus = []
+        individuals = []
+        for team in self.teams:
+            individuals += team.individuals
+        for individual in individuals:
+            individual.policy = self.reality.belief_2_policy(belief=individual.belief)
+        threshold = threshold_ratio * sum([individual.token for individual in individuals])
+        for i in range(self.policy_num):
+            overall_sum = sum([individual.policy[i] * individual.token for individual in individuals])
+            positive_count = sum([individual.token for individual in individuals if individual.policy[i] == 1])
+            negative_count = sum([individual.token for individual in individuals if individual.policy[i] == -1])
+            if (positive_count > threshold) and overall_sum > 0:
+                new_consensus.append(1)
+            elif (negative_count > threshold) and overall_sum < 0:
+                new_consensus.append(-1)
+            else:
+                new_consensus.append(0)
+        # Once there is a change in consensus, reward the contributor
+        for old_bit, new_bit, index in zip(self.consensus, new_consensus, range(self.policy_num)):
+            if old_bit != new_bit:
+                for individual in individuals:
+                    if individual.policy[index] == new_bit:
+                        individual.token += incentive / self.policy_num
+        self.consensus = new_consensus
+        self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
+        # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
+        for team in self.teams:
+            team.form_individual_majority_view()
+            team.adjust_majority_view_2_consensus(policy=self.consensus)
+            team.learn()
+        performance_list = []
+        for team in self.teams:
+            performance_list += [individual.payoff for individual in team.individuals]
 
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.percentile_10_across_time.append(np.percentile(performance_list, 10))

@@ -26,8 +26,12 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, incentive=None,
     for team in dao.teams:
         for individual in team.individuals:
             individual.token = 1
-    for _ in range(search_loop):
-        dao.search(threshold_ratio=0.6, token=True, incentive=incentive)
+    if incentive == 0:
+        for _ in range(search_loop):
+            dao.search(threshold_ratio=0.5, token=False)
+    else:
+        for _ in range(search_loop):
+            dao.incentive_search(threshold_ratio=0.5, incentive=incentive)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time, dao.percentile_10_across_time,
                          dao.percentile_90_across_time]
@@ -42,10 +46,11 @@ if __name__ == '__main__':
     lr = 0.3
     hyper_iteration = 10
     repetition = 50
-    incentive_list = [False, True]
+    incentive_list = [0, 1, 2, 3]
     search_loop = 100
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
+    # DVs
     performance_across_para = []
     consensus_across_para = []
     diversity_across_para = []
@@ -154,13 +159,3 @@ if __name__ == '__main__':
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
-    # import matplotlib.pyplot as plt
-    # x = range(search_loop)
-    # fig, (ax1) = plt.subplots(1, 1)
-    # ax1.plot(x, performance_final, "k-", label="DAO")
-    # plt.xlabel('Time', fontweight='bold', fontsize=10)
-    # plt.ylabel('Performance', fontweight='bold', fontsize=10)
-    # # plt.xticks(x)
-    # plt.legend(frameon=False, ncol=1, fontsize=10)
-    # plt.savefig(r"\DAO_performance.png", transparent=False, dpi=200)
-
