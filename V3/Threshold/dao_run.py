@@ -37,7 +37,7 @@ if __name__ == '__main__':
     s = 1
     n = 350
     lr = 0.3
-    repetition = 50
+    repetition = 200
     search_loop = 500
     threshold_ratio_list = np.arange(0.40, 0.71, 0.01)
     group_size = 7  # the smallest group size in Fang's model: 7

@@ -36,7 +36,7 @@ if __name__ == '__main__':
     n = 350
     lr = 0.3
     alpha_list = [1, 3, 5, 7]  # alpha does not matter for autonomy
-    repetition = 100
+    repetition = 1000
     concurrency = 50
     search_loop = 500
     group_size = 7  # the smallest group size in Fang's model: 7
