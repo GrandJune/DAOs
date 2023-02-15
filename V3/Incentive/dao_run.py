@@ -28,7 +28,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, incentive=None,
             individual.token = 1
     if incentive == 0:
         for _ in range(search_loop):
-            dao.search(threshold_ratio=0.5, token=False)
+            dao.search(threshold_ratio=0.5)
     else:
         for _ in range(search_loop):
             dao.incentive_search(threshold_ratio=0.5, incentive=incentive)

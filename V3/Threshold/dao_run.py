@@ -23,7 +23,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
     reality = Reality(m=m, s=s)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     for _ in range(search_loop):
-        dao.search(threshold_ratio=threshold_ratio, token=False, incentive=False)
+        dao.search(threshold_ratio=threshold_ratio)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time, dao.percentile_10_across_time,
                          dao.percentile_90_across_time]

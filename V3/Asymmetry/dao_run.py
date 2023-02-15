@@ -40,7 +40,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, asymmetry=None,
         gini_coef = gini(array=token_list)
         print("Asymmetry={0}, Gini={1}".format(asymmetry, gini_coef))
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.5, token=True, incentive=False)
+        dao.search(threshold_ratio=0.5, token=True)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time, dao.percentile_10_across_time,
                          dao.percentile_90_across_time]
