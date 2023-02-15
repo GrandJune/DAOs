@@ -35,7 +35,7 @@ if __name__ == '__main__':
     s = 1
     n = 350
     lr_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-    repetition = 100
+    repetition = 200
     concurrency = 50
     search_loop = 500
     group_size = 7  # the smallest group size in Fang's model: 7
