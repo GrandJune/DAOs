@@ -16,7 +16,7 @@ class Individual:
         self.alpha = alpha
         self.policy_num = self.m // self.alpha
         self.lr = lr  # learning rate, learning from (adjusted) majority view
-        self.token = None  # should introduce more dimensions of token
+        self.token = 1  # may introduce more dimensions of token
         self.active = True  # whether the agent is active in voting/learning
 
         self.reality = reality

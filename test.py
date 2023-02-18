@@ -12,14 +12,13 @@ def gini(array):
     n = len(array)
     coefficient = 0
     for i, value in enumerate(array):
-        coefficient += (2 * i + 1) * value
+        coefficient += (2 * i - n) * value
     coefficient /= n * sum(array)
-    coefficient -= (n + 1) / n
     return coefficient
 
 
 
-asymmetry_list = [1, 2, 3, 4]
+asymmetry_list = [1, 2, 3]
 mode = 1
 xx = []
 for asymmetry in asymmetry_list:
