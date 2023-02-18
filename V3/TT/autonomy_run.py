@@ -23,11 +23,14 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
     reality = Reality(m=m, s=s)
     autonomy = Autonomy(m=m, s=s, n=n, reality=reality, group_size=group_size, lr=lr)
     for period in range(search_loop):
+        # First turbulence
         if (period + 1) % 100 == 0:
             reality.change(reality_change_rate=0.1)
             for team in autonomy.teams:
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
+        # Then turnover
+        autonomy.turnover(turnover_rate=0.1)
         autonomy.search()
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time, autonomy.variance_across_time,
                          autonomy.variance_across_time, autonomy.percentile_10_across_time, autonomy.percentile_90_across_time]
