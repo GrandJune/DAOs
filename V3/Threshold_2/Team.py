@@ -90,13 +90,16 @@ class Team:
             if not individual.superior_majority_view:
                 continue
             for index in range(self.policy_num):
-                # if policy[index] == 0:   # if do nothing in case of zero, cannot enable sufficient search
-                #     continue
-                # else:
-                if sum(individual.superior_majority_view
-                       [index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
-                    individual.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
-                        self.reality.policy_2_belief(policy=policy[index])
+                if (policy[index] == 0) and (np.random.uniform(0, 1) < (1 - individual.lr)):
+                    # if do nothing in case of zero, cannot enable sufficient search
+                    # using learning rate \eta: would like to adopt the others' perception
+                    # Thus with a probability of (1- \eta) to retain the previous belief
+                    continue
+                else:
+                    if sum(individual.superior_majority_view
+                           [index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
+                        individual.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
+                            self.reality.policy_2_belief(policy=policy[index])
 
     def confirm(self, policy=None):
         # individual first confirm to the consensus
