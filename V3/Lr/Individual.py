@@ -27,6 +27,8 @@ class Individual:
         self.superior_majority_view = None
 
     def learning_from_belief(self, belief=None):
+        if not belief:
+            return
         if len(belief) != self.m:
             raise ValueError("Belief length {0} is not equal to {1}".format(len(belief), self.m))
         for i in range(self.m):

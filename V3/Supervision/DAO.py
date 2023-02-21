@@ -170,10 +170,10 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 30
+    m = 60
     s = 1
     n = 350
-    search_loop = 50
+    search_loop = 100
     lr = 0.3
     alpha = 3
     group_size = 7  # the smallest group size in Fang's model: 7
@@ -184,11 +184,11 @@ if __name__ == '__main__':
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.5)
-        print(period, dao.consensus, reality.real_policy, reality.real_code)
+        dao.search(threshold_ratio=0.6)
+        print(dao.consensus)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].policy,
         #       dao.teams[0].individuals[0].payoff)
-        print("---")
+        print("--{0}--".format(period))
     import matplotlib.pyplot as plt
     x = range(search_loop)
 

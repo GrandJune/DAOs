@@ -71,27 +71,32 @@ class Team:
         for individual in self.individuals:
             superior_belief_pool = [other.belief for other in self.individuals
                                     if other.payoff > individual.payoff]
-            majority_view = []
-            for i in range(self.m):
-                temp = [belief[i] for belief in superior_belief_pool]
-                if sum(temp) > 0:
-                    majority_view.append(1)
-                elif sum(temp) < 0:
-                    majority_view.append(-1)
-                else:
-                    majority_view.append(0)
-            individual.superior_majority_view = majority_view
+            if len(superior_belief_pool) == 0:  # only those have better reference will learn / update their belief
+                individual.superior_majority_view = None
+            else:
+                majority_view = []
+                for i in range(self.m):
+                    temp = [belief[i] for belief in superior_belief_pool]
+                    if sum(temp) > 0:
+                        majority_view.append(1)
+                    elif sum(temp) < 0:
+                        majority_view.append(-1)
+                    else:
+                        majority_view.append(0)
+                individual.superior_majority_view = majority_view
 
     def adjust_majority_view_2_consensus(self, policy=None):
         for individual in self.individuals:
+            if not individual.superior_majority_view:
+                continue
             for index in range(self.policy_num):
-                if policy[index] == 0:
-                    continue
-                else:
-                    if sum(individual.superior_majority_view
-                           [index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
-                        individual.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
-                            self.reality.policy_2_belief(policy=policy[index])
+                # if policy[index] == 0:   # if do nothing in case of zero, cannot enable sufficient search
+                #     continue
+                # else:
+                if sum(individual.superior_majority_view
+                       [index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
+                    individual.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
+                        self.reality.policy_2_belief(policy=policy[index])
 
     def confirm(self, policy=None):
         # individual first confirm to the consensus
@@ -119,7 +124,6 @@ if __name__ == '__main__':
     version = "Rushed"
     reality = Reality(m=m, s=s, version=version)
     from DAO import Team
-    team = Team(policy_num=m // 3)
     for _ in range(n):
         individual = Individual(m=m, s=s, reality=reality, lr=lr)
         team.individuals.append(individual)
