@@ -31,11 +31,11 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, alpha=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 105  # 1 * 3 * 5 * 7 = 105
+    m = 90  # 1 * 3 * 5 * 7 = 105
     s = 1
     n = 350
     lr = 0.3
-    alpha_list = [1, 3, 5, 7]  # alpha does not matter for autonomy
+    alpha_list = [1, 3, 5]  # alpha does not matter for autonomy
     repetition = 1000
     concurrency = 50
     search_loop = 500
