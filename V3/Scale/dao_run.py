@@ -30,42 +30,39 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
     sema.release()
 
 
-
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
     s = 1
-    n = 350
+    n_list = [280, 350, 420, 490]
     lr = 0.3
-    repetition = 50
-    search_loop = 2000
-    threshold_ratio_list = np.arange(0.40, 0.71, 0.01)
+    repetition = 1000
+    concurrency = 50
+    search_loop = 200
     group_size = 7  # the smallest group size in Fang's model: 7
-
-    performance_across_para = []  # remove the time dimension
+    threshold_ratio = 0.5
+    # DVs
+    performance_across_para = []
     consensus_performance_across_para = []
     diversity_across_para = []
     variance_across_para = []
     percentile_10_across_para = []
     percentile_90_across_para = []
 
-    performance_across_para_time = []  # retain the across_time dimension
-    consensus_performance_across_para_time = []
+    performance_across_para_time = []
     diversity_across_para_time = []
+    consensus_performance_across_para_time = []
     variance_across_para_time = []
     percentile_10_across_para_time = []
     percentile_90_across_para_time = []
-
-    concurrency = 50
-    for threshold_ratio in threshold_ratio_list:
+    for n in n_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
         return_dict = manager.dict()
         jobs = []
         for loop in range(repetition):
             sema.acquire()
-            p = mp.Process(target=func,
-                           args=(m, s, n, group_size, lr, threshold_ratio, search_loop, loop, return_dict, sema))
+            p = mp.Process(target=func, args=(m, s, n, group_size, lr, threshold_ratio, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
@@ -80,7 +77,7 @@ if __name__ == '__main__':
         percentile_10_across_repeat = [result[4][-1] for result in results]
         percentile_90_across_repeat = [result[5][-1] for result in results]
 
-        # take an average across repetition, integrate into one value for one parameter
+        # take an average across repetition, only one value for one parameter
         performance_across_para.append(sum(performance_across_repeat) / len(performance_across_repeat))
         consensus_performance_across_para.append(
             sum(consensus_performance_across_repeat) / len(consensus_performance_across_repeat))
@@ -89,7 +86,7 @@ if __name__ == '__main__':
         percentile_10_across_para.append(sum(percentile_10_across_repeat) / len(percentile_10_across_repeat))
         percentile_90_across_para.append(sum(percentile_90_across_repeat) / len(percentile_90_across_repeat))
 
-        # retain the time dimension
+        # keep the time dimension
         performance_across_repeat_time = [result[0] for result in results]
         consensus_performance_across_repeat_time = [result[1] for result in results]
         diversity_across_repeat_time = [result[2] for result in results]
@@ -104,24 +101,24 @@ if __name__ == '__main__':
         variance_across_time = []
         percentile_10_across_time = []
         percentile_90_across_time = []
-        for iteration in range(search_loop):
-            temp_performance = [performance_list[iteration] for performance_list in performance_across_repeat_time]
+        for period in range(search_loop):
+            temp_performance = [performance_list[period] for performance_list in performance_across_repeat_time]
             performance_across_time.append(sum(temp_performance) / len(temp_performance))
+            temp_consensus_performance = [performance_list[period] for performance_list in
+                                         consensus_performance_across_repeat_time]
+            consensus_performance_across_time.append(sum(temp_consensus_performance) / len(temp_consensus_performance))
 
-            temp_consensus = [consensus_list[iteration] for consensus_list in consensus_performance_across_repeat_time]
-            consensus_performance_across_time.append(sum(temp_consensus) / len(temp_consensus))
-
-            temp_diversity = [diversity_list[iteration] for diversity_list in diversity_across_repeat_time]
+            temp_diversity = [diversity_list[period] for diversity_list in diversity_across_repeat_time]
             diversity_across_time.append(sum(temp_diversity) / len(temp_diversity))
 
-            temp_variance = [variance_list[iteration] for variance_list in variance_across_repeat_time]
+            temp_variance = [variance_list[period] for variance_list in variance_across_repeat_time]
             variance_across_time.append(sum(temp_variance) / len(temp_variance))
 
-            temp_percentile_10 = [percentile_10_list[iteration] for percentile_10_list in percentile_10_across_repeat_time]
+            temp_percentile_10 = [result[period] for result in percentile_10_across_repeat_time]
             percentile_10_across_time.append(sum(temp_percentile_10) / len(temp_percentile_10))
 
-            temp_percentile_90 = [percentile_90_list[iteration] for percentile_90_list in percentile_90_across_repeat_time]
-            percentile_90_across_time.append(sum(temp_percentile_90) / len(temp_percentile_90))
+            temp_percentile_90 = [result[period] for result in percentile_90_across_repeat_time]
+            percentile_90_across_time.append(sum(temp_percentile_90) / len(temp_percentile_10))
         # retain the time dimension
         performance_across_para_time.append(performance_across_time)
         consensus_performance_across_para_time.append(consensus_performance_across_time)
@@ -131,48 +128,33 @@ if __name__ == '__main__':
         percentile_90_across_para_time.append(percentile_90_across_time)
 
     # save the without-time data (ready for figure)
-    with open("dao_performance_across_threshold", 'wb') as out_file:
+    with open("dao_performance_across_n", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("dao_consensus_performance_across_threshold", 'wb') as out_file:
+    with open("consensus_performance_across_n", 'wb') as out_file:
         pickle.dump(consensus_performance_across_para, out_file)
-    with open("dao_diversity_across_threshold", 'wb') as out_file:
+    with open("dao_diversity_across_n", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("dao_variance_across_threshold", 'wb') as out_file:
+    with open("dao_variance_across_n", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
-    with open("dao_percentile_10_across_threshold", 'wb') as out_file:
+    with open("dao_percentile_10_across_n", 'wb') as out_file:
         pickle.dump(percentile_10_across_para, out_file)
-    with open("dao_percentile_90_across_threshold", 'wb') as out_file:
+    with open("dao_percentile_90_across_n", 'wb') as out_file:
         pickle.dump(percentile_90_across_para, out_file)
 
     # save the with-time data
-    with open("dao_performance_across_threshold_time", 'wb') as out_file:
+    with open("dao_performance_across_n_time", 'wb') as out_file:
         pickle.dump(performance_across_para_time, out_file)
-    with open("dao_consensus_performance_across_threshold_time", 'wb') as out_file:
+    with open("consensus_performance_across_n_time", 'wb') as out_file:
         pickle.dump(consensus_performance_across_para_time, out_file)
-    with open("dao_diversity_across_threshold_time", 'wb') as out_file:
+    with open("dao_diversity_across_n_time", 'wb') as out_file:
         pickle.dump(diversity_across_para_time, out_file)
-    with open("dao_variance_across_threshold_time", 'wb') as out_file:
+    with open("dao_variance_across_n_time", 'wb') as out_file:
         pickle.dump(variance_across_para_time, out_file)
-    with open("dao_percentile_10_across_threshold_time", 'wb') as out_file:
+    with open("dao_percentile_10_across_n_time", 'wb') as out_file:
         pickle.dump(percentile_10_across_para_time, out_file)
-    with open("dao_percentile_90_across_threshold_time", 'wb') as out_file:
+    with open("dao_percentile_90_across_n_time", 'wb') as out_file:
         pickle.dump(percentile_90_across_para_time, out_file)
 
-    import matplotlib.pyplot as plt
-    from matplotlib import container
-
-    x = threshold_ratio_list
-    fig, (ax1) = plt.subplots(1, 1)
-    ax1.errorbar(x, performance_across_para, yerr=variance_across_para, color="k", fmt="--", capsize=5, capthick=0.8,
-                 ecolor="k", label="DAO")
-    plt.xlabel('Threshold', fontweight='bold', fontsize=10)
-    plt.ylabel('Performance', fontweight='bold', fontsize=10)
-    plt.xticks(x)
-    handles, labels = ax1.get_legend_handles_labels()
-    handles = [h[0] if isinstance(h, container.ErrorbarContainer) else h for h in handles]
-    plt.legend(handles, labels, numpoints=1)
-    plt.savefig("Performance_across_threshold.png", transparent=True, dpi=500)
-    plt.clf()
-
     t1 = time.time()
-    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
+    print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
+
