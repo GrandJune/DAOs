@@ -65,7 +65,7 @@ if __name__ == '__main__':
     lr = 0.3
     hyper_iteration = 20
     repetition = 50
-    search_loop = 100
+    search_loop = 300
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
     asymmetry_list = [0, 1, 2, 3]  # smaller asymmetry is associated with higher wealth inequality

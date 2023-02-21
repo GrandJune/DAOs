@@ -38,7 +38,7 @@ if __name__ == '__main__':
     lr = 0.3
     repetition = 1000
     concurrency = 50
-    search_loop = 200
+    search_loop = 300
     group_size = 7  # the smallest group size in Fang's model: 7
     threshold_ratio = 0.5
     # DVs

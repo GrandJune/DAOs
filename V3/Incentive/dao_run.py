@@ -44,10 +44,10 @@ if __name__ == '__main__':
     s = 1
     n = 350
     lr = 0.3
-    hyper_iteration = 4
+    hyper_iteration = 20
     repetition = 50
-    incentive_list = [0, 10, 100, 1000]
-    search_loop = 100
+    incentive_list = [0, 1, 10, 100]
+    search_loop = 300
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
     # DVs

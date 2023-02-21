@@ -123,9 +123,3 @@ if __name__ == '__main__':
     loop = 100
     version = "Rushed"
     reality = Reality(m=m, s=s, version=version)
-    from DAO import Team
-    for _ in range(n):
-        individual = Individual(m=m, s=s, reality=reality, lr=lr)
-        team.individuals.append(individual)
-    for individual in team.individuals:
-        print(individual.belief, individual.payoff)
