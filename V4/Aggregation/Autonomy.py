@@ -104,11 +104,10 @@ if __name__ == '__main__':
     s = 1
     n = 350
     lr = 0.3
-    alpha = 5
     group_size = 7  # the smallest group size in Fang's model: 7
     # according to the practice, such a subdivision of an organization, such a size of autonomous team cannot be large.
-    reality = Reality(m=m, s=s, alpha=alpha)
-    autonomy = Autonomy(m=m, s=s, n=n, group_size=group_size, reality=reality, lr=lr, alpha=alpha)
+    reality = Reality(m=m, s=s)
+    autonomy = Autonomy(m=m, s=s, n=n, group_size=group_size, reality=reality, lr=lr)
     for period in range(100):
         autonomy.search()
         print(period)

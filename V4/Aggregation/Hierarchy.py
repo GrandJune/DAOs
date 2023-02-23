@@ -113,10 +113,9 @@ if __name__ == '__main__':
     group_size = 7  # the smallest group size in Fang's model: 7
     p1 = 0.1  # belief learning from code
     p2 = 0.9  # code learning from belief
-    alpha = 5
     search_iteration = 100
-    reality = Reality(m=m, s=s, alpha=alpha)
-    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=p2, alpha=alpha)
+    reality = Reality(m=m, s=s)
+    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=p2)
     for i in range(search_iteration):
         hierarchy.search()
         print(i)
