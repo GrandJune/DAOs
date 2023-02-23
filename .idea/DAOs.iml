@@ -10,6 +10,20 @@
       <sourceFolder url="file://$MODULE_DIR$/Consensus_v1/DAOs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V3" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Aggregation" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Asymmetry" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Comparison" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/DHA" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Incentive" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Lr" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Scale" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Supervision" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/TT" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/TTT" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Threshold" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Turnover" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Christina2010" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/March1991" />

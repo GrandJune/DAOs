@@ -16,8 +16,6 @@ def gini(array):
     coefficient /= n * sum(array)
     return coefficient
 
-
-
 asymmetry_list = [1, 2, 3]
 mode = 1
 xx = []
