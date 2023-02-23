@@ -16,8 +16,7 @@ class Individual:
         self.alpha = alpha
         self.policy_num = self.m // self.alpha
         self.lr = lr  # learning rate, learning from (adjusted) majority view
-        self.token = 1  # may introduce more dimensions of token
-        self.active = True  # whether the agent is active in voting/learning
+        self.token = None  # should introduce more dimensions of token
 
         self.reality = reality
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
@@ -45,6 +44,7 @@ class Individual:
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)
         self.superior_majority_view = None
+        self.token = None  # wait for re-assignment
 
 
 if __name__ == '__main__':

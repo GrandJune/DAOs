@@ -22,51 +22,6 @@ class Team:
         self.belief = [0] * self.m
         self.token = None
 
-    def form_team_policy(self, token=False):
-        for individual in self.individuals:
-            individual.policy = self.reality.belief_2_policy(belief=individual.belief)
-        if token:
-            for i in range(self.policy_num):
-                tendency = sum([individual.policy[i] * individual.token for individual in self.individuals])
-                if tendency > 0:
-                    self.policy[i] = 1
-                elif tendency < 0:
-                    self.policy[i] = -1
-                else:
-                    self.policy[i] = 0
-        else:
-            for i in range(self.policy_num):
-                tendency = sum([individual.policy[i] for individual in self.individuals])
-                if tendency > 0:
-                    self.policy[i] = 1
-                elif tendency < 0:
-                    self.policy[i] = -1
-                else:
-                    self.policy[i] = 0
-
-    def form_team_belief(self, token=False):
-        if token:
-            for i in range(self.m):
-                tendency = sum([individual.belief[i] * individual.token for individual in self.individuals])
-                if tendency > 0:
-                    self.belief[i] = 1
-                elif tendency < 0:
-                    self.belief[i] = -1
-                else:
-                    self.belief[i] = 0
-        else:
-            for i in range(self.m):
-                tendency = sum([individual.belief[i] for individual in self.individuals])
-                if tendency > 0:
-                    self.belief[i] = 1
-                elif tendency < 0:
-                    self.belief[i] = -1
-                else:
-                    self.belief[i] = 0
-
-    def update_token(self,):
-        self.token = sum([individual.token for individual in self.individuals])
-
     def form_individual_majority_view(self):
         for individual in self.individuals:
             superior_belief_pool = [other.belief for other in self.individuals
@@ -78,25 +33,26 @@ class Team:
                     majority_view.append(1)
                 elif sum(temp) < 0:
                     majority_view.append(-1)
-                else:
+                else:  # when there is no inclination as reference, agents will become uncertain
                     majority_view.append(0)
             individual.superior_majority_view = majority_view
 
     def adjust_majority_view_2_consensus(self, policy=None):
         for individual in self.individuals:
+            if not individual.superior_majority_view:
+                continue
             for index in range(self.policy_num):
-                if policy[index] == 0:
-                    continue
-                else:
-                    if sum(individual.superior_majority_view
-                           [index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
-                        individual.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
-                            self.reality.policy_2_belief(policy=policy[index])
+                # if the consensus is zero, will learn from chaos
+                if sum(individual.superior_majority_view
+                       [index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
+                    individual.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
+                        self.reality.policy_2_belief(policy=policy[index])
 
     def confirm(self, policy=None):
-        # individual first confirm to the consensus
+        # individual first confirm to the supervision
         for individual in self.individuals:
             for index in range(self.policy_num):
+                # if the supervision is zero, will retain the previous belief (lazy employee)
                 if policy[index] == 0:
                     continue
                 else:
@@ -107,6 +63,7 @@ class Team:
     def learn(self):
         for individual in self.individuals:
             individual.learning_from_belief(belief=individual.superior_majority_view)
+
 
 if __name__ == '__main__':
     # test
@@ -119,7 +76,6 @@ if __name__ == '__main__':
     version = "Rushed"
     reality = Reality(m=m, s=s, version=version)
     from DAO import Team
-    team = Team(policy_num=m // 3)
     for _ in range(n):
         individual = Individual(m=m, s=s, reality=reality, lr=lr)
         team.individuals.append(individual)
