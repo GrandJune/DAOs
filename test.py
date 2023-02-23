@@ -42,7 +42,6 @@ for count, bins, asymmetry, color in zip(count_list, bins_list, asymmetry_list, 
     plt.plot(bins, max(count) * fit / max(fit), linewidth=2, color=color)
     # plt.xticks((0, 6))
 plt.show()
-
 for x in xx:
     gini_index = gini(x)
     print("Gini Index: ", gini_index)
