@@ -42,18 +42,17 @@ class Team:
             if not individual.superior_majority_view:
                 continue
             for index in range(self.policy_num):
-                # if policy[index] == 0:   # if do nothing in case of zero, cannot enable sufficient search
-                #     continue
-                # else:
+                # if the consensus is zero, will learn from chaos
                 if sum(individual.superior_majority_view
                        [index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
                     individual.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
                         self.reality.policy_2_belief(policy=policy[index])
 
     def confirm(self, policy=None):
-        # individual first confirm to the consensus
+        # individual first confirm to the supervision
         for individual in self.individuals:
             for index in range(self.policy_num):
+                # if the supervision is zero, will retain the previous belief (lazy employee)
                 if policy[index] == 0:
                     continue
                 else:
@@ -64,6 +63,7 @@ class Team:
     def learn(self):
         for individual in self.individuals:
             individual.learning_from_belief(belief=individual.superior_majority_view)
+
 
 if __name__ == '__main__':
     # test
