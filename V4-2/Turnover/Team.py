@@ -27,7 +27,9 @@ class Team:
             superior_belief_pool = [other.belief for other in self.individuals
                                     if other.payoff > individual.payoff]
             majority_view = []
-            # In this robustness, we strictly constrain this boundary of superior majority view learning
+            # In this robustness, we explicitly constrain this boundary of superior majority view learning
+            # In previous code, it is implied in the learn_from_belief function
+            # where agents never learn from zero, namely never forget.
             if len(superior_belief_pool) == 0:
                 individual.superior_majority_view = None
             else:
