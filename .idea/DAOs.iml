@@ -24,6 +24,19 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Threshold" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turnover" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4-2" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4-2/Aggregation" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4-2/Asymmetry" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4-2/DHA" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4-2/Incentive" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4-2/Lr" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4-2/Scale" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4-2/Supervision" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4-2/TT" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4-2/TTT" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4-2/Threshold" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4-2/Turbulence" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4-2/Turnover" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Christina2010" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/March1991" />
