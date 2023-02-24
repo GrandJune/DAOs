@@ -27,6 +27,7 @@ class Team:
             superior_belief_pool = [other.belief for other in self.individuals
                                     if other.payoff > individual.payoff]
             majority_view = []
+            # In this robustness, we strictly constrain this boundary of superior majority view learning
             if len(superior_belief_pool) == 0:
                 individual.superior_majority_view = None
             else:
@@ -65,6 +66,8 @@ class Team:
 
     def learn(self):
         for individual in self.individuals:
+            if not individual.superior_majority_view:
+                continue
             individual.learning_from_belief(belief=individual.superior_majority_view)
 
 

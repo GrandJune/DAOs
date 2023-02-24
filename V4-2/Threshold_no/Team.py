@@ -27,19 +27,15 @@ class Team:
             superior_belief_pool = [other.belief for other in self.individuals
                                     if other.payoff > individual.payoff]
             majority_view = []
-            # In this robustness, we strictly constrain this boundary of superior majority view learning
-            if len(superior_belief_pool) == 0:
-                individual.superior_majority_view = None
-            else:
-                for i in range(self.m):
-                    temp = [belief[i] for belief in superior_belief_pool]
-                    if sum(temp) > 0:
-                        majority_view.append(1)
-                    elif sum(temp) < 0:
-                        majority_view.append(-1)
-                    else:  # when there is no inclination as reference, agents will become uncertain
-                        majority_view.append(0)
-                individual.superior_majority_view = majority_view
+            for i in range(self.m):
+                temp = [belief[i] for belief in superior_belief_pool]
+                if sum(temp) > 0:
+                    majority_view.append(1)
+                elif sum(temp) < 0:
+                    majority_view.append(-1)
+                else:  # when there is no inclination as reference, agents will become uncertain
+                    majority_view.append(0)
+            individual.superior_majority_view = majority_view
 
     def adjust_majority_view_2_consensus(self, policy=None):
         for individual in self.individuals:
@@ -66,8 +62,6 @@ class Team:
 
     def learn(self):
         for individual in self.individuals:
-            if not individual.superior_majority_view:
-                continue
             individual.learning_from_belief(belief=individual.superior_majority_view)
 
 
