@@ -39,7 +39,7 @@ class Team:
 
     def adjust_majority_view_2_consensus(self, policy=None):
         for individual in self.individuals:
-            if not individual.superior_majority_view:
+            if not individual.superior_majority_view:  # This determines whether the best actor learn from consensus
                 continue
             for index in range(self.policy_num):
                 # if the consensus is zero, will learn from chaos
