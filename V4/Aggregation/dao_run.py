@@ -20,7 +20,7 @@ import math
 def func(m=None, s=None, n=None, group_size=None, lr=None, alpha=None, threshold_ratio=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
-    reality = Reality(m=m, s=s)
+    reality = Reality(m=m, s=s, alpha=alpha)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, alpha=alpha)
     for _ in range(search_loop):
         dao.search(threshold_ratio=threshold_ratio)

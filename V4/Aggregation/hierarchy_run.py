@@ -20,7 +20,7 @@ import math
 def func(m=None, s=None, n=None, group_size=None, lr=None, alpha=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
-    reality = Reality(m=m, s=s)
+    reality = Reality(m=m, s=s, alpha=alpha)
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr,
                           group_size=group_size, alpha=alpha)
     for _ in range(search_loop):
