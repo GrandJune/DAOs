@@ -35,14 +35,15 @@ class Team:
                     majority_view.append(-1)
                 else:  # when there is no inclination as reference, agents will become uncertain
                     majority_view.append(0)
+            # The best actors will have a learning resource of a list of zero
             individual.superior_majority_view = majority_view
 
     def adjust_majority_view_2_consensus(self, policy=None):
         for individual in self.individuals:
-            if not individual.superior_majority_view:  # This determines whether the best actor learn from consensus
-                continue
             for index in range(self.policy_num):
-                # if the consensus is zero, will learn from chaos
+                # if the consensus is 0, belief is 1, will learn from chaos
+                # if the consensus is 1, belief is 0, will learn from 1
+                # if both consensus and belief are 0, no change
                 if sum(individual.superior_majority_view
                        [index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
                     individual.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
@@ -59,6 +60,8 @@ class Team:
                     if sum(individual.belief[index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
                         individual.belief[index * self.alpha: (index + 1) * self.alpha] = self.reality.policy_2_belief(
                             policy=policy[index])
+            individual.payoff = self.reality.get_payoff(belief=individual.belief)
+            individual.policy = self.reality.belief_2_policy(belief=individual.belief)
 
     def learn(self):
         for individual in self.individuals:
@@ -75,9 +78,3 @@ if __name__ == '__main__':
     loop = 100
     version = "Rushed"
     reality = Reality(m=m, s=s, version=version)
-    from DAO import Team
-    for _ in range(n):
-        individual = Individual(m=m, s=s, reality=reality, lr=lr)
-        team.individuals.append(individual)
-    for individual in team.individuals:
-        print(individual.belief, individual.payoff)
