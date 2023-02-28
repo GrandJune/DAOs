@@ -26,24 +26,27 @@ class Team:
         for individual in self.individuals:
             superior_belief_pool = [other.belief for other in self.individuals
                                     if other.payoff > individual.payoff]
-            majority_view = []
-            for i in range(self.m):
-                temp = [belief[i] for belief in superior_belief_pool]
-                if sum(temp) > 0:
-                    majority_view.append(1)
-                elif sum(temp) < 0:
-                    majority_view.append(-1)
-                else:  # when there is no inclination as reference, agents will become uncertain
-                    majority_view.append(0)
-            # The best actors will have a learning resource of a list of zero
-            individual.superior_majority_view = majority_view
+            if len(superior_belief_pool) == 0:
+                # The best performing actors will not learn from peers
+                individual.superior_majority_view = None
+            else:
+                majority_view = []
+                for i in range(self.m):
+                    temp = [belief[i] for belief in superior_belief_pool]
+                    if sum(temp) > 0:
+                        majority_view.append(1)
+                    elif sum(temp) < 0:
+                        majority_view.append(-1)
+                    else:  # when there is no inclination as reference, agents will become uncertain
+                        majority_view.append(0)
+                individual.superior_majority_view = majority_view
 
     def adjust_majority_view_2_consensus(self, policy=None):
         for individual in self.individuals:
+            if not individual.superior_majority_view:
+                continue
             for index in range(self.policy_num):
-                # if the consensus is 0, belief is 1, will learn from chaos
-                # if the consensus is 1, belief is 0, will learn from 1
-                # if both consensus and belief are 0, no change
+                # if the consensus is zero, agents will learn from chaos
                 if sum(individual.superior_majority_view
                        [index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
                     individual.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
@@ -65,6 +68,8 @@ class Team:
 
     def learn(self):
         for individual in self.individuals:
+            if not individual.superior_majority_view:
+                continue
             individual.learning_from_belief(belief=individual.superior_majority_view)
 
 
