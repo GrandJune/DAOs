@@ -17,11 +17,18 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None,
+def func(m=None, s=None, n=None, group_size=None, lr=None, initialization_bar=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
     autonomy = Autonomy(m=m, s=s, n=n, reality=reality, group_size=group_size, lr=lr)
+    # bad initialization
+    for team in autonomy.teams:
+        for individual in team.individuals:
+            while individual.payoff > initialization_bar:
+                individual.belief = np.random.choice([-1, 0, 1], m, p=[1 / 3, 1 / 3, 1 / 3])
+                individual.payoff = reality.get_payoff(belief=individual.belief)
+            individual.policy = reality.belief_2_policy(belief=individual.belief)  # a fake policy for voting
     for _ in range(search_loop):
         autonomy.search()
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time, autonomy.variance_across_time,
@@ -33,12 +40,12 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     s = 1
-    group_size_list = [7, 14, 70]
+    initialization_bar_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     n = 350
     lr = 0.3
     repetition = 200
     concurrency = 50
-    search_loop = 300
+    search_loop = 100
     group_size = 7  # the smallest group size in Fang's model: 7
     # DVs
     # after taking an average across repetitions
@@ -63,7 +70,7 @@ if __name__ == '__main__':
     variance_across_para_time = []
     percentile_10_across_para_time = []
     percentile_90_across_para_time = []
-    for group_size in group_size_list:
+    for initialization_bar in initialization_bar_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
         return_dict = manager.dict()
@@ -71,7 +78,7 @@ if __name__ == '__main__':
         for loop in range(repetition):
             sema.acquire()
             p = mp.Process(target=func,
-                           args=(m, s, n, group_size, lr, search_loop, loop, return_dict, sema))
+                           args=(m, s, n, group_size, lr, initialization_bar, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:

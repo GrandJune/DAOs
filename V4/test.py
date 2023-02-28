@@ -4,6 +4,7 @@
 # @FileName: test.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
+import numpy as np
 
-x = []
-print(sum(x))
+x = np.random.choice(range(10), 10, p=0.1)
+print(x)

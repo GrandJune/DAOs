@@ -39,7 +39,6 @@ if __name__ == '__main__':
     repetition = 200
     concurrency = 50
     search_loop = 300
-    group_size = 7  # the smallest group size in Fang's model: 7
     # DVs
     # after taking an average across repetitions
     performance_across_para = []
