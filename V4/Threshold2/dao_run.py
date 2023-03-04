@@ -37,7 +37,7 @@ if __name__ == '__main__':
     s = 1
     n = 350
     lr = 0.3
-    repetition = 100
+    repetition = 50
     search_loop = 2000
     threshold_ratio_list = np.arange(0.40, 0.71, 0.01)
     group_size = 7  # the smallest group size in Fang's model: 7
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     percentile_10_across_para_time = []
     percentile_90_across_para_time = []
 
-    concurrency = 80
+    concurrency = 50
     for threshold_ratio in threshold_ratio_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
