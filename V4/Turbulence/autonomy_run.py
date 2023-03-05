@@ -28,9 +28,6 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
             for team in autonomy.teams:
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
-        for team in autonomy.teams:
-            for individual in team.individuals:
-                individual.payoff = reality.get_payoff(belief=individual.belief)
         autonomy.search()
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time, autonomy.variance_across_time,
                          autonomy.variance_across_time, autonomy.percentile_10_across_time, autonomy.percentile_90_across_time]

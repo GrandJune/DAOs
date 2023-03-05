@@ -33,10 +33,6 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
                 manager.payoff = reality.get_policy_payoff(policy=manager.policy)
             # update the code payoff
             hierarchy.superior.code_payoff = reality.get_policy_payoff(policy=hierarchy.superior.code)
-        for team in hierarchy.teams:
-            for individual in team.individuals:
-                individual.payoff = reality.get_payoff(belief=individual.belief)
-        hierarchy.superior.code_payoff = reality.get_policy_payoff(policy=hierarchy.superior.code)
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
                          hierarchy.diversity_across_time, hierarchy.variance_across_time,
