@@ -17,21 +17,13 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None,
+def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
-    for period in range(search_loop):
-        if (period + 1) % 100 == 0:
-            reality.change(reality_change_rate=0.1)
-            for team in dao.teams:
-                for individual in team.individuals:
-                    individual.payoff = reality.get_payoff(belief=individual.belief)
-        for team in dao.teams:
-            for individual in team.individuals:
-                individual.payoff = reality.get_payoff(belief=individual.belief)
-        dao.search(threshold_ratio=0.5)
+    for _ in range(search_loop):
+        dao.search(threshold_ratio=threshold_ratio)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time, dao.percentile_10_across_time,
                          dao.percentile_90_across_time]
@@ -44,19 +36,12 @@ if __name__ == '__main__':
     s = 1
     n = 350
     lr = 0.3
+    threshold_ratio = 0.5
     hyper_iteration = 10
     repetition = 50
-    search_loop = 1000
-    group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
-    # after taking an average across repetitions
-    performance_final = []
-    consensus_final = []
-    diversity_final = []
-    variance_final = []
-    percentile_10_final = []
-    percentile_90_final = []
-    # before taking an average across repetitions
+    search_loop = 100
+    group_size = 7  # the smallest group size in Fang's model: 7
     performance_hyper = []
     consensus_hyper = []
     diversity_hyper = []
@@ -66,12 +51,11 @@ if __name__ == '__main__':
     for hyper_loop in range(hyper_iteration):
         sema = Semaphore(concurrency)
         manager = mp.Manager()
-        return_dict = manager.dict()
         jobs = []
+        return_dict = manager.dict()
         for loop in range(repetition):
             sema.acquire()
-            p = mp.Process(target=func,
-                           args=(m, s, n, group_size, lr, search_loop, loop, return_dict, sema))
+            p = mp.Process(target=func, args=(m, s, n, group_size, lr, threshold_ratio, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
@@ -83,22 +67,27 @@ if __name__ == '__main__':
         variance_hyper += [result[3] for result in results]
         percentile_10_hyper += [result[4] for result in results]
         percentile_90_hyper += [result[5] for result in results]
-    for period in range(search_loop):
-        performance_temp = [performance_list[period] for performance_list in performance_hyper]
-        consensus_temp = [consensus_list[period] for consensus_list in consensus_hyper]
-        diversity_temp = [diversity_list[period] for diversity_list in diversity_hyper]
-        variance_temp = sum([result[period] for result in variance_hyper]) / len(variance_hyper)
-        percentile_10_temp = sum([result[period] for result in percentile_10_hyper]) / len(percentile_10_hyper)
-        percentile_90_temp = sum([result[period] for result in percentile_90_hyper]) / len(percentile_90_hyper)
 
-        performance_final.append(sum(performance_temp) / len(performance_temp))
-        consensus_final.append(sum(consensus_temp) / len(consensus_temp))
-        diversity_final.append(sum(diversity_temp) / len(diversity_temp))
-        variance_final.append(variance_temp)
-        percentile_10_final.append(percentile_10_temp)
-        percentile_90_final.append(percentile_90_temp)
+    performance_final = []
+    consensus_final = []
+    diversity_final = []
+    variance_final = []
+    percentile_10_final = []
+    percentile_90_final = []
+    for index in range(search_loop):
+        temp_performance = sum([result[index] for result in performance_hyper]) / len(performance_hyper)
+        temp_consensus = sum([result[index] for result in consensus_hyper]) / len(consensus_hyper)
+        temp_diversity = sum([result[index] for result in diversity_hyper]) / len(diversity_hyper)
+        temp_variance = sum([result[index] for result in variance_hyper]) / len(variance_hyper)
+        temp_percentile_10 = sum([result[index] for result in percentile_10_hyper]) / len(percentile_10_hyper)
+        temp_percentile_90 = sum([result[index] for result in percentile_90_hyper]) / len(percentile_90_hyper)
+        performance_final.append(temp_performance)
+        consensus_final.append(temp_consensus)
+        diversity_final.append(temp_diversity)
+        variance_final.append(temp_variance)
+        percentile_10_final.append(temp_percentile_10)
+        percentile_90_final.append(temp_percentile_90)
 
-    # after taking an average across repetitions
     with open("dao_performance", 'wb') as out_file:
         pickle.dump(performance_final, out_file)
     with open("dao_consensus_performance", 'wb') as out_file:
@@ -112,7 +101,7 @@ if __name__ == '__main__':
     with open("dao_percentile_90", 'wb') as out_file:
         pickle.dump(percentile_90_final, out_file)
 
-    # before taking an average across repetitions
+    # save the original data to assess the iteration
     with open("dao_original_performance", 'wb') as out_file:
         pickle.dump(performance_hyper, out_file)
     with open("dao_original_consensus_performance", 'wb') as out_file:
@@ -125,7 +114,6 @@ if __name__ == '__main__':
         pickle.dump(percentile_10_hyper, out_file)
     with open("dao_original_percentile_90", 'wb') as out_file:
         pickle.dump(percentile_90_hyper, out_file)
-
     t1 = time.time()
-    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
+    print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
 
