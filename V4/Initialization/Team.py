@@ -67,8 +67,6 @@ class Team:
 
     def learn(self):
         for individual in self.individuals:
-            if not individual.superior_majority_view:
-                continue
             individual.learning_from_belief(belief=individual.superior_majority_view)
 
 
