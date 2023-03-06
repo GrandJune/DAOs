@@ -43,6 +43,7 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Typology" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Threshold2" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/TurbulenceEvery" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Votings" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Christina2010" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/March1991" />
