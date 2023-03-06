@@ -29,7 +29,7 @@ class Team:
             if len(superior_belief_pool) == 0:
                 # The best performing actors will not learn from peers (learn from itself)
                 # This is for the next function, in which we can adjust the majority view toward consensus
-                individual.superior_majority_view = individual.belief
+                individual.superior_majority_view = individual.belief.copy()
             else:
                 majority_view = []
                 for i in range(self.m):
