@@ -159,3 +159,5 @@ if __name__ == '__main__':
     with open("dao_percentile_90_across_turnover_time", 'wb') as out_file:
         pickle.dump(percentile_90_across_para_time, out_file)
 
+    t1 = time.time()
+    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
