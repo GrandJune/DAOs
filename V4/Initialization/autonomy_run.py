@@ -25,9 +25,11 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, initialization_bar=No
     # bad initialization
     for team in autonomy.teams:
         for individual in team.individuals:
-            while individual.payoff > initialization_bar:
+            while True:
                 individual.belief = np.random.choice([-1, 0, 1], m, p=[1 / 3, 1 / 3, 1 / 3])
                 individual.payoff = reality.get_payoff(belief=individual.belief)
+                if (individual.payoff > initialization_bar) & (individual.payoff < initialization_bar + 0.1):
+                    break
             individual.policy = reality.belief_2_policy(belief=individual.belief)  # a fake policy for voting
     for _ in range(search_loop):
         autonomy.search()
@@ -40,7 +42,7 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     s = 1
-    initialization_bar_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    initialization_bar_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
     n = 350
     lr = 0.3
     repetition = 200
