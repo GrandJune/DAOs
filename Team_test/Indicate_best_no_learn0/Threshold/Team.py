@@ -44,6 +44,7 @@ class Team:
         for individual in self.individuals:
             # If IS the best one
             if individual.superior_majority_view == None:
+                individual.superior_majority_view = individual.belief.copy()
                 for index in range(self.policy_num):
                     # if the consensus is zero, agents will ignore zero (no new exploration)
                     if policy[index] == 0:

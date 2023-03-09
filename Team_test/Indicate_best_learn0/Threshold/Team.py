@@ -44,14 +44,14 @@ class Team:
         for individual in self.individuals:
             # If IS the best one
             if individual.superior_majority_view == None:
+                individual.superior_majority_view = individual.belief.copy()
                 for index in range(self.policy_num):
-                    if sum(individual.superior_majority_view
-                           [index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
-                        individual.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
-                            self.reality.policy_2_belief(policy=policy[index])
+                    # if the consensus is zero, agents will ignore zero (no new exploration)
+                    individual.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
+                        self.reality.policy_2_belief(policy=policy[index])
             else:  # NOT the best one
                 for index in range(self.policy_num):
-                    # if the consensus is zero, agents will learn from chaos (exploration)
+                    # if the consensus is zero, agents will ignore zero (no new exploration)
                     if sum(individual.superior_majority_view
                            [index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
                         individual.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
