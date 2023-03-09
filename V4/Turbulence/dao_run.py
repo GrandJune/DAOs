@@ -49,7 +49,6 @@ if __name__ == '__main__':
     repetition = 200
     concurrency = 50
     search_loop = 1000
-    threshold_ratio = 0.5
     # DVs
     performance_across_para = []
     consensus_performance_across_para = []
@@ -73,7 +72,7 @@ if __name__ == '__main__':
             sema.acquire()
             p = mp.Process(target=func,
                            args=(
-                           m, s, n, group_size, lr, turbulence_rate, threshold_ratio, search_loop, loop, return_dict,
+                           m, s, n, group_size, lr, turbulence_rate, search_loop, loop, return_dict,
                            sema))
             jobs.append(p)
             p.start()
