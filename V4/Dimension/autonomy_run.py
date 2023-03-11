@@ -31,9 +31,9 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 90
+    m_list = [60, 90, 120, 150]
     s = 1
-    n_list = [280, 350, 420, 490]
+    n = 350
     lr = 0.3
     repetition = 200
     concurrency = 50
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     variance_across_para_time = []
     percentile_10_across_para_time = []
     percentile_90_across_para_time = []
-    for n in n_list:
+    for m in m_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
         return_dict = manager.dict()
@@ -127,27 +127,27 @@ if __name__ == '__main__':
         percentile_90_across_para_time.append(percentile_90_across_time)
 
     # save the without-time data
-    with open("autonomy_performance_across_n", 'wb') as out_file:
+    with open("autonomy_performance_across_m", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("autonomy_diversity_across_n", 'wb') as out_file:
+    with open("autonomy_diversity_across_m", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("autonomy_variance_across_n", 'wb') as out_file:
+    with open("autonomy_variance_across_m", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
-    with open("autonomy_percentile_10_across_n", 'wb') as out_file:
+    with open("autonomy_percentile_10_across_m", 'wb') as out_file:
         pickle.dump(percentile_10_across_para, out_file)
-    with open("autonomy_percentile_90_across_n", 'wb') as out_file:
+    with open("autonomy_percentile_90_across_m", 'wb') as out_file:
         pickle.dump(percentile_90_across_para, out_file)
 
     # save the with-time data
-    with open("autonomy_performance_across_n_time", 'wb') as out_file:
+    with open("autonomy_performance_across_m_time", 'wb') as out_file:
         pickle.dump(performance_across_para_time, out_file)
-    with open("autonomy_diversity_across_n_time", 'wb') as out_file:
+    with open("autonomy_diversity_across_m_time", 'wb') as out_file:
         pickle.dump(diversity_across_para_time, out_file)
-    with open("autonomy_variance_across_n_time", 'wb') as out_file:
+    with open("autonomy_variance_across_m_time", 'wb') as out_file:
         pickle.dump(variance_across_para_time, out_file)
-    with open("autonomy_percentile_10_across_n_time", 'wb') as out_file:
+    with open("autonomy_percentile_10_across_m_time", 'wb') as out_file:
         pickle.dump(percentile_10_across_para_time, out_file)
-    with open("autonomy_percentile_10_across_n_time", 'wb') as out_file:
+    with open("autonomy_percentile_10_across_m_time", 'wb') as out_file:
         pickle.dump(percentile_90_across_para_time, out_file)
 
     t1 = time.time()
