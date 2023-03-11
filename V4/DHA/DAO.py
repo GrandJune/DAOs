@@ -173,7 +173,7 @@ if __name__ == '__main__':
     m = 60
     s = 1
     n = 350
-    search_loop = 100
+    search_loop = 200
     lr = 0.3
     alpha = 5
     group_size = 7  # the smallest group size in Fang's model: 7
@@ -184,8 +184,19 @@ if __name__ == '__main__':
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.6)
-        print(dao.consensus)
+        dao.search(threshold_ratio=0.55)
+        print("Consensus: ", dao.consensus)
+        best_count_list = []
+        for team in dao.teams:
+            count_best = 0
+            for individual in team.individuals:
+                if individual.best_one:
+                    count_best += 1
+            best_count_list.append(count_best)
+        fully_best_proportion = [1 for each in best_count_list if each == 7]
+        fully_best_proportion = sum(fully_best_proportion) / (len(fully_best_proportion) + 1 )
+        print("Best Proportion: ", fully_best_proportion)
+
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].policy,
         #       dao.teams[0].individuals[0].payoff)
         print("--{0}--".format(period))

@@ -24,6 +24,7 @@ class Individual:
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)  # a fake policy for voting
         self.superior_majority_view = None
+        self.best_one = False  # indicator for those best-performing agents
 
     def learning_from_belief(self, belief=None):
         if len(belief) != self.m:
