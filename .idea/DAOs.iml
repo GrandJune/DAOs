@@ -21,6 +21,7 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Supervision" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/TT" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/TTT" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Threshold" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turnover" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4-2" isTestSource="false" />
@@ -42,7 +43,6 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Typology" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/TurbulenceEvery" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Votings" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4/chaos0" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/ignore0" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Christina2010" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
