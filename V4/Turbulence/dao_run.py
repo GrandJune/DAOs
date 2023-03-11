@@ -73,7 +73,7 @@ if __name__ == '__main__':
             sema.acquire()
             p = mp.Process(target=func,
                            args=(
-                           m, s, n, group_size, lr, turbulence_rate, threshold_ratio, search_loop, loop, return_dict,
+                           m, s, n, group_size, lr, turbulence_rate, search_loop, loop, return_dict,
                            sema))
             jobs.append(p)
             p.start()
