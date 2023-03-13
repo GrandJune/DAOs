@@ -47,6 +47,7 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Dimension" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/TurbulenceFreq" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/TurbulenceRate" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/TurbulenceStrategy" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Christina2010" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/March1991" />
