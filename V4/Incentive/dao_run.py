@@ -33,8 +33,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, incentive=None,
         for _ in range(search_loop):
             dao.incentive_search(threshold_ratio=0.5, incentive=incentive)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
-                         dao.diversity_across_time, dao.variance_across_time, dao.percentile_10_across_time,
-                         dao.percentile_90_across_time, dao.gini_across_time]
+                         dao.diversity_across_time, dao.variance_across_time]
     sema.release()
 
 
@@ -55,16 +54,12 @@ if __name__ == '__main__':
     consensus_across_para = []
     diversity_across_para = []
     variance_across_para = []
-    percentile_10_across_para = []
-    percentile_90_across_para = []
     gini_across_para = []
 
     performance_across_para_hyper = []
     consensus_across_para_hyper = []
     diversity_across_para_hyper = []
     variance_across_para_hyper = []
-    percentile_10_across_para_hyper = []
-    percentile_90_across_para_hyper = []
     gini_across_para_hyper = []
     for incentive in incentive_list:
         # before taking an average across repetitions

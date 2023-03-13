@@ -24,8 +24,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
     for _ in range(search_loop):
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
-                         hierarchy.diversity_across_time, hierarchy.variance_across_time,
-                         hierarchy.percentile_10_across_time, hierarchy.percentile_90_across_time]
+                         hierarchy.diversity_across_time, hierarchy.variance_across_time]
     sema.release()
 
 
@@ -44,8 +43,6 @@ if __name__ == '__main__':
     superior_performance_across_time_hyper = []
     diversity_across_time_hyper = []
     variance_across_time_hyper = []
-    percentile_10_across_time_hyper = []
-    percentile_90_across_time_hyper = []
     for hyper_loop in range(hyper_iteration):
         sema = Semaphore(concurrency)
         manager = mp.Manager()
@@ -64,29 +61,21 @@ if __name__ == '__main__':
         superior_performance_across_time_hyper += [result[1] for result in results]
         diversity_across_time_hyper += [result[2] for result in results]
         variance_across_time_hyper += [result[3] for result in results]
-        percentile_10_across_time_hyper += [result[4] for result in results]
-        percentile_90_across_time_hyper += [result[5] for result in results]
 
     performance_across_time_final = []
     superior_performance_across_time_final = []
     diversity_across_time_final = []
     variance_across_time_final = []
-    percentile_10_across_time_final = []
-    percentile_90_across_time_final = []
     for index in range(search_loop):
         temp_performance = sum([result[index] for result in performance_across_time_hyper]) / len(performance_across_time_hyper)
         temp_superior = sum([result[index] for result in superior_performance_across_time_hyper]) / len(superior_performance_across_time_hyper)
         temp_diveristy = sum([result[index] for result in diversity_across_time_hyper]) / len(diversity_across_time_hyper)
         temp_variance = sum([result[index] for result in variance_across_time_hyper]) / len(variance_across_time_hyper)
-        temp_percentile_10 = sum([result[index] for result in percentile_10_across_time_hyper]) / len(percentile_10_across_time_hyper)
-        temp_percentile_90 = sum([result[index] for result in percentile_90_across_time_hyper]) / len(percentile_90_across_time_hyper)
 
         performance_across_time_final.append(temp_performance)
         superior_performance_across_time_final.append(temp_superior)
         diversity_across_time_final.append(temp_diveristy)
         variance_across_time_final.append(temp_variance)
-        percentile_10_across_time_final.append(temp_percentile_10)
-        percentile_90_across_time_final.append(temp_percentile_90)
 
     with open("hierarchy_performance", 'wb') as out_file:
         pickle.dump(performance_across_time_final, out_file)
@@ -96,10 +85,6 @@ if __name__ == '__main__':
         pickle.dump(diversity_across_time_final, out_file)
     with open("hierarchy_variance", 'wb') as out_file:
         pickle.dump(variance_across_time_final, out_file)
-    with open("hierarchy_percentile_10", 'wb') as out_file:
-        pickle.dump(percentile_10_across_time_final, out_file)
-    with open("hierarchy_percentile_90", 'wb') as out_file:
-        pickle.dump(percentile_90_across_time_final, out_file)
 
     # save the original data to assess the iteration
     with open("hierarchy_original_performance", 'wb') as out_file:
@@ -110,11 +95,6 @@ if __name__ == '__main__':
         pickle.dump(diversity_across_time_hyper, out_file)
     with open("hierarchy_original_variance", 'wb') as out_file:
         pickle.dump(variance_across_time_hyper, out_file)
-    with open("hierarchy_original_percentile_10", 'wb') as out_file:
-        pickle.dump(percentile_10_across_time_hyper, out_file)
-    with open("hierarchy_original_percentile_90", 'wb') as out_file:
-        pickle.dump(percentile_90_across_time_hyper, out_file)
-
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))

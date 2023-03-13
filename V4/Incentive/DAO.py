@@ -45,6 +45,8 @@ class DAO:
         self.variance_across_time = []
         self.diversity_across_time = []
         self.consensus_performance_across_time = []
+        self.gini_across_time = []
+        self.reward_num_across_time = []
 
     def search(self, threshold_ratio=None, token=False):
         # Consensus Formation
@@ -95,6 +97,7 @@ class DAO:
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
+        self.gini_across_time.append(0)
 
     def incentive_search(self, threshold_ratio=None, incentive=1):
         new_consensus = []
@@ -115,8 +118,10 @@ class DAO:
             else:
                 new_consensus.append(0)
         # Once there is a change in consensus, reward the contributor
+        reward_count = 0
         for old_bit, new_bit, index in zip(self.consensus, new_consensus, range(self.policy_num)):
             if old_bit != new_bit:
+                reward_count += 1
                 for individual in individuals:
                     if individual.policy[index] == new_bit:
                         individual.token += incentive / self.policy_num
@@ -135,6 +140,8 @@ class DAO:
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
+        self.gini_across_time.append(self.get_gini())
+        self.reward_num_across_time.append(reward_count)
 
     def get_diversity(self):
         diversity = 0
@@ -155,6 +162,19 @@ class DAO:
                 acc += 1
         return acc
 
+    def get_gini(self):
+        array = []
+        for team in self.teams:
+            for individual in team.individuals:
+                array.append(individual.token)
+        array = sorted(array)
+        n = len(array)
+        coefficient = 0
+        for i, value in enumerate(array):
+            coefficient += (2 * i - n) * value
+        coefficient /= n * sum(array)
+        return coefficient
+
     def turnover(self, turnover_rate=None):
         if turnover_rate:
             for team in self.teams:
@@ -166,20 +186,20 @@ class DAO:
 if __name__ == '__main__':
     m = 60
     s = 1
-    n = 350
+    n = 280
     search_loop = 100
     lr = 0.3
-    alpha = 5
+    alpha = 3
     group_size = 7  # the smallest group size in Fang's model: 7
-    reality = Reality(m=m, s=s, version="Rushed", alpha=alpha)
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, alpha=alpha)
+    reality = Reality(m=m, s=s, version="Rushed", alpha=3)
+    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, alpha=3)
     # dao.teams[0].individuals[0].belief = reality.real_code.copy()
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.6)
-        print(dao.consensus)
+        dao.incentive_search(threshold_ratio=0.5, incentive=50)
+        # print(period, dao.consensus, reality.real_policy, reality.real_code)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].policy,
         #       dao.teams[0].individuals[0].payoff)
         print("--{0}--".format(period))
@@ -213,6 +233,26 @@ if __name__ == '__main__':
     plt.title('Variance')
     plt.legend(frameon=False, ncol=3, fontsize=10)
     # plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
+
+    # Gini Index
+    plt.plot(x, dao.gini_across_time, "k-", label="DAO")
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Gini Index', fontweight='bold', fontsize=10)
+    plt.title('Gini Index')
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    # plt.savefig("DAO_gini.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
+
+    # Reward number
+    plt.plot(x, dao.reward_num_across_time, "k-", label="DAO")
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Reward Number', fontweight='bold', fontsize=10)
+    plt.title('Reward Number')
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    # plt.savefig("DAO_gini.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 

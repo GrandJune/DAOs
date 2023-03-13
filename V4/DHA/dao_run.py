@@ -25,8 +25,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
     for _ in range(search_loop):
         dao.search(threshold_ratio=threshold_ratio)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
-                         dao.diversity_across_time, dao.variance_across_time, dao.percentile_10_across_time,
-                         dao.percentile_90_across_time]
+                         dao.diversity_across_time, dao.variance_across_time]
     sema.release()
 
 
@@ -46,8 +45,6 @@ if __name__ == '__main__':
     consensus_hyper = []
     diversity_hyper = []
     variance_hyper = []
-    percentile_10_hyper = []
-    percentile_90_hyper = []
     for hyper_loop in range(hyper_iteration):
         sema = Semaphore(concurrency)
         manager = mp.Manager()
@@ -65,8 +62,6 @@ if __name__ == '__main__':
         consensus_hyper += [result[1] for result in results]
         diversity_hyper += [result[2] for result in results]
         variance_hyper += [result[3] for result in results]
-        percentile_10_hyper += [result[4] for result in results]
-        percentile_90_hyper += [result[5] for result in results]
 
     performance_final = []
     consensus_final = []
@@ -79,14 +74,10 @@ if __name__ == '__main__':
         temp_consensus = sum([result[index] for result in consensus_hyper]) / len(consensus_hyper)
         temp_diversity = sum([result[index] for result in diversity_hyper]) / len(diversity_hyper)
         temp_variance = sum([result[index] for result in variance_hyper]) / len(variance_hyper)
-        temp_percentile_10 = sum([result[index] for result in percentile_10_hyper]) / len(percentile_10_hyper)
-        temp_percentile_90 = sum([result[index] for result in percentile_90_hyper]) / len(percentile_90_hyper)
         performance_final.append(temp_performance)
         consensus_final.append(temp_consensus)
         diversity_final.append(temp_diversity)
         variance_final.append(temp_variance)
-        percentile_10_final.append(temp_percentile_10)
-        percentile_90_final.append(temp_percentile_90)
 
     with open("dao_performance", 'wb') as out_file:
         pickle.dump(performance_final, out_file)
@@ -96,10 +87,6 @@ if __name__ == '__main__':
         pickle.dump(diversity_final, out_file)
     with open("dao_variance", 'wb') as out_file:
         pickle.dump(variance_final, out_file)
-    with open("dao_percentile_10", 'wb') as out_file:
-        pickle.dump(percentile_10_final, out_file)
-    with open("dao_percentile_90", 'wb') as out_file:
-        pickle.dump(percentile_90_final, out_file)
 
     # save the original data to assess the iteration
     with open("dao_original_performance", 'wb') as out_file:
@@ -110,10 +97,7 @@ if __name__ == '__main__':
         pickle.dump(diversity_hyper, out_file)
     with open("dao_original_variance", 'wb') as out_file:
         pickle.dump(variance_hyper, out_file)
-    with open("dao_original_percentile_10", 'wb') as out_file:
-        pickle.dump(percentile_10_hyper, out_file)
-    with open("dao_original_percentile_90", 'wb') as out_file:
-        pickle.dump(percentile_90_hyper, out_file)
+
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
 
