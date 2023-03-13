@@ -42,8 +42,6 @@ class DAO:
                 team.individuals.append(individual)
             self.teams.append(team)
         self.performance_across_time = []
-        self.percentile_10_across_time = []
-        self.percentile_90_across_time = []
         self.variance_across_time = []
         self.diversity_across_time = []
         self.consensus_performance_across_time = []
@@ -94,8 +92,6 @@ class DAO:
             performance_list += [individual.payoff for individual in team.individuals]
 
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        self.percentile_10_across_time.append(np.percentile(performance_list, 10))
-        self.percentile_90_across_time.append(np.percentile(performance_list, 90))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
@@ -136,8 +132,6 @@ class DAO:
             performance_list += [individual.payoff for individual in team.individuals]
 
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        self.percentile_10_across_time.append(np.percentile(performance_list, 10))
-        self.percentile_90_across_time.append(np.percentile(performance_list, 90))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
@@ -193,8 +187,6 @@ if __name__ == '__main__':
     x = range(search_loop)
 
     plt.plot(x, dao.performance_across_time, "k-", label="Mean")
-    plt.plot(x, dao.percentile_90_across_time, "k--", label="90th percentile")
-    plt.plot(x, dao.percentile_10_across_time, "k:", label="10th percentile")
     plt.plot(x, dao.consensus_performance_across_time, "r-", label="Consensus")
     plt.title('Performance')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)

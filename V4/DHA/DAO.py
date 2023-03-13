@@ -42,8 +42,6 @@ class DAO:
                 team.individuals.append(individual)
             self.teams.append(team)
         self.performance_across_time = []
-        self.percentile_10_across_time = []
-        self.percentile_90_across_time = []
         self.variance_across_time = []
         self.diversity_across_time = []
         self.consensus_performance_across_time = []
@@ -94,8 +92,6 @@ class DAO:
             performance_list += [individual.payoff for individual in team.individuals]
 
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        self.percentile_10_across_time.append(np.percentile(performance_list, 10))
-        self.percentile_90_across_time.append(np.percentile(performance_list, 90))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
@@ -136,8 +132,6 @@ class DAO:
             performance_list += [individual.payoff for individual in team.individuals]
 
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        self.percentile_10_across_time.append(np.percentile(performance_list, 10))
-        self.percentile_90_across_time.append(np.percentile(performance_list, 90))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
@@ -173,7 +167,7 @@ if __name__ == '__main__':
     m = 60
     s = 1
     n = 350
-    search_loop = 200
+    search_loop = 100
     lr = 0.3
     alpha = 5
     group_size = 7  # the smallest group size in Fang's model: 7
@@ -184,19 +178,8 @@ if __name__ == '__main__':
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.55)
-        print("Consensus: ", dao.consensus)
-        best_count_list = []
-        for team in dao.teams:
-            count_best = 0
-            for individual in team.individuals:
-                if individual.best_one:
-                    count_best += 1
-            best_count_list.append(count_best)
-        fully_best_proportion = [1 for each in best_count_list if each == 7]
-        fully_best_proportion = sum(fully_best_proportion) / (len(fully_best_proportion) + 1 )
-        print("Best Proportion: ", fully_best_proportion)
-
+        dao.search(threshold_ratio=0.6)
+        print(dao.consensus)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].policy,
         #       dao.teams[0].individuals[0].payoff)
         print("--{0}--".format(period))
@@ -204,8 +187,6 @@ if __name__ == '__main__':
     x = range(search_loop)
 
     plt.plot(x, dao.performance_across_time, "k-", label="Mean")
-    plt.plot(x, dao.percentile_90_across_time, "k--", label="90th percentile")
-    plt.plot(x, dao.percentile_10_across_time, "k:", label="10th percentile")
     plt.plot(x, dao.consensus_performance_across_time, "r-", label="Consensus")
     plt.title('Performance')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)

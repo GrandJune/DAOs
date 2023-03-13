@@ -55,8 +55,6 @@ class Hierarchy:
         # DVs
         self.performance_across_time = []
         self.variance_across_time = []
-        self.percentile_10_across_time = []
-        self.percentile_90_across_time = []
         self.diversity_across_time = []
         self.superior_performance_across_time = []
 
@@ -73,8 +71,6 @@ class Hierarchy:
             performance_list += [individual.payoff for individual in team.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
-        self.percentile_10_across_time.append(np.percentile(performance_list, 10))
-        self.percentile_90_across_time.append(np.percentile(performance_list, 90))
         self.diversity_across_time.append(self.get_diversity())
 
     def get_diversity(self):
@@ -122,8 +118,6 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     x = range(search_iteration)
     plt.plot(x, hierarchy.performance_across_time, "k-", label="Mean")
-    plt.plot(x, hierarchy.percentile_90_across_time, "k--", label="90th Percentile")
-    plt.plot(x, hierarchy.percentile_10_across_time, "k:", label="10th Percentile")
     plt.plot(x, hierarchy.superior.performance_average_across_time, "r-", label="Superior")
     plt.title('Performance')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)

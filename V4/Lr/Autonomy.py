@@ -40,8 +40,6 @@ class Autonomy:
                 team.individuals.append(individual)
             self.teams.append(team)
         self.performance_across_time = []
-        self.percentile_10_across_time = []
-        self.percentile_90_across_time = []
         self.diversity_across_time = []
         self.variance_across_time = []
 
@@ -56,8 +54,6 @@ class Autonomy:
             performance_list += [individual.payoff for individual in team.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
-        self.percentile_10_across_time.append(np.percentile(performance_list, 10))
-        self.percentile_90_across_time.append(np.percentile(performance_list, 90))
         self.diversity_across_time.append(self.get_diversity())
 
     def get_majority_view(self, superior_belief=None):
@@ -115,8 +111,6 @@ if __name__ == '__main__':
 
     x = range(100)
     plt.plot(x, autonomy.performance_across_time, "k-", label="Autonomy")
-    plt.plot(x, autonomy.percentile_10_across_time, "k--", label="10th percentile")
-    plt.plot(x, autonomy.percentile_90_across_time, "k:", label="90th percentile")
     plt.title('Performance')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
