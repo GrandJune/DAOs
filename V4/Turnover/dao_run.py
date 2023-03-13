@@ -26,10 +26,8 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, turnover_rate=None,
         dao.turnover(turnover_rate=turnover_rate)
         dao.search(threshold_ratio=0.5, token=False)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
-                         dao.diversity_across_time, dao.variance_across_time, dao.percentile_10_across_time,
-                         dao.percentile_90_across_time]
+                         dao.diversity_across_time, dao.variance_across_time]
     sema.release()
-
 
 
 if __name__ == '__main__':
@@ -48,15 +46,11 @@ if __name__ == '__main__':
     consensus_performance_across_para = []
     diversity_across_para = []
     variance_across_para = []
-    percentile_10_across_para = []
-    percentile_90_across_para = []
 
     performance_across_para_time = []
     diversity_across_para_time = []
     consensus_performance_across_para_time = []
     variance_across_para_time = []
-    percentile_10_across_para_time = []
-    percentile_90_across_para_time = []
     for turnover_rate in turnover_rate_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
@@ -77,8 +71,6 @@ if __name__ == '__main__':
         consensus_performance_across_repeat = [result[1][-1] for result in results]
         diversity_across_repeat = [result[2][-1] for result in results]
         variance_across_repeat = [result[3][-1] for result in results]
-        percentile_10_across_repeat = [result[4][-1] for result in results]
-        percentile_90_across_repeat = [result[5][-1] for result in results]
 
         # take an average across repetition, only one value for one parameter
         performance_across_para.append(sum(performance_across_repeat) / len(performance_across_repeat))
@@ -86,24 +78,17 @@ if __name__ == '__main__':
             sum(consensus_performance_across_repeat) / len(consensus_performance_across_repeat))
         diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
         variance_across_para.append(sum(variance_across_repeat) / len(variance_across_repeat))
-        percentile_10_across_para.append(sum(percentile_10_across_repeat) / len(percentile_10_across_repeat))
-        percentile_90_across_para.append(sum(percentile_90_across_repeat) / len(percentile_90_across_repeat))
 
         # keep the time dimension
         performance_across_repeat_time = [result[0] for result in results]
         consensus_performance_across_repeat_time = [result[1] for result in results]
         diversity_across_repeat_time = [result[2] for result in results]
         variance_across_repeat_time = [result[3] for result in results]
-        percentile_10_across_repeat_time = [result[4] for result in results]
-        percentile_90_across_repeat_time = [result[5] for result in results]
-
         # take an average across repetition, for each time iteration, integrate into 600 values for one parameter
         performance_across_time = []  # under the same parameter
         consensus_performance_across_time = []
         diversity_across_time = []
         variance_across_time = []
-        percentile_10_across_time = []
-        percentile_90_across_time = []
         for period in range(search_loop):
             temp_performance = [performance_list[period] for performance_list in performance_across_repeat_time]
             performance_across_time.append(sum(temp_performance) / len(temp_performance))
@@ -116,19 +101,11 @@ if __name__ == '__main__':
 
             temp_variance = [variance_list[period] for variance_list in variance_across_repeat_time]
             variance_across_time.append(sum(temp_variance) / len(temp_variance))
-
-            temp_percentile_10 = [result[period] for result in percentile_10_across_repeat_time]
-            percentile_10_across_time.append(sum(temp_percentile_10) / len(temp_percentile_10))
-
-            temp_percentile_90 = [result[period] for result in percentile_90_across_repeat_time]
-            percentile_90_across_time.append(sum(temp_percentile_90) / len(temp_percentile_10))
         # retain the time dimension
         performance_across_para_time.append(performance_across_time)
         consensus_performance_across_para_time.append(consensus_performance_across_time)
         diversity_across_para_time.append(diversity_across_time)
         variance_across_para_time.append(variance_across_time)
-        percentile_10_across_para_time.append(percentile_10_across_time)
-        percentile_90_across_para_time.append(percentile_90_across_time)
 
     # save the without-time data (ready for figure)
     with open("dao_performance_across_turnover", 'wb') as out_file:
@@ -139,10 +116,6 @@ if __name__ == '__main__':
         pickle.dump(diversity_across_para, out_file)
     with open("dao_variance_across_turnover", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
-    with open("dao_percentile_10_across_turnover", 'wb') as out_file:
-        pickle.dump(percentile_10_across_para, out_file)
-    with open("dao_percentile_90_across_turnover", 'wb') as out_file:
-        pickle.dump(percentile_90_across_para, out_file)
 
     # save the with-time data
     with open("dao_performance_across_turnover_time", 'wb') as out_file:
@@ -153,10 +126,6 @@ if __name__ == '__main__':
         pickle.dump(diversity_across_para_time, out_file)
     with open("dao_variance_across_turnover_time", 'wb') as out_file:
         pickle.dump(variance_across_para_time, out_file)
-    with open("dao_percentile_10_across_turnover_time", 'wb') as out_file:
-        pickle.dump(percentile_10_across_para_time, out_file)
-    with open("dao_percentile_90_across_turnover_time", 'wb') as out_file:
-        pickle.dump(percentile_90_across_para_time, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
