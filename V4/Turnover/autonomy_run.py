@@ -40,7 +40,7 @@ if __name__ == '__main__':
     lr = 0.3
     repetition = 200
     concurrency = 50
-    search_loop = 300
+    search_loop = 1000
     # DVs
     # after taking an average across repetitions
     performance_across_para = []

@@ -23,7 +23,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=0.1, p2=0.9)
     for period in range(search_loop):
         # Turbulence first
-        if (period + 1) % 100 == 0:
+        if (period + 1) % 50 == 0:
             reality.change(reality_change_rate=0.1)
             # update the individual payoff
             for team in hierarchy.teams:
@@ -35,7 +35,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
             # update the code payoff
             hierarchy.superior.code_payoff = reality.get_policy_payoff(policy=hierarchy.superior.code)
         # Then turnover
-        hierarchy.turnover(turnover_rate=0.1)
+        hierarchy.turnover(turnover_rate=0.01)
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
                          hierarchy.diversity_across_time, hierarchy.variance_across_time]
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     lr = 0.3
     hyper_iteration = 10
     repetition = 50
-    search_loop = 1000
+    search_loop = 2000
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
     # after taking an average across repetitions

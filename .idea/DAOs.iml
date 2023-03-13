@@ -48,14 +48,15 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/TurbulenceFreq" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/TurbulenceRate" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/TurbulenceStrategy" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/Christina2010" />
-      <excludeFolder url="file://$MODULE_DIR$/Consensus" />
-      <excludeFolder url="file://$MODULE_DIR$/March1991" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Threshold2" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />
-      <excludeFolder url="file://$MODULE_DIR$/Identity" />
-      <excludeFolder url="file://$MODULE_DIR$/Consensus_v1" />
-      <excludeFolder url="file://$MODULE_DIR$/.pytest_cache" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/Consensus_v1" />
+      <excludeFolder url="file://$MODULE_DIR$/Consensus" />
+      <excludeFolder url="file://$MODULE_DIR$/.pytest_cache" />
+      <excludeFolder url="file://$MODULE_DIR$/Christina2010" />
+      <excludeFolder url="file://$MODULE_DIR$/Identity" />
+      <excludeFolder url="file://$MODULE_DIR$/March1991" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.8 (base) (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

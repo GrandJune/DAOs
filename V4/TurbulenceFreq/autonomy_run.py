@@ -38,7 +38,7 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     s = 1
-    turbulence_freq_list = [10, 50, 100]
+    turbulence_freq_list = [10, 30, 50, 70, 90]
     group_size = 7
     n = 350
     lr = 0.3
