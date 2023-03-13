@@ -17,14 +17,14 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None, turbulence_rate=None,
+def func(m=None, s=None, n=None, group_size=None, lr=None, turbulence_freq=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=0.1, p2=0.9)
     for period in range(search_loop):
-        if (period + 1) % 100 == 0:
-            reality.change(reality_change_rate=turbulence_rate)
+        if (period + 1) % turbulence_freq == 0:
+            reality.change(reality_change_rate=0.1)
             # update the individual payoff
             for team in hierarchy.teams:
                 for individual in team.individuals:
@@ -44,13 +44,13 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     s = 1
-    turbulence_rate_list = [0.1, 0.2, 0.3, 0.4, 0.5]
+    turbulence_freq_list = [10, 50, 100]
     group_size = 7
     n = 350
     lr = 0.3
     repetition = 200
     concurrency = 50
-    search_loop = 1000
+    search_loop = 2000
     # DVs
     performance_across_para = []
     superior_performance_across_para = []
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     superior_performance_across_para_time = []
     diversity_across_para_time = []
     variance_across_para_time = []
-    for turbulence_rate in turbulence_rate_list:
+    for turbulence_freq in turbulence_freq_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
         return_dict = manager.dict()
@@ -69,7 +69,7 @@ if __name__ == '__main__':
         for loop in range(repetition):
             sema.acquire()
             p = mp.Process(target=func,
-                           args=(m, s, n, group_size, lr, turbulence_rate, search_loop, loop, return_dict, sema))
+                           args=(m, s, n, group_size, lr, turbulence_freq, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
