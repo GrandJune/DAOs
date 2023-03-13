@@ -8,7 +8,6 @@
       <sourceFolder url="file://$MODULE_DIR$/Consensus" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Marlo2022" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Consensus_v1/DAOs" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V3" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Aggregation" isTestSource="false" />
@@ -48,6 +47,7 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/TurbulenceFreq" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/TurbulenceRate" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/TurbulenceStrategy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4.2" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Threshold2" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
