@@ -21,15 +21,15 @@ class Team:
         self.policy = [0] * self.policy_num
         self.belief = [0] * self.m
         self.token = None
+        self.token_active = None  # For extensions on delegation
 
     def form_individual_majority_view(self):
         for individual in self.individuals:
             superior_belief_pool = [other.belief for other in self.individuals
                                     if other.payoff > individual.payoff]
             if len(superior_belief_pool) == 0:
-                # The best performing actors will not learn from peers (learn from itself)
-                # This is for the next function, in which we can adjust the majority view toward consensus
-                individual.superior_majority_view = individual.belief.copy()
+                # The best performing actors will not learn from peers
+                individual.superior_majority_view = None
             else:
                 majority_view = []
                 for i in range(self.m):
@@ -44,8 +44,10 @@ class Team:
 
     def adjust_majority_view_2_consensus(self, policy=None):
         for individual in self.individuals:
+            if not individual.superior_majority_view:
+                continue
             for index in range(self.policy_num):
-                # if the consensus is zero, agents will learn from chaos (exploration)
+                # if the consensus is zero, agents will learn from chaos
                 if sum(individual.superior_majority_view
                        [index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
                     individual.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \

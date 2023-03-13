@@ -158,21 +158,5 @@ if __name__ == '__main__':
     with open("dao_percentile_90_across_threshold_time", 'wb') as out_file:
         pickle.dump(percentile_90_across_para_time, out_file)
 
-    import matplotlib.pyplot as plt
-    from matplotlib import container
-
-    x = threshold_ratio_list
-    fig, (ax1) = plt.subplots(1, 1)
-    ax1.errorbar(x, performance_across_para, yerr=variance_across_para, color="k", fmt="--", capsize=5, capthick=0.8,
-                 ecolor="k", label="DAO")
-    plt.xlabel('Threshold', fontweight='bold', fontsize=10)
-    plt.ylabel('Performance', fontweight='bold', fontsize=10)
-    plt.xticks(x)
-    handles, labels = ax1.get_legend_handles_labels()
-    handles = [h[0] if isinstance(h, container.ErrorbarContainer) else h for h in handles]
-    plt.legend(handles, labels, numpoints=1)
-    plt.savefig("Performance_across_threshold.png", transparent=True, dpi=500)
-    plt.clf()
-
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
