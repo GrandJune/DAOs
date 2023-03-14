@@ -94,16 +94,12 @@ if __name__ == '__main__':
         superior_performance_across_repeat_time = [result[1] for result in results]
         diversity_across_repeat_time = [result[2] for result in results]
         variance_across_repeat_time = [result[3] for result in results]
-        percentile_10_across_repeat_time = [result[4] for result in results]
-        percentile_90_across_repeat_time = [result[5] for result in results]
 
         # take an average across repetition, for each time iteration, integrate into 600 values for one parameter
         performance_across_time = []  # under the same parameter
         superior_performance_across_time = []
         diversity_across_time = []
         variance_across_time = []
-        percentile_10_across_time = []
-        percentile_90_across_time = []
         for period in range(search_loop):
             temp_performance = [performance_list[period] for performance_list in performance_across_repeat_time]
             performance_across_time.append(sum(temp_performance) / len(temp_performance))
