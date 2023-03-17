@@ -33,7 +33,7 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     s = 1
-    group_size_list = [7, 14, 70]
+    group_size_list = [7, 14, 28]
     n = 350
     lr = 0.3
     repetition = 200

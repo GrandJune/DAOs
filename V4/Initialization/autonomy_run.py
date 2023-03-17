@@ -119,19 +119,19 @@ if __name__ == '__main__':
         variance_across_para_time.append(variance_across_time)
 
     # save the without-time data
-    with open("autonomy_performance_across_z", 'wb') as out_file:
+    with open("autonomy_performance_across_i", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("autonomy_diversity_across_z", 'wb') as out_file:
+    with open("autonomy_diversity_across_i", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("autonomy_variance_across_z", 'wb') as out_file:
+    with open("autonomy_variance_across_i", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
 
     # save the with-time data
-    with open("autonomy_performance_across_z_time", 'wb') as out_file:
+    with open("autonomy_performance_across_i_time", 'wb') as out_file:
         pickle.dump(performance_across_para_time, out_file)
-    with open("autonomy_diversity_across_z_time", 'wb') as out_file:
+    with open("autonomy_diversity_across_i_time", 'wb') as out_file:
         pickle.dump(diversity_across_para_time, out_file)
-    with open("autonomy_variance_across_z_time", 'wb') as out_file:
+    with open("autonomy_variance_across_i_time", 'wb') as out_file:
         pickle.dump(variance_across_para_time, out_file)
 
     t1 = time.time()

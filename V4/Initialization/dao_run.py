@@ -25,7 +25,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
     # initialization
     for team in dao.teams:
         for individual in team.individuals:
-            bounded_payoff =  np.random.uniform(initialization_bar, initialization_bar+0.1)
+            bounded_payoff = np.random.uniform(initialization_bar, initialization_bar+0.1)
             correct_num = math.ceil(bounded_payoff * m)
             correct_indexes = np.random.choice(range(m), correct_num, replace=False)
             for index in range(m):
