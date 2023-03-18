@@ -45,13 +45,18 @@ class Team:
     def adjust_majority_view_2_consensus(self, policy=None):
         for individual in self.individuals:
             if not individual.superior_majority_view:
-                continue
-            for index in range(self.policy_num):
-                # if the consensus is zero, agents will learn from chaos
-                if sum(individual.superior_majority_view
-                       [index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
-                    individual.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
+                consensus_belief = [0] * self.m
+                for index in range(self.policy_num):
+                    consensus_belief[index * self.alpha: (index + 1) * self.alpha] = \
                         self.reality.policy_2_belief(policy=policy[index])
+                    individual.superior_majority_view = consensus_belief
+            else:
+                for index in range(self.policy_num):
+                    # if the consensus is zero, agents will learn from chaos
+                    if sum(individual.superior_majority_view
+                           [index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
+                        individual.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
+                            self.reality.policy_2_belief(policy=policy[index])
 
     def confirm(self, policy=None):
         # individual first confirm to the supervision

@@ -49,6 +49,7 @@ class Team:
                 for index in range(self.policy_num):
                     consensus_belief[index * self.alpha: (index + 1) * self.alpha] = \
                         self.reality.policy_2_belief(policy=policy[index])
+                if self.reality.get_payoff(belief=consensus_belief) > individual.payoff:
                     individual.superior_majority_view = consensus_belief
             else:
                 for index in range(self.policy_num):
