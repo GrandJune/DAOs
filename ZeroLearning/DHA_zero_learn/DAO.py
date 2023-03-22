@@ -46,42 +46,15 @@ class DAO:
         self.diversity_across_time = []
         self.consensus_performance_across_time = []
 
-    def search(self, threshold_ratio=None, token=False):
+    def search(self):
         # Consensus Formation
-        new_consensus = []
         individuals = []
         for team in self.teams:
             individuals += team.individuals
         for individual in individuals:
             individual.policy = self.reality.belief_2_policy(belief=individual.belief)
-
-        if not token:
-            threshold = threshold_ratio * self.n
-            for i in range(self.policy_num):
-                crowd_opinion = [individual.policy[i] for individual in individuals]
-                positive_count = sum([1 for each in crowd_opinion if each == 1])
-                negative_count = sum([1 for each in crowd_opinion if each == -1])
-                if (positive_count > threshold) and sum(crowd_opinion) > 0:
-                    new_consensus.append(1)
-                elif (negative_count > threshold) and sum(crowd_opinion) < 0:
-                    new_consensus.append(-1)
-                else:
-                    new_consensus.append(0)
-
-        else:  # With token
-            threshold = threshold_ratio * sum([individual.token for individual in individuals])
-            for i in range(self.policy_num):
-                overall_sum = sum([individual.policy[i] * individual.token for individual in individuals])
-                positive_count = sum([individual.token for individual in individuals if individual.policy[i] == 1])
-                negative_count = sum([individual.token for individual in individuals if individual.policy[i] == -1])
-                if (positive_count > threshold) and overall_sum > 0:
-                    new_consensus.append(1)
-                elif (negative_count > threshold) and overall_sum < 0:
-                    new_consensus.append(-1)
-                else:
-                    new_consensus.append(0)
-        self.consensus = new_consensus
-        self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
+        # keep the consensus as a list of zero
+        self.consensus = [0] * self.policy_num
         # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
         for team in self.teams:
             team.form_individual_majority_view()

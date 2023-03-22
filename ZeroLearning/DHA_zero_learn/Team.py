@@ -41,8 +41,8 @@ class Team:
     def adjust_majority_view_2_consensus(self, policy=None):
         for individual in self.individuals:
             for index in range(self.policy_num):
-                if policy[index] == 0:
-                    continue
+                # if policy[index] == 0:
+                #     continue
                 if sum(individual.superior_majority_view
                        [index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
                     individual.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
