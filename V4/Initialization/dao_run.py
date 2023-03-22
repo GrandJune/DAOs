@@ -30,7 +30,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
             correct_indexes = np.random.choice(range(m), correct_num, replace=False)
             for index in range(m):
                 if index in correct_indexes:
-                    individual.belief[index] = reality.real_code[index]
+                    individual.belief[index] = int(reality.real_code[index])
                 else:
                     individual.belief[index] = np.random.choice((0, -1 * reality.real_code[index]))
             individual.payoff = reality.get_payoff(belief=individual.belief)

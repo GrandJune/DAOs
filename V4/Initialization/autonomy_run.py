@@ -86,9 +86,9 @@ if __name__ == '__main__':
         results = return_dict.values()  # Don't need dict index, since it is repetition.
 
         # remove the time dimension, only keep the last value
-        performance_hyper += [result[0][-1] for result in results]
-        diversity_hyper += [result[1][-1] for result in results]
-        variance_hyper += [result[2][-1] for result in results]
+        performance_across_repeat = [result[0][-1] for result in results]
+        diversity_across_repeat = [result[1][-1] for result in results]
+        variance_across_repeat = [result[2][-1] for result in results]
 
         # take an average across repetition, only one value for one parameter
         performance_across_para.append(sum(performance_hyper) / len(performance_hyper))
