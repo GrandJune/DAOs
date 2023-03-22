@@ -58,6 +58,8 @@
       <sourceFolder url="file://$MODULE_DIR$/V4.4/Threshold" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4.4/TurbulenceFreq" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4.4/TurbulenceRate" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/InformationAsymmetry" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Supervision_p2" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Christina2010" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/March1991" />
