@@ -51,7 +51,7 @@ if __name__ == '__main__':
     lr = 0.3
     repetition = 200
     concurrency = 50
-    search_loop = 100
+    search_loop = 500
     threshold_ratio = 0.5
     group_size = 7
     # DVs

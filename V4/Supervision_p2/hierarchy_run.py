@@ -17,11 +17,11 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None, p1=None,
+def func(m=None, s=None, n=None, group_size=None, lr=None, p2=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
-    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=0.9)
+    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=0.1, p2=p2)
     for _ in range(search_loop):
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     repetition = 200
     search_loop = 500
     concurrency = 50
-    p1_list = np.arange(0.1, 1.0, 0.1)
+    p2_list = np.arange(0.1, 1.0, 0.1)
     group_size = 7  # the smallest group size in Fang's model: 7
     # DVs
     performance_across_para = []
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     superior_performance_across_para_time = []
     diversity_across_para_time = []
     variance_across_para_time = []
-    for p1 in p1_list:
+    for p2 in p2_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
         return_dict = manager.dict()
@@ -58,7 +58,7 @@ if __name__ == '__main__':
         for loop in range(repetition):
             sema.acquire()
             p = mp.Process(target=func,
-                           args=(m, s, n, group_size, lr, p1, search_loop, loop, return_dict, sema))
+                           args=(m, s, n, group_size, lr, p2, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
@@ -108,23 +108,23 @@ if __name__ == '__main__':
         variance_across_para_time.append(variance_across_time)
 
     # save the without-time data
-    with open("hierarchy_performance_across_p1", 'wb') as out_file:
+    with open("hierarchy_performance_across_p2", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("superior_performance_across_p1", 'wb') as out_file:
+    with open("superior_performance_across_p2", 'wb') as out_file:
         pickle.dump(superior_performance_across_para, out_file)
-    with open("hierarchy_diversity_across_p1", 'wb') as out_file:
+    with open("hierarchy_diversity_across_p2", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("hierarchy_variance_across_p1", 'wb') as out_file:
+    with open("hierarchy_variance_across_p2", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
 
     # save the with-time data
-    with open("hierarchy_performance_across_p1_time", 'wb') as out_file:
+    with open("hierarchy_performance_across_p2_time", 'wb') as out_file:
         pickle.dump(performance_across_para_time, out_file)
-    with open("superior_performance_across_p1_time", 'wb') as out_file:
+    with open("superior_performance_across_p2_time", 'wb') as out_file:
         pickle.dump(superior_performance_across_para_time, out_file)
-    with open("hierarchy_diversity_across_p1_time", 'wb') as out_file:
+    with open("hierarchy_diversity_across_p2_time", 'wb') as out_file:
         pickle.dump(diversity_across_para_time, out_file)
-    with open("hierarchy_variance_across_p1_time", 'wb') as out_file:
+    with open("hierarchy_variance_across_p2_time", 'wb') as out_file:
         pickle.dump(variance_across_para_time, out_file)
 
     t1 = time.time()

@@ -44,7 +44,7 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     s = 1
-    turbulence_rate_list = [0.02, 0.04, 0.06, 0.08, 0.1]
+    turbulence_rate_list = [0.10, 0.12, 0.14, 0.16, 0.18, 0.20]
     group_size = 7
     n = 350
     lr = 0.3
