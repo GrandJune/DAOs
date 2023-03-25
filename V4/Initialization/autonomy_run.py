@@ -51,7 +51,7 @@ if __name__ == '__main__':
     lr = 0.3
     repetition = 200
     concurrency = 50
-    search_loop = 100
+    search_loop = 1000
     group_size = 7  # the smallest group size in Fang's model: 7
     # DVs
     # after taking an average across repetitions
@@ -59,11 +59,6 @@ if __name__ == '__main__':
     consensus_across_para = []
     diversity_across_para = []
     variance_across_para = []
-    # before taking an average across repetitions
-    performance_hyper = []
-    consensus_hyper = []
-    diversity_hyper = []
-    variance_hyper = []
     # retian the time dimension
     # before taking an average across repetitions
     performance_across_para_time = []
@@ -90,10 +85,9 @@ if __name__ == '__main__':
         diversity_across_repeat = [result[1][-1] for result in results]
         variance_across_repeat = [result[2][-1] for result in results]
 
-        # take an average across repetition, only one value for one parameter
-        performance_across_para.append(sum(performance_hyper) / len(performance_hyper))
-        diversity_across_para.append(sum(diversity_hyper) / len(diversity_hyper))
-        variance_across_para.append(sum(variance_hyper) / len(variance_hyper))
+        performance_across_para.append(sum(performance_across_repeat) / len(performance_across_repeat))
+        diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
+        variance_across_para.append(sum(variance_across_repeat) / len(variance_across_repeat))
 
         # keep the time dimension
         performance_across_repeat_time = [result[0] for result in results]

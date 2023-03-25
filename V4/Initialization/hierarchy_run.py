@@ -52,7 +52,7 @@ if __name__ == '__main__':
     lr = 0.3
     repetition = 200
     concurrency = 50
-    search_loop = 100
+    search_loop = 1000
     # DVs
     performance_across_para = []
     superior_performance_across_para = []

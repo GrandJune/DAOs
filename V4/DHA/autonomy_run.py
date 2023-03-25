@@ -35,7 +35,7 @@ if __name__ == '__main__':
     s = 1
     n = 350
     lr = 0.3
-    hyper_iteration = 20
+    hyper_iteration = 10
     repetition = 50
     concurrency = 50
     search_loop = 300
