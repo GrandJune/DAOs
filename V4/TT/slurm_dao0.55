@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --time=3-00:00:00
-#SBATCH --job-name=TbF_H
+#SBATCH --job-name=TT_D0.55
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
 #SBATCH --mem=100gb
 #SBATCH --partition=long
 #SBATCH --cpus-per-task=50
 #SBATCH --nodes=1
-python hierarchy_run.py
+python dao_run0.55.py

@@ -25,7 +25,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
     for period in range(search_loop):
         # First turbulence
         if (period + 1) % 50 == 0:
-            reality.change(reality_change_rate=0.1)
+            reality.change(reality_change_rate=0.15)
             for team in dao.teams:
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
@@ -33,7 +33,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
             for individual in team.individuals:
                 individual.payoff = reality.get_payoff(belief=individual.belief)
         # Then turnover
-        dao.turnover(turnover_rate=0.01)
+        dao.turnover(turnover_rate=0.02)
         dao.search(threshold_ratio=0.5)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
@@ -46,9 +46,9 @@ if __name__ == '__main__':
     s = 1
     n = 350
     lr = 0.3
-    hyper_iteration = 10
+    hyper_iteration = 4
     repetition = 50
-    search_loop = 2000
+    search_loop = 1000
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
     # after taking an average across repetitions

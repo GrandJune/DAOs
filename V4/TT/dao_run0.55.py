@@ -24,8 +24,8 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     for period in range(search_loop):
         # First turbulence
-        if (period + 1) % 100 == 0:
-            reality.change(reality_change_rate=0.1)
+        if (period + 1) % 50 == 0:
+            reality.change(reality_change_rate=0.15)
             for team in dao.teams:
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
@@ -33,8 +33,8 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
             for individual in team.individuals:
                 individual.payoff = reality.get_payoff(belief=individual.belief)
         # Then turnover
-        dao.turnover(turnover_rate=0.01)
-        dao.search(threshold_ratio=0.5)
+        dao.turnover(turnover_rate=0.02)
+        dao.search(threshold_ratio=0.55)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
     sema.release()
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     s = 1
     n = 350
     lr = 0.3
-    hyper_iteration = 10
+    hyper_iteration = 4
     repetition = 50
     search_loop = 1000
     group_size = 7  # the smallest group size in Fang's model: 7
@@ -91,24 +91,25 @@ if __name__ == '__main__':
         variance_final.append(variance_temp)
 
     # after taking an average across repetitions
-    with open("dao_performance", 'wb') as out_file:
+    with open("dao_performance_0.55", 'wb') as out_file:
         pickle.dump(performance_final, out_file)
-    with open("dao_consensus_performance", 'wb') as out_file:
+    with open("dao_consensus_performance_0.55", 'wb') as out_file:
         pickle.dump(consensus_final, out_file)
-    with open("dao_diversity", 'wb') as out_file:
+    with open("dao_diversity_0.55", 'wb') as out_file:
         pickle.dump(diversity_final, out_file)
-    with open("dao_variance", 'wb') as out_file:
+    with open("dao_variance_0.55", 'wb') as out_file:
         pickle.dump(variance_final, out_file)
 
     # before taking an average across repetitions
-    with open("dao_original_performance", 'wb') as out_file:
+    with open("dao_original_performance_0.55", 'wb') as out_file:
         pickle.dump(performance_hyper, out_file)
-    with open("dao_original_consensus_performance", 'wb') as out_file:
+    with open("dao_original_consensus_performance_0.55", 'wb') as out_file:
         pickle.dump(consensus_hyper, out_file)
-    with open("dao_original_diversity", 'wb') as out_file:
+    with open("dao_original_diversity_0.55", 'wb') as out_file:
         pickle.dump(diversity_hyper, out_file)
-    with open("dao_original_variance", 'wb') as out_file:
+    with open("dao_original_variance_0.55", 'wb') as out_file:
         pickle.dump(variance_hyper, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
+

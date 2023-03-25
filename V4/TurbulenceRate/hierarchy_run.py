@@ -23,7 +23,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, turbulence_rate=None,
     reality = Reality(m=m, s=s)
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=0.1, p2=0.9)
     for period in range(search_loop):
-        if (period + 1) % 100 == 0:
+        if (period + 1) % 50 == 0:
             reality.change(reality_change_rate=turbulence_rate)
             # update the individual payoff
             for team in hierarchy.teams:

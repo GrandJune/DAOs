@@ -23,7 +23,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, turbulence_rate=None,
     reality = Reality(m=m, s=s)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     for period in range(search_loop):
-        if (period + 1) % 100 == 0:
+        if (period + 1) % 50 == 0:
             reality.change(reality_change_rate=turbulence_rate)
             for team in dao.teams:
                 for individual in team.individuals:
@@ -48,7 +48,6 @@ if __name__ == '__main__':
     repetition = 200
     concurrency = 50
     search_loop = 1000
-    threshold_ratio = 0.5
     # DVs
     performance_across_para = []
     consensus_performance_across_para = []
