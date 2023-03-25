@@ -82,8 +82,7 @@ class Superior:
     def turnover(self, turnover_rate=None):
         if turnover_rate:
             for manager in self.managers:
-                if np.random.uniform(0, 1) < turnover_rate:
-                    manager.turnover()
+                manager.turnover(turnover_rate=turnover_rate)
 
 
 if __name__ == '__main__':

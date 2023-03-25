@@ -39,12 +39,13 @@ class Individual:
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)
 
-    def turnover(self):
-        self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
+    def turnover(self, turnover_rate=None):
+        for index in range(self.m):
+            if np.random.uniform(0, 1) < turnover_rate:
+                self.belief[index] *= -1
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)
         self.superior_majority_view = None
-        self.token = None  # wait for re-assignment
 
 
 if __name__ == '__main__':
