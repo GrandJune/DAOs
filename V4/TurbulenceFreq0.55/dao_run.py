@@ -31,7 +31,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, turbulence_freq=None,
         for team in dao.teams:
             for individual in team.individuals:
                 individual.payoff = reality.get_payoff(belief=individual.belief)
-        dao.search(threshold_ratio=0.5)
+        dao.search(threshold_ratio=0.55)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
     sema.release()
@@ -48,7 +48,6 @@ if __name__ == '__main__':
     repetition = 200
     concurrency = 50
     search_loop = 1000
-    threshold_ratio = 0.5
     # DVs
     performance_across_para = []
     consensus_performance_across_para = []

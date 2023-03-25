@@ -17,21 +17,21 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None, turbulence_freq=None,
+def func(m=None, s=None, n=None, group_size=None, lr=None, turbulence_rate=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     for period in range(search_loop):
-        if (period + 1) % turbulence_freq == 0:
-            reality.change(reality_change_rate=0.1)
+        if (period + 1) % 100 == 0:
+            reality.change(reality_change_rate=turbulence_rate)
             for team in dao.teams:
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
         for team in dao.teams:
             for individual in team.individuals:
                 individual.payoff = reality.get_payoff(belief=individual.belief)
-        dao.search(threshold_ratio=0.5)
+        dao.search(threshold_ratio=0.55)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
     sema.release()
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     s = 1
-    turbulence_freq_list = [20, 40, 60, 80, 100]
+    turbulence_rate_list = [0.10, 0.12, 0.14, 0.16, 0.18, 0.20]
     group_size = 7
     n = 350
     lr = 0.3
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     diversity_across_para_time = []
     consensus_performance_across_para_time = []
     variance_across_para_time = []
-    for turbulence_freq in turbulence_freq_list:
+    for turbulence_rate in turbulence_rate_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
         return_dict = manager.dict()
@@ -68,7 +68,7 @@ if __name__ == '__main__':
             sema.acquire()
             p = mp.Process(target=func,
                            args=(
-                           m, s, n, group_size, lr, turbulence_freq, search_loop, loop, return_dict,
+                           m, s, n, group_size, lr, turbulence_rate, search_loop, loop, return_dict,
                            sema))
             jobs.append(p)
             p.start()
