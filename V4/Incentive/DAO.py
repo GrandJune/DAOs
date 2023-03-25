@@ -179,8 +179,7 @@ class DAO:
         if turnover_rate:
             for team in self.teams:
                 for individual in team.individuals:
-                    if np.random.uniform(0, 1) < turnover_rate:
-                        individual.turnover()
+                    individual.turnover(turnover_rate=turnover_rate)
 
 
 if __name__ == '__main__':
