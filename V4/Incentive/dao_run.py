@@ -6,8 +6,6 @@
 # Observing PEP 8 coding style
 import numpy as np
 from DAO import DAO
-from Hierarchy import Hierarchy
-from Autonomy import Autonomy
 from Reality import Reality
 import multiprocessing as mp
 import time
