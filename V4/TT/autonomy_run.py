@@ -30,7 +30,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
         # Then turnover
-        autonomy.turnover(turnover_rate=0.02)
+        autonomy.turnover(turnover_rate=0.01)
         autonomy.search()
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time,
                          autonomy.variance_across_time]

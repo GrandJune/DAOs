@@ -33,7 +33,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
             for individual in team.individuals:
                 individual.payoff = reality.get_payoff(belief=individual.belief)
         # Then turnover
-        dao.turnover(turnover_rate=0.02)
+        dao.turnover(turnover_rate=0.01)
         dao.search(threshold_ratio=0.5)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
