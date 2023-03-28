@@ -46,7 +46,7 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     s = 1
-    initialization_bar_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+    initialization_bar_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     n = 350
     lr = 0.3
     repetition = 200

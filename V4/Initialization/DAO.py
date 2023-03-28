@@ -172,12 +172,23 @@ if __name__ == '__main__':
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s, version="Rushed", alpha=alpha)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, alpha=alpha)
-    # dao.teams[0].individuals[0].belief = reality.real_code.copy()
-    # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
-    # print(dao.teams[0].individuals[0].belief)
-    # print(dao.teams[0].individuals[0].payoff)
+    # initialization
+    initialization_bar = 0.8
+    for team in dao.teams:
+        for individual in team.individuals:
+            bounded_payoff = np.random.uniform(initialization_bar, initialization_bar+0.1)
+            correct_num = math.ceil(bounded_payoff * m)
+            correct_indexes = np.random.choice(range(m), correct_num, replace=False)
+            for index in range(m):
+                if index in correct_indexes:
+                    individual.belief[index] = int(reality.real_code[index])
+                else:
+                    individual.belief[index] = np.random.choice((0, -1 * reality.real_code[index]))
+            individual.payoff = reality.get_payoff(belief=individual.belief)
+            individual.policy = reality.belief_2_policy(belief=individual.belief)  # a fake policy for voting
+
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.6)
+        dao.search(threshold_ratio=0.5)
         print(dao.consensus)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].policy,
         #       dao.teams[0].individuals[0].payoff)

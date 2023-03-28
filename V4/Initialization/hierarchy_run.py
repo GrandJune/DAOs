@@ -23,18 +23,17 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, initialization_bar=No
     reality = Reality(m=m, s=s)
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     # initialization
-    for team in hierarchy.teams:
-        for individual in team.individuals:
-            bounded_payoff =  np.random.uniform(initialization_bar, initialization_bar+0.1)
-            correct_num = math.ceil(bounded_payoff * m)
-            correct_indexes = np.random.choice(range(m), correct_num, replace=False)
-            for index in range(m):
-                if index in correct_indexes:
-                    individual.belief[index] = reality.real_code[index]
-                else:
-                    individual.belief[index] = np.random.choice((0, -1 * reality.real_code[index]))
-            individual.payoff = reality.get_payoff(belief=individual.belief)
-            individual.policy = reality.belief_2_policy(belief=individual.belief)  # a fake policy for voting
+    for manager in hierarchy.superior.managers:
+        bounded_payoff = np.random.uniform(initialization_bar, initialization_bar + 0.1)
+        correct_policy_num = math.ceil(bounded_payoff * reality.policy_num)
+        correct_indexes = np.random.choice(range(reality.policy_num), correct_policy_num, replace=False)
+        for index in range(reality.policy_num):
+            if index in correct_indexes:
+                manager.policy[index] = int(reality.real_policy[index])
+            else:
+                manager.policy[index] = np.random.choice((0, -1 * reality.real_policy[index]))
+        for team in hierarchy.teams:
+            team.confirm(policy=team.manager.policy)
     for _ in range(search_loop):
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
@@ -46,7 +45,7 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     s = 1
-    initialization_bar_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+    initialization_bar_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     n = 350
     group_size = 7
     lr = 0.3
