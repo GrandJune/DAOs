@@ -11,6 +11,7 @@ from Reality import Reality
 from Superior import Superior
 from Team import Team
 import time
+import pickle
 
 
 class Hierarchy:
@@ -101,54 +102,23 @@ class Hierarchy:
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
+    m = 90
     s = 1
     n = 350  # 50 managers, each manager control one autonomous team; 50*7=350
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     p1 = 0.1  # belief learning from code
     p2 = 0.9  # code learning from belief
-    search_iteration = 100
+    search_iteration = 300
     reality = Reality(m=m, s=s)
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=p2)
-    for i in range(search_iteration):
+    individual_performance_list = []
+    for _ in range(search_iteration):
+        individual_performance = []
+        for team in hierarchy.teams:
+            individual_performance += [individual.payoff for individual in team.individuals]
+        individual_performance_list.append(individual_performance)
         hierarchy.search()
-        print(i)
-    import matplotlib.pyplot as plt
-    x = range(search_iteration)
-    plt.plot(x, hierarchy.performance_across_time, "k-", label="Mean")
-    plt.plot(x, hierarchy.superior.performance_average_across_time, "r-", label="Superior")
-    plt.title('Performance')
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-    plt.ylabel('Performance', fontweight='bold', fontsize=10)
-    plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Hierarchy_performance.png", transparent=False, dpi=1200)
-    plt.show()
-    plt.clf()
 
-
-    plt.plot(x, hierarchy.diversity_across_time, "k-", label="Hierarchy")
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-    plt.ylabel('Diversity', fontweight='bold', fontsize=10)
-    plt.title('Diversity')
-    plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Hierarchy_diversity.png", transparent=False, dpi=1200)
-    plt.show()
-    plt.clf()
-
-    plt.plot(x, hierarchy.variance_across_time, "k-", label="Hierarchy")
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-    plt.ylabel('Variance', fontweight='bold', fontsize=10)
-    plt.title('Variance')
-    plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Hierarchy_variance.png", transparent=False, dpi=1200)
-    plt.show()
-    plt.clf()
-
-    t1 = time.time()
-    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
-    print("END")
-
-
-
-
+    with open("hierarchy_typical_run", 'wb') as out_file:
+        pickle.dump(individual_performance_list, out_file)

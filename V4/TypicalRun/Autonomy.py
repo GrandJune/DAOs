@@ -9,6 +9,7 @@ import numpy as np
 import math
 from Reality import Reality
 from Team import Team
+import pickle
 
 
 class Autonomy:
@@ -95,47 +96,21 @@ class Autonomy:
 
 
 if __name__ == '__main__':
-    m = 60
+    m = 90
     s = 1
     n = 350
+    search_loop = 300
     lr = 0.3
+    alpha = 3
     group_size = 7  # the smallest group size in Fang's model: 7
-    # according to the practice, such a subdivision of an organization, such a size of autonomous team cannot be large.
     reality = Reality(m=m, s=s)
     autonomy = Autonomy(m=m, s=s, n=n, group_size=group_size, reality=reality, lr=lr)
-    for period in range(100):
+    individual_performance_list = []
+    for _ in range(search_loop):
+        individual_performance = []
+        for team in autonomy.teams:
+            individual_performance += [individual.payoff for individual in team.individuals]
         autonomy.search()
-        print(period)
-    import matplotlib.pyplot as plt
 
-    x = range(100)
-    plt.plot(x, autonomy.performance_across_time, "k-", label="Autonomy")
-    plt.title('Performance')
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-    plt.ylabel('Performance', fontweight='bold', fontsize=10)
-    plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Autonomy_performance.png", transparent=False, dpi=1200)
-    plt.show()
-    plt.clf()
-
-    plt.plot(x, autonomy.diversity_across_time, "k-", label="Mean")
-    plt.title('Diversity')
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-    plt.ylabel('Diversity', fontweight='bold', fontsize=10)
-    plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Autonomy_diversity.png", transparent=False, dpi=1200)
-    plt.show()
-    plt.clf()
-
-    plt.plot(x, autonomy.variance_across_time, "k-", label="Autonomy")
-    plt.title('Variance')
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-    plt.ylabel('Variance', fontweight='bold', fontsize=10)
-    plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Autonomy_variance.png", transparent=False, dpi=1200)
-    plt.show()
-    plt.clf()
-
-    print("END")
-
-
+    with open("autonomy_typical_run", 'wb') as out_file:
+        pickle.dump(individual_performance_list, out_file)

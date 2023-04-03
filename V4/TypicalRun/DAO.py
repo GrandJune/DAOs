@@ -174,7 +174,7 @@ if __name__ == '__main__':
     reality = Reality(m=m, s=s, version="Rushed", alpha=alpha)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, alpha=alpha)
     individual_performance_list = []
-    for period in range(search_loop):
+    for _ in range(search_loop):
         individual_performance = []
         for team in dao.teams:
             individual_performance += [individual.payoff for individual in team.individuals]
