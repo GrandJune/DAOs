@@ -54,10 +54,10 @@ class Hierarchy:
                 team.confirm(policy=team.manager.policy)
             self.teams.append(team)
         # DVs
-        self.performance_across_time = []
-        self.variance_across_time = []
-        self.diversity_across_time = []
-        self.superior_performance_across_time = []
+        # self.performance_across_time = []
+        # self.variance_across_time = []
+        # self.diversity_across_time = []
+        # self.superior_performance_across_time = []
 
     def search(self):
         # Supervision Formation
@@ -67,12 +67,12 @@ class Hierarchy:
             team.confirm(policy=team.manager.policy)
             team.form_individual_majority_view()
             team.learn()
-        performance_list = []
-        for team in self.teams:
-            performance_list += [individual.payoff for individual in team.individuals]
-        self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        self.variance_across_time.append(np.std(performance_list))
-        self.diversity_across_time.append(self.get_diversity())
+        # performance_list = []
+        # for team in self.teams:
+        #     performance_list += [individual.payoff for individual in team.individuals]
+        # self.performance_across_time.append(sum(performance_list) / len(performance_list))
+        # self.variance_across_time.append(np.std(performance_list))
+        # self.diversity_across_time.append(self.get_diversity())
 
     def get_diversity(self):
         diversity = 0
@@ -104,12 +104,12 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     s = 1
-    n = 350  # 50 managers, each manager control one autonomous team; 50*7=350
+    n = 1225  # 50 managers, each manager control one autonomous team; 50*7=350
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     p1 = 0.1  # belief learning from code
     p2 = 0.9  # code learning from belief
-    search_iteration = 300
+    search_iteration = 500
     reality = Reality(m=m, s=s)
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=p2)
     individual_performance_list = []

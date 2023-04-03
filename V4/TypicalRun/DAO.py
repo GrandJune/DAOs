@@ -42,10 +42,10 @@ class DAO:
                 individual = Individual(m=self.m, s=self.s, alpha=self.alpha, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
             self.teams.append(team)
-        self.performance_across_time = []
-        self.variance_across_time = []
-        self.diversity_across_time = []
-        self.consensus_performance_across_time = []
+        # self.performance_across_time = []
+        # self.variance_across_time = []
+        # self.diversity_across_time = []
+        # self.consensus_performance_across_time = []
 
     def search(self, threshold_ratio=None, token=False):
         # Consensus Formation
@@ -88,14 +88,14 @@ class DAO:
             team.form_individual_majority_view()
             team.adjust_majority_view_2_consensus(policy=self.consensus)
             team.learn()
-        performance_list = []
-        for team in self.teams:
-            performance_list += [individual.payoff for individual in team.individuals]
-
-        self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        self.variance_across_time.append(np.std(performance_list))
-        self.diversity_across_time.append(self.get_diversity())
-        self.consensus_performance_across_time.append(self.consensus_payoff)
+        # performance_list = []
+        # for team in self.teams:
+        #     performance_list += [individual.payoff for individual in team.individuals]
+        #
+        # self.performance_across_time.append(sum(performance_list) / len(performance_list))
+        # self.variance_across_time.append(np.std(performance_list))
+        # self.diversity_across_time.append(self.get_diversity())
+        # self.consensus_performance_across_time.append(self.consensus_payoff)
 
     def incentive_search(self, threshold_ratio=None, incentive=1):
         new_consensus = []
@@ -128,14 +128,14 @@ class DAO:
             team.form_individual_majority_view()
             team.adjust_majority_view_2_consensus(policy=self.consensus)
             team.learn()
-        performance_list = []
-        for team in self.teams:
-            performance_list += [individual.payoff for individual in team.individuals]
-
-        self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        self.variance_across_time.append(np.std(performance_list))
-        self.diversity_across_time.append(self.get_diversity())
-        self.consensus_performance_across_time.append(self.consensus_payoff)
+        # performance_list = []
+        # for team in self.teams:
+        #     performance_list += [individual.payoff for individual in team.individuals]
+        #
+        # self.performance_across_time.append(sum(performance_list) / len(performance_list))
+        # self.variance_across_time.append(np.std(performance_list))
+        # self.diversity_across_time.append(self.get_diversity())
+        # self.consensus_performance_across_time.append(self.consensus_payoff)
 
     def get_diversity(self):
         diversity = 0
@@ -166,8 +166,8 @@ class DAO:
 if __name__ == '__main__':
     m = 90
     s = 1
-    n = 350
-    search_loop = 300
+    n = 1225
+    search_loop = 500
     lr = 0.3
     alpha = 3
     group_size = 7  # the smallest group size in Fang's model: 7

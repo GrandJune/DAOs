@@ -40,9 +40,9 @@ class Autonomy:
                 individual = Individual(m=self.m, s=self.s, reality=self.reality, lr=self.lr, alpha=self.alpha)
                 team.individuals.append(individual)
             self.teams.append(team)
-        self.performance_across_time = []
-        self.diversity_across_time = []
-        self.variance_across_time = []
+        # self.performance_across_time = []
+        # self.diversity_across_time = []
+        # self.variance_across_time = []
 
     def search(self):
         # For autonomy, only learn from an isolated subgroup, according to Fang (2010)'s paper
@@ -50,12 +50,12 @@ class Autonomy:
         for team in self.teams:
             team.form_individual_majority_view()
             team.learn()
-        performance_list = []
-        for team in self.teams:
-            performance_list += [individual.payoff for individual in team.individuals]
-        self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        self.variance_across_time.append(np.std(performance_list))
-        self.diversity_across_time.append(self.get_diversity())
+        # performance_list = []
+        # for team in self.teams:
+        #     performance_list += [individual.payoff for individual in team.individuals]
+        # self.performance_across_time.append(sum(performance_list) / len(performance_list))
+        # self.variance_across_time.append(np.std(performance_list))
+        # self.diversity_across_time.append(self.get_diversity())
 
     def get_majority_view(self, superior_belief=None):
         majority_view = []
@@ -98,8 +98,8 @@ class Autonomy:
 if __name__ == '__main__':
     m = 90
     s = 1
-    n = 350
-    search_loop = 300
+    n = 1225
+    search_loop = 500
     lr = 0.3
     alpha = 3
     group_size = 7  # the smallest group size in Fang's model: 7
