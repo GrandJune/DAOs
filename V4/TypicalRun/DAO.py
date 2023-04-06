@@ -174,12 +174,16 @@ if __name__ == '__main__':
     reality = Reality(m=m, s=s, version="Rushed", alpha=alpha)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, alpha=alpha)
     individual_performance_list = []
+    consensus_performance_list = []
     for _ in range(search_loop):
         individual_performance = []
         for team in dao.teams:
             individual_performance += [individual.payoff for individual in team.individuals]
         individual_performance_list.append(individual_performance)
+        consensus_performance_list.append(dao.consensus_payoff)
         dao.search(threshold_ratio=0.5)
 
     with open("dao_typical_run", 'wb') as out_file:
         pickle.dump(individual_performance_list, out_file)
+    with open("dao_consensus_typical_run", 'wb') as out_file:
+        pickle.dump(consensus_performance_list, out_file)

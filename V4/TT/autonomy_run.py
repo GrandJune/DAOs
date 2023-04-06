@@ -24,7 +24,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
     autonomy = Autonomy(m=m, s=s, n=n, reality=reality, group_size=group_size, lr=lr)
     for period in range(search_loop):
         # First turbulence
-        if (period + 1) % 50 == 0:
+        if (period + 1) % 100 == 0:
             reality.change(reality_change_rate=0.15)
             for team in autonomy.teams:
                 for individual in team.individuals:
