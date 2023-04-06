@@ -25,8 +25,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
     # initialization
     for team in dao.teams:
         for individual in team.individuals:
-            bounded_payoff = np.random.uniform(initialization_bar, initialization_bar+0.1)
-            correct_num = math.ceil(bounded_payoff * m)
+            correct_num = math.ceil(initialization_bar * m)
             correct_indexes = np.random.choice(range(m), correct_num, replace=False)
             for index in range(m):
                 if index in correct_indexes:
@@ -35,9 +34,6 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
                     individual.belief[index] = np.random.choice((0, -1 * reality.real_code[index]))
             individual.payoff = reality.get_payoff(belief=individual.belief)
             individual.policy = reality.belief_2_policy(belief=individual.belief)  # a fake policy for voting
-            if individual.payoff < initialization_bar:
-                print(individual.payoff, individual.belief)
-                raise ValueError("Error")
     for _ in range(search_loop):
         dao.search(threshold_ratio=threshold_ratio)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,

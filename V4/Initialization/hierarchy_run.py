@@ -24,8 +24,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, initialization_bar=No
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     # initialization
     for manager in hierarchy.superior.managers:
-        bounded_payoff = np.random.uniform(initialization_bar, initialization_bar + 0.1)
-        correct_policy_num = math.ceil(bounded_payoff * reality.policy_num)
+        correct_policy_num = math.ceil(initialization_bar * reality.policy_num)
         correct_indexes = np.random.choice(range(reality.policy_num), correct_policy_num, replace=False)
         for index in range(reality.policy_num):
             if index in correct_indexes:
