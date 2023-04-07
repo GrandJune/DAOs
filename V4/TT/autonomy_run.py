@@ -17,17 +17,18 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None, turbulence_rate=None,
+def func(m=None, s=None, n=None, group_size=None, lr=None, turnover_rate=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
     autonomy = Autonomy(m=m, s=s, n=n, reality=reality, group_size=group_size, lr=lr)
     for period in range(search_loop):
         if (period + 1) % 50 == 0:
-            reality.change(reality_change_rate=turbulence_rate)
+            reality.change(reality_change_rate=0.15)
             for team in autonomy.teams:
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
+        autonomy.turnover(turnover_rate=turnover_rate)
         autonomy.search()
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time,
                          autonomy.variance_across_time]
@@ -38,7 +39,7 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     s = 1
-    turbulence_rate_list = [0.10, 0.12, 0.14, 0.16, 0.18, 0.20]
+    turnover_rate_list = [0.10, 0.12, 0.14, 0.16, 0.18, 0.20, 0.22, 0.24]
     group_size = 7
     n = 350
     lr = 0.3
@@ -59,7 +60,7 @@ if __name__ == '__main__':
     performance_across_para_time = []
     diversity_across_para_time = []
     variance_across_para_time = []
-    for turbulence_rate in turbulence_rate_list:
+    for turnover_rate in turnover_rate_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
         return_dict = manager.dict()
@@ -67,7 +68,7 @@ if __name__ == '__main__':
         for loop in range(repetition):
             sema.acquire()
             p = mp.Process(target=func,
-                           args=(m, s, n, group_size, lr, turbulence_rate, search_loop, loop, return_dict, sema))
+                           args=(m, s, n, group_size, lr, turnover_rate, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
@@ -108,18 +109,18 @@ if __name__ == '__main__':
         variance_across_para_time.append(variance_across_time)
 
     # save the without-time data
-    with open("autonomy_performance_across_turbulence", 'wb') as out_file:
+    with open("autonomy_performance_across_turnover", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("autonomy_diversity_across_turbulence", 'wb') as out_file:
+    with open("autonomy_diversity_across_turnover", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("autonomy_variance_across_turbulence", 'wb') as out_file:
+    with open("autonomy_variance_across_turnover", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
     # save the with-time data
-    with open("autonomy_performance_across_turbulence_time", 'wb') as out_file:
+    with open("autonomy_performance_across_turnover_time", 'wb') as out_file:
         pickle.dump(performance_across_para_time, out_file)
-    with open("autonomy_diversity_across_turbulence_time", 'wb') as out_file:
+    with open("autonomy_diversity_across_turnover_time", 'wb') as out_file:
         pickle.dump(diversity_across_para_time, out_file)
-    with open("autonomy_variance_across_turbulence_time", 'wb') as out_file:
+    with open("autonomy_variance_across_turnover_time", 'wb') as out_file:
         pickle.dump(variance_across_para_time, out_file)
 
     t1 = time.time()

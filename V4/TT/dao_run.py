@@ -17,20 +17,21 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None, turbulence_rate=None,
+def func(m=None, s=None, n=None, group_size=None, lr=None, turnover_rate=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
     for period in range(search_loop):
         if (period + 1) % 50 == 0:
-            reality.change(reality_change_rate=turbulence_rate)
+            reality.change(reality_change_rate=0.15)
             for team in dao.teams:
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
         for team in dao.teams:
             for individual in team.individuals:
                 individual.payoff = reality.get_payoff(belief=individual.belief)
+        dao.turnover(turnover_rate=turnover_rate)
         dao.search(threshold_ratio=0.5)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
@@ -58,7 +59,7 @@ if __name__ == '__main__':
     diversity_across_para_time = []
     consensus_performance_across_para_time = []
     variance_across_para_time = []
-    for turbulence_rate in turbulence_rate_list:
+    for turnover_rate in turnover_rate_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
         return_dict = manager.dict()
@@ -67,7 +68,7 @@ if __name__ == '__main__':
             sema.acquire()
             p = mp.Process(target=func,
                            args=(
-                           m, s, n, group_size, lr, turbulence_rate, search_loop, loop, return_dict,
+                           m, s, n, group_size, lr, turnover_rate, search_loop, loop, return_dict,
                            sema))
             jobs.append(p)
             p.start()
@@ -118,23 +119,23 @@ if __name__ == '__main__':
         variance_across_para_time.append(variance_across_time)
 
     # save the without-time data (ready for figure)
-    with open("dao_performance_across_turbulence", 'wb') as out_file:
+    with open("dao_performance_across_turnover", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("consensus_performance_across_turbulence", 'wb') as out_file:
+    with open("consensus_performance_across_turnover", 'wb') as out_file:
         pickle.dump(consensus_performance_across_para, out_file)
-    with open("dao_diversity_across_turbulence", 'wb') as out_file:
+    with open("dao_diversity_across_turnover", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("dao_variance_across_turbulence", 'wb') as out_file:
+    with open("dao_variance_across_turnover", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
 
     # save the with-time data
-    with open("dao_performance_across_turbulence_time", 'wb') as out_file:
+    with open("dao_performance_across_turnover_time", 'wb') as out_file:
         pickle.dump(performance_across_para_time, out_file)
-    with open("consensus_performance_across_turbulence_time", 'wb') as out_file:
+    with open("consensus_performance_across_turnover_time", 'wb') as out_file:
         pickle.dump(consensus_performance_across_para_time, out_file)
-    with open("dao_diversity_across_turbulence_time", 'wb') as out_file:
+    with open("dao_diversity_across_turnover_time", 'wb') as out_file:
         pickle.dump(diversity_across_para_time, out_file)
-    with open("dao_variance_across_turbulence_time", 'wb') as out_file:
+    with open("dao_variance_across_turnover_time", 'wb') as out_file:
         pickle.dump(variance_across_para_time, out_file)
 
     t1 = time.time()
