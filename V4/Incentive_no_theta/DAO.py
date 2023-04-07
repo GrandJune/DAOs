@@ -99,7 +99,7 @@ class DAO:
         self.consensus_performance_across_time.append(self.consensus_payoff)
         self.gini_across_time.append(0)
 
-    def incentive_search(self, threshold_ratio=None, incentive=1, inactive_rate=None):
+    def incentive_search(self, incentive=1, inactive_rate=None):
         new_consensus = []
         individuals = []
         for team in self.teams:
@@ -111,15 +111,12 @@ class DAO:
                 individual.active = 0
             else:
                 individual.active = 1
-        threshold = threshold_ratio * sum([individual.token for individual in individuals])
         # consider the active status
         for i in range(self.policy_num):
             overall_sum = sum([individual.policy[i] * individual.token * individual.active for individual in individuals])
-            positive_count = sum([individual.token for individual in individuals if (individual.policy[i] == 1) and (individual.active == 1)])
-            negative_count = sum([individual.token for individual in individuals if (individual.policy[i] == -1) and (individual.active == 1)])
-            if (positive_count > threshold) and overall_sum > 0:
+            if overall_sum > 0:
                 new_consensus.append(1)
-            elif (negative_count > threshold) and overall_sum < 0:
+            elif overall_sum < 0:
                 new_consensus.append(-1)
             else:
                 new_consensus.append(0)

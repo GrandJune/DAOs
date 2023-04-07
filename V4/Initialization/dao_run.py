@@ -17,7 +17,7 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None, initialization_bar=None,
+def func(m=None, s=None, n=None, group_size=None, lr=None, initialization_bar=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, s=s)
@@ -35,7 +35,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, threshold_ratio=None,
             individual.payoff = reality.get_payoff(belief=individual.belief)
             individual.policy = reality.belief_2_policy(belief=individual.belief)  # a fake policy for voting
     for _ in range(search_loop):
-        dao.search(threshold_ratio=threshold_ratio)
+        dao.search(threshold_ratio=0.5)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
     sema.release()
@@ -70,7 +70,7 @@ if __name__ == '__main__':
         jobs = []
         for loop in range(repetition):
             sema.acquire()
-            p = mp.Process(target=func, args=(m, s, n, group_size, lr, initialization_bar, threshold_ratio, search_loop, loop, return_dict, sema))
+            p = mp.Process(target=func, args=(m, s, n, group_size, lr, initialization_bar, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
