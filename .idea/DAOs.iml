@@ -14,7 +14,6 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Asymmetry" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Comparison" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/DHA" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4/Incentive" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Lr" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Scale" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Supervision" isTestSource="false" />
@@ -60,6 +59,8 @@
       <sourceFolder url="file://$MODULE_DIR$/V4.4/TurbulenceRate" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/InformationAsymmetry" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Supervision_p2" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Incentive_no_theta" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Incentive_theta" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/TypicalRun" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Christina2010" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />

@@ -44,6 +44,7 @@ if __name__ == '__main__':
     hyper_iteration = 10
     repetition = 50
     incentive_list = [0, 1, 10, 100]
+    inactive_list = [0, 0.1, 0.2, 0.3, 0.4]
     search_loop = 500
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50

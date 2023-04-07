@@ -99,18 +99,24 @@ class DAO:
         self.consensus_performance_across_time.append(self.consensus_payoff)
         self.gini_across_time.append(0)
 
-    def incentive_search(self, threshold_ratio=None, incentive=1):
+    def incentive_search(self, threshold_ratio=None, incentive=1, inactive_rate=None):
         new_consensus = []
         individuals = []
         for team in self.teams:
             individuals += team.individuals
         for individual in individuals:
             individual.policy = self.reality.belief_2_policy(belief=individual.belief)
+        for individual in individuals:
+            if np.random.uniform(0, 1) < inactive_rate:
+                individual.active = 0
+            else:
+                individual.active = 1
         threshold = threshold_ratio * sum([individual.token for individual in individuals])
+        # consider the active status
         for i in range(self.policy_num):
-            overall_sum = sum([individual.policy[i] * individual.token for individual in individuals])
-            positive_count = sum([individual.token for individual in individuals if individual.policy[i] == 1])
-            negative_count = sum([individual.token for individual in individuals if individual.policy[i] == -1])
+            overall_sum = sum([individual.policy[i] * individual.token * individual.active for individual in individuals])
+            positive_count = sum([individual.token for individual in individuals if (individual.policy[i] == 1) and (individual.active == 1)])
+            negative_count = sum([individual.token for individual in individuals if (individual.policy[i] == -1) and (individual.active == 1)])
             if (positive_count > threshold) and overall_sum > 0:
                 new_consensus.append(1)
             elif (negative_count > threshold) and overall_sum < 0:
@@ -123,11 +129,11 @@ class DAO:
             if old_bit != new_bit:
                 reward_count += 1
                 for individual in individuals:
-                    if individual.policy[index] == new_bit:
+                    if (individual.policy[index] == new_bit) and (individual.active == 1):  # individual active and vote correctly
                         individual.token += incentive / self.policy_num
         self.consensus = new_consensus
         self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
-        # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
+        # 1) Generate and 2) adjust the superior majority view and 3) learn from it
         for team in self.teams:
             team.form_individual_majority_view()
             team.adjust_majority_view_2_consensus(policy=self.consensus)

@@ -17,7 +17,7 @@ class Individual:
         self.policy_num = self.m // self.alpha
         self.lr = lr  # learning rate, learning from (adjusted) majority view
         self.token = None  # should introduce more dimensions of token
-
+        self.active = 1  # introduce the active/inactive status for voting, 0: inactive, 1: active
         self.reality = reality
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
         # self.belief = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
