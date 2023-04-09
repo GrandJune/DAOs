@@ -37,6 +37,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, turnover_rate=None,
         hierarchy.turnover(turnover_rate=turnover_rate)
         # also turnover the managers
         hierarchy.superior.turnover(turnover_rate=turnover_rate)
+        hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
                          hierarchy.diversity_across_time, hierarchy.variance_across_time]
     sema.release()

@@ -26,7 +26,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, initialization_bar=No
     for team in autonomy.teams:
         for individual in team.individuals:
             correct_num = math.ceil(initialization_bar * m)
-            correct_indexes = np.random.choice(range(m), correct_num, replace=False)
+            correct_indexes = np.random.choice(range(m), correct_num, replace=False).tolist()
             for index in range(m):
                 if index in correct_indexes:
                     individual.belief[index] = reality.real_code[index]
@@ -34,6 +34,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, initialization_bar=No
                     individual.belief[index] = np.random.choice((0, -1 * reality.real_code[index]))
             individual.payoff = reality.get_payoff(belief=individual.belief)
             individual.policy = reality.belief_2_policy(belief=individual.belief)  # a fake policy for voting
+            del correct_indexes
     for _ in range(search_loop):
         autonomy.search()
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time,

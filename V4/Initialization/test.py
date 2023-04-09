@@ -6,5 +6,10 @@
 # Observing PEP 8 coding style
 import numpy as np
 import math
+m = 10
+correct_num = 5
 
-print(np.random.choice((0, -1)))
+for _ in range(10):
+    correct_indexes = np.random.choice(range(m), correct_num, replace=False).tolist()
+    print(correct_indexes)
+    del correct_indexes
