@@ -88,24 +88,24 @@ if __name__ == '__main__':
 
             with open("dao_performance_incentive_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
                 pickle.dump(performance_final, out_file)
-            with open("dao_consensus_performance_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
+            with open("dao_consensus_performance_incentive_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
                 pickle.dump(consensus_final, out_file)
-            with open("dao_diversity_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
+            with open("dao_diversity_incentive_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
                 pickle.dump(diversity_final, out_file)
-            with open("dao_variance_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
+            with open("dao_variance_incentive_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
                 pickle.dump(variance_final, out_file)
-            with open("dao_gini_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
+            with open("dao_gini_incentive_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
                 pickle.dump(gini_final, out_file)
 
-            with open("dao_original_performance_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
+            with open("dao_original_performance_incentive_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
                 pickle.dump(performance_across_repeat, out_file)
-            with open("dao_original_consensus_performance_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
+            with open("dao_original_consensus_performance_incentive_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
                 pickle.dump(consensus_across_repeat, out_file)
-            with open("dao_original_diversity_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
+            with open("dao_original_diversity_incentive_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
                 pickle.dump(diversity_across_repeat, out_file)
-            with open("dao_original_variance_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
+            with open("dao_original_variance_incentive_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
                 pickle.dump(variance_across_repeat, out_file)
-            with open("dao_original_gini_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
+            with open("dao_original_gini_incentive_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
                 pickle.dump(gini_across_repeat, out_file)
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))

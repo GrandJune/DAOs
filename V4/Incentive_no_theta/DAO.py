@@ -107,8 +107,9 @@ class DAO:
         for individual in individuals:
             individual.policy = self.reality.belief_2_policy(belief=individual.belief)
         for individual in individuals:
-            if np.random.uniform(0, 1) < inactive_rate:
-                individual.active = 0
+            if np.random.uniform(0, 1) < inactive_rate:  # e.g., 0.3
+                if np.random.uniform(0, 1) > incentive:   # if not be incentivized e.g., 1 - 0.7
+                    individual.active = 0
             else:
                 individual.active = 1
         # consider the active status
