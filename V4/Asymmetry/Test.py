@@ -31,20 +31,23 @@ def gini(array):
     return coefficient
 
 
-a_vals = [1, 2, 3, 4, 5]
-ginis = []
-ginis_theoretical = []
-n = 1000
-
-fig, ax = plt.subplots()
-for a in a_vals:
-    y = np.random.pareto(a, size=n)
-    ginis.append(qe.gini_coefficient(y))
-    ginis_theoretical.append(gini(y))
-ax.plot(a_vals, ginis, label='estimated gini coefficient')
-ax.plot(a_vals, ginis_theoretical, label='theoretical gini coefficient')
-ax.legend()
-ax.set_xlabel("Pareto Distrubtion Parameter $\\rho$")
-ax.set_ylabel("Gini coefficient")
-plt.show()
-print("END")
+# a_vals = [1, 2, 3]
+# ginis = []
+# ginis_theoretical = []
+# n = 1000
+#
+# fig, ax = plt.subplots()
+# for a in a_vals:
+#     y = np.random.pareto(a, size=n)
+#     ginis.append(qe.gini_coefficient(y))
+#     ginis_theoretical.append(gini(y))
+# print(ginis)
+# ax.plot(a_vals, ginis, label='estimated gini coefficient')
+# ax.plot(a_vals, ginis_theoretical, label='theoretical gini coefficient')
+# ax.legend()
+# ax.set_xlabel("Pareto Distrubtion Parameter $\\rho$")
+# ax.set_ylabel("Gini coefficient")
+# plt.show()
+# print("END")
+# for _ in range(1000)
+# y = np.random.pareto(a, size=n)

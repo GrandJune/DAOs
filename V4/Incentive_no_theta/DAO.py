@@ -122,13 +122,13 @@ class DAO:
             else:
                 new_consensus.append(0)
         # Once there is a change in consensus, reward the contributor
-        reward_count = 0
+        # reward_count = 0
         for old_bit, new_bit, index in zip(self.consensus, new_consensus, range(self.policy_num)):
             if old_bit != new_bit:
-                reward_count += 1
+                # reward_count += 1
                 for individual in individuals:
                     if (individual.policy[index] == new_bit) and (individual.active == 1):  # individual active and vote correctly
-                        individual.token += incentive / self.policy_num
+                        individual.token += incentive
         self.consensus = new_consensus
         self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
         # 1) Generate and 2) adjust the superior majority view and 3) learn from it
@@ -145,7 +145,7 @@ class DAO:
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
         self.gini_across_time.append(self.get_gini())
-        self.reward_num_across_time.append(reward_count)
+        # self.reward_num_across_time.append(reward_count)
 
     def get_diversity(self):
         diversity = 0

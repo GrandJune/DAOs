@@ -42,7 +42,7 @@ if __name__ == '__main__':
     n = 350
     lr = 0.3
     repetition = 200
-    incentive_list = [0, 1, 10, 100]
+    incentive_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     inactive_rate_list = [0, 0.1, 0.2, 0.3, 0.4]
     search_loop = 500
     group_size = 7  # the smallest group size in Fang's model: 7
