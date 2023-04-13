@@ -29,7 +29,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, incentive=None, inact
             dao.search(threshold_ratio=0.5)
     else:
         for _ in range(search_loop):
-            dao.incentive_search(incentive=incentive, inactive_rate=inactive_rate)
+            dao.incentive_search(threshold_ratio=0.5, incentive=incentive, inactive_rate=inactive_rate)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time, dao.gini_across_time]
     sema.release()
@@ -42,8 +42,8 @@ if __name__ == '__main__':
     n = 350
     lr = 0.3
     repetition = 200
-    incentive_list = [0.1, 0.2]
-    inactive_rate_list = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    incentive_list = [0.7, 0.8]
+    inactive_rate_list = [0, 0.1, 0.2, 0.3, 0.4]
     search_loop = 500
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
