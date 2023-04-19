@@ -99,7 +99,7 @@ class DAO:
         self.consensus_performance_across_time.append(self.consensus_payoff)
         self.gini_across_time.append(0)
 
-    def incentive_search(self, incentive=1, inactive_rate=None):
+    def incentive_search(self, incentive=0, inactive_rate=None):
         new_consensus = []
         individuals = []
         for team in self.teams:
