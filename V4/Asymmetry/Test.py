@@ -20,15 +20,15 @@ import matplotlib.pyplot as plt
 # plt.clf()
 
 
-def gini(array):
-    array = sorted(array)
-    n = len(array)
-    coefficient = 0
-    for i, value in enumerate(array):
-        coefficient += (2 * i + 1) * value
-    coefficient /= n * sum(array)
-    coefficient -= (n + 1) / n
-    return coefficient
+# def gini(array):
+#     array = sorted(array)
+#     n = len(array)
+#     coefficient = 0
+#     for i, value in enumerate(array):
+#         coefficient += (2 * i + 1) * value
+#     coefficient /= n * sum(array)
+#     coefficient -= (n + 1) / n
+#     return coefficient
 
 
 # a_vals = [1, 2, 3]
@@ -51,3 +51,11 @@ def gini(array):
 # print("END")
 # for _ in range(1000)
 # y = np.random.pareto(a, size=n)
+
+import numpy as np
+token_list = []
+for _ in range(1000):
+    token = (np.random.pareto(a=1) + 1) * 10
+
+gini_index = gini(array=token_list)
+print(gini_index)
