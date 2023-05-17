@@ -58,3 +58,4 @@ if __name__ == '__main__':
     p1 = 0.3
     reality = Reality(m=m)
     individual = Individual(m=m, p1=p1, reality=reality)
+    print(individual.payoff)

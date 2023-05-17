@@ -62,9 +62,7 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Incentive_no_theta" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Incentive_theta" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/TypicalRun" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/Christina2010" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
-      <excludeFolder url="file://$MODULE_DIR$/March1991" />
       <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />
       <excludeFolder url="file://$MODULE_DIR$/Identity" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus_v1" />

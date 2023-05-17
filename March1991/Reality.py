@@ -32,3 +32,4 @@ class Reality:
 if __name__ == '__main__':
     m = 30
     reality = Reality(m=m)
+    print(reality.code)
