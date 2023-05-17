@@ -24,8 +24,7 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, p1=None,
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=0.9)
     for _ in range(search_loop):
         hierarchy.search()
-    return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
-                         hierarchy.diversity_across_time, hierarchy.variance_across_time]
+    return_dict[loop] = [hierarchy.performance_across_time]
     sema.release()
 
 
@@ -39,93 +38,33 @@ if __name__ == '__main__':
     search_loop = 1000
     concurrency = 50
     p1_list = np.arange(0.1, 1.0, 0.1)
+    p2_list = np.arange(0.1, 1.0, 0.1)
     group_size = 7  # the smallest group size in Fang's model: 7
     # DVs
-    performance_across_para = []
-    superior_performance_across_para = []
-    diversity_across_para = []
-    variance_across_para = []
-
-    performance_across_para_time = []
-    superior_performance_across_para_time = []
-    diversity_across_para_time = []
-    variance_across_para_time = []
+    performance_across_p1p2 = []
     for p1 in p1_list:
-        sema = Semaphore(concurrency)
-        manager = mp.Manager()
-        return_dict = manager.dict()
-        jobs = []
-        for loop in range(repetition):
-            sema.acquire()
-            p = mp.Process(target=func,
-                           args=(m, s, n, group_size, lr, p1, search_loop, loop, return_dict, sema))
-            jobs.append(p)
-            p.start()
-        for proc in jobs:
-            proc.join()
-        results = return_dict.values()  # Don't need dict index, since it is repetition.
-
-        # remove the time dimension, only keep the last value
-        performance_across_repeat = [result[0][-1] for result in results]
-        superior_performance_across_repeat = [result[1][-1] for result in results]
-        diversity_across_repeat = [result[2][-1] for result in results]
-        variance_across_repeat = [result[3][-1] for result in results]
-
-        # take an average across repetition, only one value for one parameter
-        performance_across_para.append(sum(performance_across_repeat) / len(performance_across_repeat))
-        superior_performance_across_para.append(
-            sum(superior_performance_across_repeat) / len(superior_performance_across_repeat))
-        diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
-        variance_across_para.append(sum(variance_across_repeat) / len(variance_across_repeat))
-
-        # keep the time dimension
-        performance_across_repeat_time = [result[0] for result in results]
-        superior_performance_across_repeat_time = [result[1] for result in results]
-        diversity_across_repeat_time = [result[2] for result in results]
-        variance_across_repeat_time = [result[3] for result in results]
-
-        # take an average across repetition, for each time iteration, integrate into 600 values for one parameter
-        performance_across_time = []  # under the same parameter
-        superior_performance_across_time = []
-        diversity_across_time = []
-        variance_across_time = []
-        for period in range(search_loop):
-            temp_performance = [performance_list[period] for performance_list in performance_across_repeat_time]
-            performance_across_time.append(sum(temp_performance) / len(temp_performance))
-            temp_superior_performance = [performance_list[period] for performance_list in
-                                         superior_performance_across_repeat_time]
-            superior_performance_across_time.append(sum(temp_superior_performance) / len(temp_superior_performance))
-
-            temp_diversity = [diversity_list[period] for diversity_list in diversity_across_repeat_time]
-            diversity_across_time.append(sum(temp_diversity) / len(temp_diversity))
-
-            temp_variance = [variance_list[period] for variance_list in variance_across_repeat_time]
-            variance_across_time.append(sum(temp_variance) / len(temp_variance))
-        # retain the time dimension
-        performance_across_para_time.append(performance_across_time)
-        superior_performance_across_para_time.append(superior_performance_across_time)
-        diversity_across_para_time.append(diversity_across_time)
-        variance_across_para_time.append(variance_across_time)
-
-    # save the without-time data
-    with open("hierarchy_performance_across_p1", 'wb') as out_file:
-        pickle.dump(performance_across_para, out_file)
-    with open("superior_performance_across_p1", 'wb') as out_file:
-        pickle.dump(superior_performance_across_para, out_file)
-    with open("hierarchy_diversity_across_p1", 'wb') as out_file:
-        pickle.dump(diversity_across_para, out_file)
-    with open("hierarchy_variance_across_p1", 'wb') as out_file:
-        pickle.dump(variance_across_para, out_file)
-
-    # save the with-time data
-    with open("hierarchy_performance_across_p1_time", 'wb') as out_file:
-        pickle.dump(performance_across_para_time, out_file)
-    with open("superior_performance_across_p1_time", 'wb') as out_file:
-        pickle.dump(superior_performance_across_para_time, out_file)
-    with open("hierarchy_diversity_across_p1_time", 'wb') as out_file:
-        pickle.dump(diversity_across_para_time, out_file)
-    with open("hierarchy_variance_across_p1_time", 'wb') as out_file:
-        pickle.dump(variance_across_para_time, out_file)
+        performance_across_p2 = []
+        for p2 in p2_list:
+            sema = Semaphore(concurrency)
+            manager = mp.Manager()
+            return_dict = manager.dict()
+            jobs = []
+            for loop in range(repetition):
+                sema.acquire()
+                p = mp.Process(target=func,
+                               args=(m, s, n, group_size, lr, p1, search_loop, loop, return_dict, sema))
+                jobs.append(p)
+                p.start()
+            for proc in jobs:
+                proc.join()
+            results = return_dict.values()  # Don't need dict index, since it is repetition.
+            # remove the time dimension, only keep the last value
+            performance_across_repeat = [result[0][-1] for result in results]
+            performance_across_p2.append(sum(performance_across_repeat) / len(performance_across_repeat))
+        performance_across_p1p2.append(performance_across_p2)
+        # save the without-time data
+        with open("hierarchy_performance", 'wb') as out_file:
+            pickle.dump(performance_across_p1p2, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
