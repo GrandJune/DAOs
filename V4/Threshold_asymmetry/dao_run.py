@@ -32,7 +32,6 @@ def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None, asymmet
         for team in dao.teams:
             for individual in team.individuals:
                 individual.token = (np.random.pareto(a=asymmetry) + 1) * mode
-
     for period in range(search_loop):
         dao.search(threshold_ratio=threshold_ratio, token=True)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
@@ -69,7 +68,7 @@ if __name__ == '__main__':
             for loop in range(repetition):
                 sema.acquire()
                 p = mp.Process(target=func,
-                               args=(m, n, group_size, lr, threshold_ratio, search_loop, loop, return_dict, sema))
+                               args=(m, n, group_size, lr, threshold_ratio, asymmetry, search_loop, loop, return_dict, sema))
                 jobs.append(p)
                 p.start()
             for proc in jobs:
