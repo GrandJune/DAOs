@@ -77,10 +77,9 @@ class Team:
 if __name__ == '__main__':
     # test
     m = 30
-    s = 1
     n = 10
     lr = 0.3
     auto_lr = 0.5
     loop = 100
     version = "Rushed"
-    reality = Reality(m=m, s=s, version=version)
+    reality = Reality(m=m, version=version)

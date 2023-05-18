@@ -17,11 +17,11 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None, turnover_rate=None,
+def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
-    reality = Reality(m=m, s=s)
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
+    reality = Reality(m=m)
+    dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
     for period in range(search_loop):
         dao.turnover(turnover_rate=turnover_rate)
         dao.search(threshold_ratio=0.5, token=False)
@@ -33,7 +33,6 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, turnover_rate=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    s = 1
     turnover_rate_list = [0.02, 0.04, 0.06, 0.08, 0.10]
     group_size = 7
     n = 350
@@ -59,7 +58,7 @@ if __name__ == '__main__':
         for loop in range(repetition):
             sema.acquire()
             p = mp.Process(target=func,
-                           args=(m, s, n, group_size, lr, turnover_rate, search_loop, loop, return_dict, sema))
+                           args=(m, n, group_size, lr, turnover_rate, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:

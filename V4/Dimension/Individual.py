@@ -10,9 +10,8 @@ from Reality import Reality
 
 
 class Individual:
-    def __init__(self, m=None, s=None, reality=None, lr=None, alpha=3):
+    def __init__(self, m=None, reality=None, lr=None, alpha=3):
         self.m = m
-        self.s = s
         self.alpha = alpha
         self.policy_num = self.m // self.alpha
         self.lr = lr  # learning rate, learning from (adjusted) majority view

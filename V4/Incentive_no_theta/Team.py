@@ -10,7 +10,7 @@ from Reality import Reality
 import numpy as np
 
 class Team:
-    def __init__(self, m=None, index=None, alpha=None, reality=None):
+    def __init__(self, m=None, index=None, alpha=3, reality=None):
         self.index = index
         self.m = m
         self.alpha = alpha
@@ -77,10 +77,9 @@ class Team:
 if __name__ == '__main__':
     # test
     m = 30
-    s = 1
     n = 10
     lr = 0.3
     auto_lr = 0.5
     loop = 100
     version = "Rushed"
-    reality = Reality(m=m, s=s, version=version)
+    reality = Reality(m=m, version=version)

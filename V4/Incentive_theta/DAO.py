@@ -12,19 +12,15 @@ import numpy as np
 
 
 class DAO:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, group_size=None,
+    def __init__(self, m=None, n=None, reality=None, lr=None, group_size=None,
                  alpha=3):
         """
         :param m: problem space
-        :param s: the first complexity
         :param n: the number of agents
         :param reality: to provide feedback
         """
         self.m = m  # state length
-        self.s = s  # lower-level interdependency
         self.n = n  # the number of subunits under this superior
-        if self.m % self.s != 0:
-            raise ValueError("m is not dividable by s")
         if self.m % alpha != 0:
             raise ValueError("m is not dividable by {0}".format(alpha))
         self.alpha = alpha  # The aggregation degree
@@ -38,7 +34,7 @@ class DAO:
         for i in range(self.n // self.group_size):
             team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
-                individual = Individual(m=self.m, s=self.s, alpha=self.alpha, reality=self.reality, lr=self.lr)
+                individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
             self.teams.append(team)
         self.performance_across_time = []
@@ -191,14 +187,13 @@ class DAO:
 
 if __name__ == '__main__':
     m = 60
-    s = 1
     n = 280
     search_loop = 100
     lr = 0.3
     alpha = 3
     group_size = 7  # the smallest group size in Fang's model: 7
-    reality = Reality(m=m, s=s, version="Rushed", alpha=3)
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, alpha=3)
+    reality = Reality(m=m, version="Rushed", alpha=3)
+    dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size, alpha=3)
     # dao.teams[0].individuals[0].belief = reality.real_code.copy()
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)

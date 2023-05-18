@@ -17,11 +17,11 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None, turnover_rate=None,
+def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
-    reality = Reality(m=m, s=s)
-    autonomy = Autonomy(m=m, s=s, n=n, reality=reality, group_size=group_size, lr=lr)
+    reality = Reality(m=m)
+    autonomy = Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr)
     for period in range(search_loop):
         autonomy.turnover(turnover_rate=turnover_rate)
         autonomy.search()
@@ -33,7 +33,6 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, turnover_rate=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    s = 1
     turnover_rate_list = [0.12, 0.14, 0.16, 0.18, 0.20]
     group_size = 7
     n = 350
@@ -66,7 +65,7 @@ if __name__ == '__main__':
         for loop in range(repetition):
             sema.acquire()
             p = mp.Process(target=func,
-                           args=(m, s, n, group_size, lr, turnover_rate, search_loop, loop, return_dict, sema))
+                           args=(m, n, group_size, lr, turnover_rate, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:

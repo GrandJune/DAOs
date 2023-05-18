@@ -87,12 +87,11 @@ class Superior:
 
 if __name__ == '__main__':
     # m = 30
-    # s = 1
     # n = 50
     # p1 = 0.1  # belief learning from code
     # p2 = 0.9  # code learning from belief
     # p1_list = np.arange(0.1, 1.0, 0.1)
-    # reality = Reality(m=m, s=s)
+    # reality = Reality(m=m)
     # performance_list = []
     # for p1 in p1_list:
     #     superior = Superior(m=m, n=n, reality=reality, p1=p1, p2=p2)
@@ -112,13 +111,12 @@ if __name__ == '__main__':
     # Single P1
     m = 90
     policy_num = m // 3
-    s = 1
     manager_num = 50
     p1 = 0.1  # belief learning from code
     p2 = 0.1  # code learning from belief
     performance_list_across_repeat = []
     code_performance_list_across_repeat = []
-    reality = Reality(m=m, s=s)
+    reality = Reality(m=m)
     superior = Superior(policy_num=policy_num, manager_num=manager_num, reality=reality, p1=p1, p2=p2)
     code_payoff_across_time = []
     for index in range(100):

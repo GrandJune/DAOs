@@ -12,9 +12,8 @@ from itertools import product
 
 
 class Reality:
-    def __init__(self, m=None, s=None, version="Rushed", alpha=3):
+    def __init__(self, m=None, version="Rushed", alpha=3):
         self.m = m
-        self.s = s
         if m % 3 != 0:
             raise ValueError("m is not dividable by 3")
         self.version = version
@@ -25,29 +24,15 @@ class Reality:
 
     def get_payoff(self, belief=None):
         ress = 0
-        if self.s == 1:
-            if self.version == "Rushed":
-                for a, b in zip(self.real_code, belief):
-                    if a == b:
-                        ress += 1
-                ress /= self.m
-            elif self.version == "Penalty":
-                for i in range(self.m):
-                    ress += self.real_code[i] * belief[i]
-                ress /= self.m
-        else:
-            if self.version == "Rushed":
-                for i in range(self.m // self.s):
-                    if np.array_equiv(belief[i * self.s: (i + 1) * self.s], self.real_code[i * self.s: (i + 1) * self.s]):
-                        ress += 1
-                ress = ress * self.s / self.m
-            elif self.version == "Penalty":
-                for i in range(self.policy_num):
-                    temp = 0
-                    for j in range(self.s):
-                        temp += belief[i * self.s + j] * self.real_code[i * self.s + j]
-                    ress += temp
-                ress /= self.m
+        if self.version == "Rushed":
+            for a, b in zip(self.real_code, belief):
+                if a == b:
+                    ress += 1
+            ress /= self.m
+        elif self.version == "Penalty":
+            for i in range(self.m):
+                ress += self.real_code[i] * belief[i]
+            ress /= self.m
         return ress
 
     def get_policy_payoff(self, policy=None):

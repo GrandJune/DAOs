@@ -10,9 +10,8 @@ from Reality import Reality
 
 
 class Individual:
-    def __init__(self, m=None, s=None, reality=None, lr=None, alpha=3):
+    def __init__(self, m=None, reality=None, lr=None, alpha=3):
         self.m = m
-        self.s = s
         self.alpha = alpha
         self.policy_num = self.m // self.alpha
         self.lr = lr  # learning rate, learning from (adjusted) majority view
@@ -50,15 +49,14 @@ class Individual:
 
 if __name__ == '__main__':
     m = 30
-    s = 1
     n = 10
     lr = 0.3
     version = "Rushed"
     loop = 100
-    reality = Reality(m=m, s=s, version=version)
+    reality = Reality(m=m, version=version)
     team = []
     for _ in range(n):
-        individual = Individual(m=m, s=s, reality=reality, lr=lr)
+        individual = Individual(m=m, reality=reality, lr=lr)
         team.append(individual)
     consensus = reality.real_policy
     performance_across_time = []

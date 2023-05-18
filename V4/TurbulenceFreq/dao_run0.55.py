@@ -17,11 +17,11 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None, turbulence_freq=None,
+def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
-    reality = Reality(m=m, s=s)
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
+    reality = Reality(m=m)
+    dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
     for period in range(search_loop):
         if (period + 1) % turbulence_freq == 0:
             reality.change(reality_change_rate=0.15)
@@ -40,7 +40,6 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, turbulence_freq=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    s = 1
     turbulence_freq_list = [20, 40, 60, 80, 100]
     group_size = 7
     n = 350
@@ -67,7 +66,7 @@ if __name__ == '__main__':
             sema.acquire()
             p = mp.Process(target=func,
                            args=(
-                           m, s, n, group_size, lr, turbulence_freq, search_loop, loop, return_dict,
+                           m, n, group_size, lr, turbulence_freq, search_loop, loop, return_dict,
                            sema))
             jobs.append(p)
             p.start()

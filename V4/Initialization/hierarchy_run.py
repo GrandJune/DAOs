@@ -17,11 +17,11 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None, initialization_bar=None, search_loop=None,
+def func(m=None, n=None, group_size=None, lr=None, initialization_bar=None, search_loop=None,
          loop=None, return_dict=None, sema=None):
     np.random.seed(None)
-    reality = Reality(m=m, s=s)
-    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
+    reality = Reality(m=m)
+    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
     # initialization
     correct_policy_num = math.ceil(initialization_bar * reality.policy_num)
     for manager in hierarchy.superior.managers:
@@ -44,7 +44,6 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, initialization_bar=No
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    s = 1
     initialization_bar_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     n = 350
     group_size = 7
@@ -70,7 +69,7 @@ if __name__ == '__main__':
         for loop in range(repetition):
             sema.acquire()
             p = mp.Process(target=func,
-                           args=(m, s, n, group_size, lr, initialization_bar, search_loop, loop, return_dict, sema))
+                           args=(m, n, group_size, lr, initialization_bar, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:

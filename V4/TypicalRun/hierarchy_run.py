@@ -17,10 +17,10 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loop=None, return_dict=None, sema=None):
+def func(m=None, n=None, group_size=None, lr=None, search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
-    reality = Reality(m=m, s=s)
-    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size)
+    reality = Reality(m=m)
+    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
     for _ in range(search_loop):
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
@@ -31,7 +31,6 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, search_loop=None, loo
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    s = 1
     n = 350
     lr = 0.3
     hyper_iteration = 10
@@ -50,7 +49,7 @@ if __name__ == '__main__':
         return_dict = manager.dict()
         for loop in range(repetition):
             sema.acquire()
-            p = mp.Process(target=func, args=(m, s, n, group_size, lr, search_loop, loop, return_dict, sema))
+            p = mp.Process(target=func, args=(m, n, group_size, lr, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:

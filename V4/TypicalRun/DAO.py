@@ -9,23 +9,18 @@ from Individual import Individual
 from Team import Team
 from Reality import Reality
 import numpy as np
-import pickle
 
 
 class DAO:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, group_size=None,
+    def __init__(self, m=None, n=None, reality=None, lr=None, group_size=None,
                  alpha=3):
         """
         :param m: problem space
-        :param s: the first complexity
         :param n: the number of agents
         :param reality: to provide feedback
         """
         self.m = m  # state length
-        self.s = s  # lower-level interdependency
         self.n = n  # the number of subunits under this superior
-        if self.m % self.s != 0:
-            raise ValueError("m is not dividable by s")
         if self.m % alpha != 0:
             raise ValueError("m is not dividable by {0}".format(alpha))
         self.alpha = alpha  # The aggregation degree
@@ -39,13 +34,13 @@ class DAO:
         for i in range(self.n // self.group_size):
             team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
-                individual = Individual(m=self.m, s=self.s, alpha=self.alpha, reality=self.reality, lr=self.lr)
+                individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
             self.teams.append(team)
-        # self.performance_across_time = []
-        # self.variance_across_time = []
-        # self.diversity_across_time = []
-        # self.consensus_performance_across_time = []
+        self.performance_across_time = []
+        self.variance_across_time = []
+        self.diversity_across_time = []
+        self.consensus_performance_across_time = []
 
     def search(self, threshold_ratio=None, token=False):
         # Consensus Formation
@@ -88,14 +83,14 @@ class DAO:
             team.form_individual_majority_view()
             team.adjust_majority_view_2_consensus(policy=self.consensus)
             team.learn()
-        # performance_list = []
-        # for team in self.teams:
-        #     performance_list += [individual.payoff for individual in team.individuals]
-        #
-        # self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        # self.variance_across_time.append(np.std(performance_list))
-        # self.diversity_across_time.append(self.get_diversity())
-        # self.consensus_performance_across_time.append(self.consensus_payoff)
+        performance_list = []
+        for team in self.teams:
+            performance_list += [individual.payoff for individual in team.individuals]
+
+        self.performance_across_time.append(sum(performance_list) / len(performance_list))
+        self.variance_across_time.append(np.std(performance_list))
+        self.diversity_across_time.append(self.get_diversity())
+        self.consensus_performance_across_time.append(self.consensus_payoff)
 
     def incentive_search(self, threshold_ratio=None, incentive=1):
         new_consensus = []
@@ -128,14 +123,14 @@ class DAO:
             team.form_individual_majority_view()
             team.adjust_majority_view_2_consensus(policy=self.consensus)
             team.learn()
-        # performance_list = []
-        # for team in self.teams:
-        #     performance_list += [individual.payoff for individual in team.individuals]
-        #
-        # self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        # self.variance_across_time.append(np.std(performance_list))
-        # self.diversity_across_time.append(self.get_diversity())
-        # self.consensus_performance_across_time.append(self.consensus_payoff)
+        performance_list = []
+        for team in self.teams:
+            performance_list += [individual.payoff for individual in team.individuals]
+
+        self.performance_across_time.append(sum(performance_list) / len(performance_list))
+        self.variance_across_time.append(np.std(performance_list))
+        self.diversity_across_time.append(self.get_diversity())
+        self.consensus_performance_across_time.append(self.consensus_payoff)
 
     def get_diversity(self):
         diversity = 0
@@ -164,26 +159,56 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 90
+    m = 60
     s = 1
-    n = 1225
-    search_loop = 500
+    n = 350
+    search_loop = 100
     lr = 0.3
-    alpha = 3
+    alpha = 5
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, s=s, version="Rushed", alpha=alpha)
     dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, alpha=alpha)
-    individual_performance_list = []
-    consensus_performance_list = []
-    for _ in range(search_loop):
-        individual_performance = []
-        for team in dao.teams:
-            individual_performance += [individual.payoff for individual in team.individuals]
-        individual_performance_list.append(individual_performance)
-        consensus_performance_list.append(dao.consensus_payoff)
-        dao.search(threshold_ratio=0.5)
+    # dao.teams[0].individuals[0].belief = reality.real_code.copy()
+    # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
+    # print(dao.teams[0].individuals[0].belief)
+    # print(dao.teams[0].individuals[0].payoff)
+    for period in range(search_loop):
+        dao.search(threshold_ratio=0.6)
+        print(dao.consensus)
+        # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].policy,
+        #       dao.teams[0].individuals[0].payoff)
+        print("--{0}--".format(period))
+    import matplotlib.pyplot as plt
+    x = range(search_loop)
 
-    with open("dao_typical_run", 'wb') as out_file:
-        pickle.dump(individual_performance_list, out_file)
-    with open("dao_consensus_typical_run", 'wb') as out_file:
-        pickle.dump(consensus_performance_list, out_file)
+    plt.plot(x, dao.performance_across_time, "k-", label="Mean")
+    plt.plot(x, dao.consensus_performance_across_time, "r-", label="Consensus")
+    plt.title('Performance')
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Performance', fontweight='bold', fontsize=10)
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    # plt.savefig("DAO_performance.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
+
+    # Diversity
+    plt.plot(x, dao.diversity_across_time, "k-", label="DAO")
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Diversity', fontweight='bold', fontsize=10)
+    plt.title('Diversity')
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    # plt.savefig("DAO_diversity.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
+
+    # Variance
+    plt.plot(x, dao.variance_across_time, "k-", label="DAO")
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Variance', fontweight='bold', fontsize=10)
+    plt.title('Variance')
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    # plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
+
+

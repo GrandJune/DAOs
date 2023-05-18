@@ -12,19 +12,15 @@ import numpy as np
 
 
 class DAO:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, group_size=None,
+    def __init__(self, m=None, n=None, reality=None, lr=None, group_size=None,
                  alpha=3):
         """
         :param m: problem space
-        :param s: the first complexity
         :param n: the number of agents
         :param reality: to provide feedback
         """
         self.m = m  # state length
-        self.s = s  # lower-level interdependency
         self.n = n  # the number of subunits under this superior
-        if self.m % self.s != 0:
-            raise ValueError("m is not dividable by s")
         if self.m % alpha != 0:
             raise ValueError("m is not dividable by {0}".format(alpha))
         self.alpha = alpha  # The aggregation degree
@@ -38,7 +34,7 @@ class DAO:
         for i in range(self.n // self.group_size):
             team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
-                individual = Individual(m=self.m, s=self.s, alpha=self.alpha, reality=self.reality, lr=self.lr)
+                individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
             self.teams.append(team)
         self.performance_across_time = []

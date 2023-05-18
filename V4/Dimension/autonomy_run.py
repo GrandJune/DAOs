@@ -17,11 +17,11 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None,
+def func(m=None, n=None, group_size=None, lr=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
-    reality = Reality(m=m, s=s)
-    autonomy = Autonomy(m=m, s=s, n=n, reality=reality, group_size=group_size, lr=lr)
+    reality = Reality(m=m)
+    autonomy = Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr)
     for _ in range(search_loop):
         autonomy.search()
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time,
@@ -32,7 +32,6 @@ def func(m=None, s=None, n=None, group_size=None, lr=None,
 if __name__ == '__main__':
     t0 = time.time()
     m_list = [60, 90, 120, 150]
-    s = 1
     n = 350
     lr = 0.3
     repetition = 200
@@ -64,7 +63,7 @@ if __name__ == '__main__':
         for loop in range(repetition):
             sema.acquire()
             p = mp.Process(target=func,
-                           args=(m, s, n, group_size, lr, search_loop, loop, return_dict, sema))
+                           args=(m, n, group_size, lr, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:

@@ -11,11 +11,10 @@ from Reality import Reality
 from Superior import Superior
 from Team import Team
 import time
-import pickle
 
 
 class Hierarchy:
-    def __init__(self, m=None, s=None, n=None, reality=None, lr=None, alpha=3,
+    def __init__(self, m=None, n=None, reality=None, lr=None, alpha=3,
                  group_size=None, p1=0.1, p2=0.9, manager_num=50, confirmation=True):
         """
         :param m: problem space
@@ -25,13 +24,10 @@ class Hierarchy:
         :param reality: to provide feedback
         """
         self.m = m  # state length
-        self.s = s  # lower-level interdependency
         self.n = n
         self.manager_num = manager_num
         self.group_size = group_size
         self.confirmation = confirmation  # whether or the lower-level individual initially confirm to the upper-level
-        if self.m % self.s != 0:
-            raise ValueError("m is not dividable by s")
         if self.manager_num * self.group_size != self.n:
             print("auto-adjust the unfit manager_num")
             self.manager_num = self.n // self.group_size
@@ -47,17 +43,17 @@ class Hierarchy:
         for i in range(self.n // self.group_size):
             team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
-                individual = Individual(m=self.m, s=self.s, alpha=self.alpha, reality=self.reality, lr=self.lr)
+                individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
             team.manager = self.superior.managers[i]
             if self.confirmation:
                 team.confirm(policy=team.manager.policy)
             self.teams.append(team)
         # DVs
-        # self.performance_across_time = []
-        # self.variance_across_time = []
-        # self.diversity_across_time = []
-        # self.superior_performance_across_time = []
+        self.performance_across_time = []
+        self.variance_across_time = []
+        self.diversity_across_time = []
+        self.superior_performance_across_time = []
 
     def search(self):
         # Supervision Formation
@@ -67,12 +63,12 @@ class Hierarchy:
             team.confirm(policy=team.manager.policy)
             team.form_individual_majority_view()
             team.learn()
-        # performance_list = []
-        # for team in self.teams:
-        #     performance_list += [individual.payoff for individual in team.individuals]
-        # self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        # self.variance_across_time.append(np.std(performance_list))
-        # self.diversity_across_time.append(self.get_diversity())
+        performance_list = []
+        for team in self.teams:
+            performance_list += [individual.payoff for individual in team.individuals]
+        self.performance_across_time.append(sum(performance_list) / len(performance_list))
+        self.variance_across_time.append(np.std(performance_list))
+        self.diversity_across_time.append(self.get_diversity())
 
     def get_diversity(self):
         diversity = 0
@@ -102,23 +98,54 @@ class Hierarchy:
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 90
+    m = 60
     s = 1
-    n = 1225  # 50 managers, each manager control one autonomous team; 50*7=350
+    n = 350  # 50 managers, each manager control one autonomous team; 50*7=350
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     p1 = 0.1  # belief learning from code
     p2 = 0.9  # code learning from belief
-    search_iteration = 500
+    search_iteration = 100
     reality = Reality(m=m, s=s)
     hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=p2)
-    individual_performance_list = []
-    for _ in range(search_iteration):
-        individual_performance = []
-        for team in hierarchy.teams:
-            individual_performance += [individual.payoff for individual in team.individuals]
-        individual_performance_list.append(individual_performance)
+    for i in range(search_iteration):
         hierarchy.search()
+        print(i)
+    import matplotlib.pyplot as plt
+    x = range(search_iteration)
+    plt.plot(x, hierarchy.performance_across_time, "k-", label="Mean")
+    plt.plot(x, hierarchy.superior.performance_average_across_time, "r-", label="Superior")
+    plt.title('Performance')
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Performance', fontweight='bold', fontsize=10)
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    plt.savefig("Hierarchy_performance.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
 
-    with open("hierarchy_typical_run", 'wb') as out_file:
-        pickle.dump(individual_performance_list, out_file)
+
+    plt.plot(x, hierarchy.diversity_across_time, "k-", label="Hierarchy")
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Diversity', fontweight='bold', fontsize=10)
+    plt.title('Diversity')
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    plt.savefig("Hierarchy_diversity.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
+
+    plt.plot(x, hierarchy.variance_across_time, "k-", label="Hierarchy")
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Variance', fontweight='bold', fontsize=10)
+    plt.title('Variance')
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    plt.savefig("Hierarchy_variance.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
+
+    t1 = time.time()
+    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
+    print("END")
+
+
+
+

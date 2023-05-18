@@ -17,11 +17,11 @@ import pickle
 import math
 
 
-def func(m=None, s=None, n=None, group_size=None, lr=None, p1=None,
+def func(m=None, n=None, group_size=None, lr=None, p1=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
-    reality = Reality(m=m, s=s)
-    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=0.9)
+    reality = Reality(m=m)
+    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=0.9)
     for _ in range(search_loop):
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
@@ -32,7 +32,6 @@ def func(m=None, s=None, n=None, group_size=None, lr=None, p1=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    s = 1
     n = 350
     lr = 0.3
     repetition = 200
@@ -58,7 +57,7 @@ if __name__ == '__main__':
         for loop in range(repetition):
             sema.acquire()
             p = mp.Process(target=func,
-                           args=(m, s, n, group_size, lr, p1, search_loop, loop, return_dict, sema))
+                           args=(m, n, group_size, lr, p1, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
