@@ -104,13 +104,12 @@ if __name__ == '__main__':
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     p1 = 0.1  # belief learning from code
-    p2 = 0.9  # code learning from belief
+    p2 = 0.1  # code learning from belief
     search_iteration = 100
-    reality = Reality(m=m, s=s)
-    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=p2)
+    reality = Reality(m=m)
+    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=p2)
     for i in range(search_iteration):
         hierarchy.search()
-        print(i)
     import matplotlib.pyplot as plt
     x = range(search_iteration)
     plt.plot(x, hierarchy.performance_across_time, "k-", label="Mean")
