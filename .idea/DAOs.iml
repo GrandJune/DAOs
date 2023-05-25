@@ -51,21 +51,21 @@
       <sourceFolder url="file://$MODULE_DIR$/V4.2/Threshold" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4.2/TurbulenceFreq" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4.2/TurbulenceRate" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4.4" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4.4/DHA" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4.4/Threshold" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4.4/TurbulenceFreq" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4.4/TurbulenceRate" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/InformationAsymmetry" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Supervision_p2" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Incentive_no_theta" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Incentive_theta" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/TypicalRun" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Supervision_p1" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4/Supervision_p1p2" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4/Threshold_inactive" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4/Threshold_asymmetry" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turnover_2" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Interactions" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Interactions/DHA" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Interactions/Supervision_p1p2" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Interactions/Threshold" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Interactions/Threshold_asymmetry" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Interactions/Threshold_inactive" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Interactions/TurbulenceFreq" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Interactions/TurbulenceRate" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />
       <excludeFolder url="file://$MODULE_DIR$/Identity" />

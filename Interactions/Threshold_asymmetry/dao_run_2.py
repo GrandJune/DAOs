@@ -47,7 +47,7 @@ if __name__ == '__main__':
     repetition = 50
     search_loop = 2000
     threshold_ratio_list = np.arange(0.40, 0.71, 0.01)
-    asymmetry_list = [1]
+    asymmetry_list = [2]
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 50
     for asymmetry in asymmetry_list:
