@@ -22,6 +22,9 @@ def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None, inactiv
     np.random.seed(None)
     reality = Reality(m=m)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
+    for team in dao.teams:
+        for individual in team.individuals:
+            individual.token = 1
     for _ in range(search_loop):
         dao.incentive_search(threshold_ratio=threshold_ratio, incentive=0, inactive_rate=inactive)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
