@@ -25,6 +25,7 @@ def func(m=None, n=None, group_size=None, lr=None, initialization_bar=None, sear
     # initialization
     correct_policy_num = math.ceil(initialization_bar * reality.policy_num)
     for manager in hierarchy.superior.managers:
+        np.random.seed(None)
         correct_indexes = np.random.choice(range(reality.policy_num), correct_policy_num, replace=False).tolist()
         for index in range(reality.policy_num):
             if index in correct_indexes:
@@ -50,7 +51,7 @@ if __name__ == '__main__':
     lr = 0.3
     repetition = 200
     concurrency = 50
-    search_loop = 1000
+    search_loop = 500
     # DVs
     performance_across_para = []
     superior_performance_across_para = []

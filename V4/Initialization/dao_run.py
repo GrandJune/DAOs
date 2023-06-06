@@ -26,6 +26,7 @@ def func(m=None, n=None, group_size=None, lr=None, initialization_bar=None,
     correct_num = math.ceil(initialization_bar * m)
     for team in dao.teams:
         for individual in team.individuals:
+            np.random.seed(None)
             correct_indexes = np.random.choice(range(m), correct_num, replace=False).tolist()
             for index in range(m):
                 if index in correct_indexes:
@@ -50,7 +51,7 @@ if __name__ == '__main__':
     lr = 0.3
     repetition = 200
     concurrency = 50
-    search_loop = 1000
+    search_loop = 500
     threshold_ratio = 0.5
     group_size = 7
     # DVs
