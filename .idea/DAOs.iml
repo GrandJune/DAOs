@@ -66,6 +66,7 @@
       <sourceFolder url="file://$MODULE_DIR$/Interactions/Threshold_inactive" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Interactions/TurbulenceFreq" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Interactions/TurbulenceRate" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Division" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />
       <excludeFolder url="file://$MODULE_DIR$/Identity" />
