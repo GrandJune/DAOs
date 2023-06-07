@@ -11,7 +11,8 @@ from Manager import Manager
 
 
 class Superior:
-    def __init__(self, policy_num=None, manager_num=None, reality=None, p1=None, p2=None):
+    def __init__(self, policy_num=None, manager_num=None,
+                 reality=None, p1=None, p2=None, initialization=1):
         """
         March's model to model how the traditional organizational cognition is formed.
         :param m: problem dimension (the length of policy directives, i.e., m // s)
@@ -27,7 +28,7 @@ class Superior:
         self.reality = reality
         self.managers = []
         for _ in range(self.manager_num):
-            manager = Manager(policy_num=self.policy_num, reality=self.reality, p1=self.p1)
+            manager = Manager(policy_num=self.policy_num, reality=self.reality, p1=self.p1, initialization=initialization)
             self.managers.append(manager)
         self.code = [0] * self.policy_num  # the initialization of code is zero
         self.code_payoff = 0

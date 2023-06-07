@@ -21,21 +21,7 @@ def func(m=None, n=None, group_size=None, lr=None, initialization_bar=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
-    dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
-    # initialization
-    correct_num = math.ceil(initialization_bar * m)
-    for team in dao.teams:
-        for individual in team.individuals:
-            np.random.seed(None)
-            correct_indexes = np.random.choice(range(m), correct_num, replace=False).tolist()
-            for index in range(m):
-                if index in correct_indexes:
-                    individual.belief[index] = int(reality.real_code[index])
-                else:
-                    individual.belief[index] = np.random.choice((0, -1 * reality.real_code[index]))
-            individual.payoff = reality.get_payoff(belief=individual.belief)
-            individual.policy = reality.belief_2_policy(belief=individual.belief)  # a fake policy for voting
-            del correct_indexes
+    dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size, initialization=initialization_bar)
     for _ in range(search_loop):
         dao.search(threshold_ratio=0.5)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,

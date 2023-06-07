@@ -21,6 +21,18 @@ def func(m=None, n=None, group_size=None, lr=None, search_loop=None, loop=None, 
     np.random.seed(None)
     reality = Reality(m=m)
     hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
+    # labor division
+    for manager, team in zip(hierarchy.superior.managers, hierarchy.teams):
+        np.random.seed(None)
+        policy_scope = np.random.choice(range(m//3), 10, replace=False)
+        for index in range(m // 3):
+            if index not in policy_scope:
+                manager.policy[index] = 0
+        manager.payoff = reality.get_policy_payoff(policy=manager.policy)
+        for individual in team.individuals:
+            individual.belief = [0] * m
+        team.confirm(policy=team.manager.policy)
+
     for _ in range(search_loop):
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,

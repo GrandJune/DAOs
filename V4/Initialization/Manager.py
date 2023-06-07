@@ -8,11 +8,18 @@ import numpy as np
 
 
 class Manager:
-    def __init__(self, policy_num=None, reality=None, p1=None):
+    def __init__(self, policy_num=None, reality=None, p1=None, initialization=1):
         self.policy_num = policy_num
         self.reality = reality
         self.p1 = p1
         self.policy = np.random.choice([-1, 0, 1], self.policy_num, p=[1/3, 1/3, 1/3])
+        if initialization != 1:
+            correct_indexes = np.random.choice(range(policy_num), int(initialization*policy_num), replace=False).tolist()
+            for index in range(policy_num):
+                if index in correct_indexes:
+                    self.policy[index] = int(reality.real_policy[index])
+                else:
+                    self.policy[index] = np.random.choice((0, -1 * reality.real_policy[index]))
         self.payoff = self.reality.get_policy_payoff(policy=self.policy)
 
     def turnover(self, turnover_rate=None):

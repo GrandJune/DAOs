@@ -22,6 +22,16 @@ def func(m=None, n=None, group_size=None, lr=None,
     np.random.seed(None)
     reality = Reality(m=m)
     autonomy = Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr)
+    # labor division
+    for team in autonomy.teams:
+        np.random.seed(None)
+        team_scope = np.random.choice(range(m), 30, replace=False)
+        for individual in team.individuals:
+            for index in range(m):
+                if index not in team_scope:
+                    individual.belief[index] = 0
+            individual.payoff = reality.get_payoff(belief=individual.belief)
+            individual.policy = reality.belief_2_policy(belief=individual.belief)  # a fake policy for voting
     for _ in range(search_loop):
         autonomy.search()
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time,

@@ -13,7 +13,7 @@ import numpy as np
 
 class DAO:
     def __init__(self, m=None, n=None, reality=None, lr=None, group_size=None,
-                 alpha=3):
+                 alpha=3, initialization=1):
         """
         :param m: problem space
         :param n: the number of agents
@@ -34,7 +34,7 @@ class DAO:
         for i in range(self.n // self.group_size):
             team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
-                individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr)
+                individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr, initialization=initialization)
                 team.individuals.append(individual)
             self.teams.append(team)
         self.performance_across_time = []

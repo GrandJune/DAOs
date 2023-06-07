@@ -22,6 +22,16 @@ def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None,
     np.random.seed(None)
     reality = Reality(m=m)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
+    # labor division
+    for team in dao.teams:
+        np.random.seed(None)
+        team_scope = np.random.choice(range(m), 30, replace=False)
+        for individual in team.individuals:
+            for index in range(m):
+                if index not in team_scope:
+                    individual.belief[index] = 0
+            individual.payoff = reality.get_payoff(belief=individual.belief)
+            individual.policy = reality.belief_2_policy(belief=individual.belief)  # a fake policy for voting
     for _ in range(search_loop):
         dao.search(threshold_ratio=threshold_ratio)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,

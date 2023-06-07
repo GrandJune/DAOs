@@ -21,20 +21,7 @@ def func(m=None, n=None, group_size=None, lr=None, initialization_bar=None, sear
          loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
-    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
-    # initialization
-    correct_policy_num = math.ceil(initialization_bar * reality.policy_num)
-    for manager in hierarchy.superior.managers:
-        np.random.seed(None)
-        correct_indexes = np.random.choice(range(reality.policy_num), correct_policy_num, replace=False).tolist()
-        for index in range(reality.policy_num):
-            if index in correct_indexes:
-                manager.policy[index] = int(reality.real_policy[index])
-            else:
-                manager.policy[index] = np.random.choice((0, -1 * reality.real_policy[index]))
-        for team in hierarchy.teams:
-            team.confirm(policy=team.manager.policy)
-        del correct_indexes
+    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size, initialization=initialization_bar)
     for _ in range(search_loop):
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,

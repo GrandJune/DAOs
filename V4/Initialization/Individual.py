@@ -10,7 +10,7 @@ from Reality import Reality
 
 
 class Individual:
-    def __init__(self, m=None, reality=None, lr=None, alpha=3):
+    def __init__(self, m=None, reality=None, lr=None, alpha=3, initialization=1):
         self.m = m
         self.alpha = alpha
         self.policy_num = self.m // self.alpha
@@ -19,6 +19,13 @@ class Individual:
 
         self.reality = reality
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
+        if initialization != 1:
+            correct_indexes = np.random.choice(range(m), int(initialization*m), replace=False).tolist()
+            for index in range(m):
+                if index in correct_indexes:
+                    individual.belief[index] = int(reality.real_code[index])
+                else:
+                    individual.belief[index] = np.random.choice((0, -1 * reality.real_code[index]))
         # self.belief = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)  # a fake policy for voting
