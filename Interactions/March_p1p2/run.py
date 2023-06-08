@@ -17,7 +17,7 @@ from multiprocessing import Pool
 from multiprocessing import Semaphore
 
 
-def func(p1=None, p2=None, loop=None, return_dict=None, sema=None):
+def func(m=None, n=None, p1=None, p2=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
     organization = Organization(m=m, n=n, p1=p1, p2=p2, reality=reality)
@@ -30,12 +30,10 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     n = 350
-    lr = 0.3
     repetition = 100
-    search_loop = 200
     concurrency = 50
     p1_list = np.arange(0.1, 1.0, 0.1)
-    p2_list = np.arange(0.1, 0.50, 0.1)
+    p2_list = np.arange(0.1, 0.5, 0.1)
     group_size = 7  # the smallest group size in Fang's model: 7
     # DVs
     performance_across_p1p2 = []
@@ -49,7 +47,7 @@ if __name__ == '__main__':
             for loop in range(repetition):
                 sema.acquire()
                 p = mp.Process(target=func,
-                               args=(m, n, group_size, lr, p1, search_loop, loop, return_dict, sema))
+                               args=(m, n, p1, p2, loop, return_dict, sema))
                 jobs.append(p)
                 p.start()
             for proc in jobs:
