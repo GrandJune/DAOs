@@ -59,8 +59,8 @@ class Organization:
                 individual.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
                 individual.payoff = self.reality.get_payoff(belief=individual.belief)
 
-    def process(self, loop=100, p3=None, p4=None):
-        for _ in range(loop):
+    def process(self, search_round=100, p3=None, p4=None):
+        for _ in range(search_round):
             self.get_superior_group()
             # print(len(self.superior_group))
             self.learn_from_beliefs()  # update the organizational code and payoff
