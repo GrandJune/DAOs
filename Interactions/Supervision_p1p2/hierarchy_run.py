@@ -61,9 +61,9 @@ if __name__ == '__main__':
             performance_across_repeat = [result[0][-1] for result in results]
             performance_across_p2.append(sum(performance_across_repeat) / len(performance_across_repeat))
         performance_across_p1p2.append(performance_across_p2)
-        # save the without-time data
-        with open("hierarchy_performance", 'wb') as out_file:
-            pickle.dump(performance_across_p1p2, out_file)
+    # save the without-time data
+    with open("hierarchy_performance", 'wb') as out_file:
+        pickle.dump(performance_across_p1p2, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
