@@ -29,8 +29,8 @@ def func(m=None, n=None, p1=None, p2=None, loop=None, return_dict=None, sema=Non
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    n = 350
-    repetition = 100
+    n = 50
+    repetition = 400
     concurrency = 50
     p1_list = np.arange(0.1, 1.0, 0.1)
     p2_list = np.arange(0.1, 0.5, 0.1)
