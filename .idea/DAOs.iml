@@ -38,7 +38,6 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Initialization" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Typology" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/TurbulenceEvery" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/Votings" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Team_test" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/ignore0" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Dimension" isTestSource="false" />
@@ -69,6 +68,9 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Division" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Interactions/Threshold_incentive" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Interactions/March_p1p2" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Simplified" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Simplified/Asymmetry" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Simplified/Threshold" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />
       <excludeFolder url="file://$MODULE_DIR$/Identity" />

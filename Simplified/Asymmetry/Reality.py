@@ -4,7 +4,6 @@
 # @FileName: Reality.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
-import random
 import time
 import numpy as np
 import math
