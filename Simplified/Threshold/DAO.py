@@ -10,8 +10,7 @@ import numpy as np
 
 
 class DAO:
-    def __init__(self, m=None, n=None, reality=None, lr=None, group_size=None,
-                 alpha=3):
+    def __init__(self, m=None, n=None, reality=None, lr=None, alpha=3):
         """
         :param m: reality dimension
         :param n: agent number

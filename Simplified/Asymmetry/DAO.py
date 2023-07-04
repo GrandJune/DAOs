@@ -10,7 +10,7 @@ import numpy as np
 
 
 class DAO:
-    def __init__(self, m=None, n=None, reality=None, lr=None, alpha=3):
+    def __init__(self, m: int, n: int, reality: object, lr: float, alpha: int = 3):
         """
         :param m: reality dimension
         :param n: agent number
@@ -38,7 +38,7 @@ class DAO:
         self.diversity_across_time = []
         self.consensus_performance_across_time = []
 
-    def search(self, threshold_ratio=None, token=False):
+    def search(self, threshold_ratio: float = 0.5, token: bool = False) -> None:
         # Consensus Formation
         new_consensus = []
         if not token:
@@ -84,7 +84,7 @@ class DAO:
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
 
-    def incentive_search(self, threshold_ratio=None, incentive=1):
+    def incentive_search(self, threshold_ratio: float = 0.5, incentive: float = 1) -> None:
         # Consensus Formation, With token
         new_consensus = []
         threshold = threshold_ratio * sum([individual.token for individual in self.individuals])

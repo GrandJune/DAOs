@@ -20,7 +20,7 @@ def func(m=None, n=None, lr=None, threshold_ratio=None, search_loop=None, loop=N
     reality = Reality(m=m,)
     dao = DAO(m=m, n=n, reality=reality, lr=lr)
     for _ in range(search_loop):
-        dao.search(threshold_ratio=threshold_ratio)
+        dao.search(threshold_ratio=threshold_ratio, token=False)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
     sema.release()
