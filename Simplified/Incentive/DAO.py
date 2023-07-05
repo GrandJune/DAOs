@@ -10,7 +10,7 @@ from Reality import Reality
 
 
 class DAO:
-    def __init__(self, m: int, n: int, reality: object, lr: float, alpha: int = 3):
+    def __init__(self, m: int, n: int, reality: object, lr: float, alpha: int = 3, group_size: int = 7):
         """
         :param m: reality dimension
         :param n: agent number
@@ -32,6 +32,8 @@ class DAO:
         for i in range(self.n):
             individual = Individual(m=m, reality=reality, lr=lr, alpha=alpha)
             self.individuals.append(individual)
+        for index in range(self.n):
+            self.individuals[index].connections = np.random.choice(range(self.n), group_size, replace=False)
         self.performance_across_time = []
         self.variance_across_time = []
         self.diversity_across_time = []
@@ -69,7 +71,7 @@ class DAO:
         self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
         # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
         for one in self.individuals:
-            superior_peer = [another for another in self.individuals if another.payoff > one.payoff]
+            superior_peer = [another for another in self.individuals[one.connections] if another.payoff > one.payoff]
             superior_belief_pool = [individual.belief for individual in superior_peer]
             majority_view = self.get_one_majority_view(superior_belief_pool=superior_belief_pool)
             if len(majority_view) == 0:
@@ -114,7 +116,7 @@ class DAO:
                         individual.token += incentive / self.policy_num
         # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
         for one in self.individuals:
-            superior_peer = [another for another in self.individuals if another.payoff > one.payoff]
+            superior_peer = [another for another in self.individuals[one.connections] if another.payoff > one.payoff]
             superior_belief_pool = [individual.belief for individual in superior_peer]
             majority_view = self.get_one_majority_view(superior_belief_pool=superior_belief_pool)
             if len(majority_view) == 0:
