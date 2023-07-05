@@ -4,9 +4,9 @@
 # @FileName: Superior.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
+import numpy as np
 from Individual import Individual
 from Reality import Reality
-import numpy as np
 
 
 class DAO:
@@ -121,57 +121,6 @@ class DAO:
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
 
-    def incentive_search(self, threshold_ratio=None, incentive=1, inactive_rate=None):
-        new_consensus = []
-        individuals = []
-        for team in self.teams:
-            individuals += team.individuals
-        for individual in individuals:
-            individual.policy = self.reality.belief_2_policy(belief=individual.belief)
-        for individual in individuals:
-            if np.random.uniform(0, 1) < inactive_rate:  # e.g., 0.3
-                if np.random.uniform(0, 1) > incentive:   # if not be incentivized e.g., 1 - 0.7
-                    individual.active = 0
-            else:
-                individual.active = 1
-        threshold = threshold_ratio * sum([individual.token for individual in individuals])
-        # consider the active status
-        for i in range(self.policy_num):
-            overall_sum = sum([individual.policy[i] * individual.token * individual.active for individual in individuals])
-            positive_count = sum([individual.token for individual in individuals if (individual.policy[i] == 1) and (individual.active == 1)])
-            negative_count = sum([individual.token for individual in individuals if (individual.policy[i] == -1) and (individual.active == 1)])
-            if (positive_count > threshold) and overall_sum > 0:
-                new_consensus.append(1)
-            elif (negative_count > threshold) and overall_sum < 0:
-                new_consensus.append(-1)
-            else:
-                new_consensus.append(0)
-        # Once there is a change in consensus, reward the contributor
-        # reward_count = 0
-        for old_bit, new_bit, index in zip(self.consensus, new_consensus, range(self.policy_num)):
-            if old_bit != new_bit:
-                # reward_count += 1
-                for individual in individuals:
-                    if (individual.policy[index] == new_bit) and (individual.active == 1):  # individual active and vote correctly
-                        individual.token += incentive
-        self.consensus = new_consensus
-        self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
-        # 1) Generate and 2) adjust the superior majority view and 3) learn from it
-        for team in self.teams:
-            team.form_individual_majority_view()
-            team.adjust_majority_view_2_consensus(policy=self.consensus)
-            team.learn()
-        performance_list = []
-        for team in self.teams:
-            performance_list += [individual.payoff for individual in team.individuals]
-
-        self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        self.variance_across_time.append(np.std(performance_list))
-        self.diversity_across_time.append(self.get_diversity())
-        self.consensus_performance_across_time.append(self.consensus_payoff)
-        self.gini_across_time.append(self.get_gini())
-        # self.reward_num_across_time.append(reward_count)
-
     def get_diversity(self):
         diversity = 0
         belief_pool = [individual.belief for individual in self.individuals]
@@ -226,7 +175,7 @@ if __name__ == '__main__':
     alpha = 3
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, version="Rushed", alpha=alpha)
-    dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size, alpha=alpha)
+    dao = DAO(m=m, n=n, reality=reality, lr=lr, alpha=alpha)
     # dao.teams[0].individuals[0].belief = reality.real_code.copy()
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)
