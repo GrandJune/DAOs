@@ -63,25 +63,21 @@ if __name__ == '__main__':
             consensus_across_repeat = [result[1] for result in results]
             diversity_across_repeat = [result[2] for result in results]
             variance_across_repeat = [result[3] for result in results]
-            gini_across_repeat = [result[4] for result in results]
             # After taking an average across repetitions
             performance_final = []
             consensus_final = []
             diversity_final = []
             variance_final = []
-            gini_final = []
             for period in range(search_loop):
                 performance_temp = [performance_list[period] for performance_list in performance_across_repeat]
                 consensus_temp = [consensus_list[period] for consensus_list in consensus_across_repeat]
                 diversity_temp = [diversity_list[period] for diversity_list in diversity_across_repeat]
                 variance_temp = [variance_list[period] for variance_list in variance_across_repeat]
-                gini_temp = [gini_list[period] for gini_list in gini_across_repeat]
 
                 performance_final.append(sum(performance_temp) / len(performance_temp))
                 consensus_final.append(sum(consensus_temp) / len(consensus_temp))
                 diversity_final.append(sum(diversity_temp) / len(diversity_temp))
                 variance_final.append(sum(variance_temp) / len(variance_temp))
-                gini_final.append(sum(gini_temp) / len(gini_temp))
 
             with open("dao_performance_incentive_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
                 pickle.dump(performance_final, out_file)
@@ -91,8 +87,6 @@ if __name__ == '__main__':
                 pickle.dump(diversity_final, out_file)
             with open("dao_variance_incentive_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
                 pickle.dump(variance_final, out_file)
-            with open("dao_gini_incentive_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
-                pickle.dump(gini_final, out_file)
 
             with open("dao_original_performance_incentive_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
                 pickle.dump(performance_across_repeat, out_file)
@@ -102,8 +96,6 @@ if __name__ == '__main__':
                 pickle.dump(diversity_across_repeat, out_file)
             with open("dao_original_variance_incentive_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
                 pickle.dump(variance_across_repeat, out_file)
-            with open("dao_original_gini_incentive_{0}_inactive_{1}".format(incentive, inactive_rate), 'wb') as out_file:
-                pickle.dump(gini_across_repeat, out_file)
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
 
