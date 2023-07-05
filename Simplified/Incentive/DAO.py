@@ -83,7 +83,9 @@ class DAO:
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
 
-    def incentive_search(self, threshold_ratio: float = 0.5, incentive: float = 1) -> None:
+    def incentive_search(self, threshold_ratio: float = 0.5, incentive: float = 1, inactive__rate: float = 0) -> None:
+        # Assign the activeness
+        
         # Consensus Formation, With token
         new_consensus = []
         threshold = threshold_ratio * sum([individual.token for individual in self.individuals])
@@ -173,7 +175,6 @@ if __name__ == '__main__':
     search_loop = 100
     lr = 0.3
     alpha = 3
-    group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, version="Rushed", alpha=alpha)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, alpha=alpha)
     # dao.teams[0].individuals[0].belief = reality.real_code.copy()
