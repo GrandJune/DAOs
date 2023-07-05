@@ -83,9 +83,14 @@ class DAO:
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
 
-    def incentive_search(self, threshold_ratio: float = 0.5, incentive: float = 1, inactive__rate: float = 0) -> None:
+    def incentive_search(self, threshold_ratio: float = 0.5, incentive: float = 1, inactive_rate: float = 0) -> None:
         # Assign the activeness
-        
+        for individual in self.individuals:
+            if np.random.uniform(0, 1) < inactive_rate:  # e.g., 0.3
+                if np.random.uniform(0, 1) > incentive:   # if not be incentivized e.g., 1 - 0.7
+                    individual.active = 0
+            else:
+                individual.active = 1
         # Consensus Formation, With token
         new_consensus = []
         threshold = threshold_ratio * sum([individual.token for individual in self.individuals])
@@ -105,7 +110,7 @@ class DAO:
         for old_bit, new_bit, index in zip(self.consensus, new_consensus, range(self.policy_num)):
             if old_bit != new_bit:
                 for individual in self.individuals:
-                    if individual.policy[index] == new_bit:
+                    if (individual.policy[index] == new_bit) and (individual.active == 1):
                         individual.token += incentive / self.policy_num
         # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
         for one in self.individuals:

@@ -4,9 +4,9 @@
 # @FileName: Superior.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
+import numpy as np
 from Individual import Individual
 from Reality import Reality
-import numpy as np
 
 
 class DAO:
@@ -83,7 +83,14 @@ class DAO:
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
 
-    def incentive_search(self, threshold_ratio: float = 0.5, incentive: float = 1) -> None:
+    def incentive_search(self, threshold_ratio: float = 0.5, incentive: float = 1, inactive_rate: float = 0) -> None:
+        # Assign the activeness
+        for individual in self.individuals:
+            if np.random.uniform(0, 1) < inactive_rate:  # e.g., 0.3
+                if np.random.uniform(0, 1) > incentive:   # if not be incentivized e.g., 1 - 0.7
+                    individual.active = 0
+            else:
+                individual.active = 1
         # Consensus Formation, With token
         new_consensus = []
         threshold = threshold_ratio * sum([individual.token for individual in self.individuals])
@@ -103,7 +110,7 @@ class DAO:
         for old_bit, new_bit, index in zip(self.consensus, new_consensus, range(self.policy_num)):
             if old_bit != new_bit:
                 for individual in self.individuals:
-                    if individual.policy[index] == new_bit:
+                    if (individual.policy[index] == new_bit) and (individual.active == 1):
                         individual.token += incentive / self.policy_num
         # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
         for one in self.individuals:
@@ -173,9 +180,8 @@ if __name__ == '__main__':
     search_loop = 100
     lr = 0.3
     alpha = 3
-    group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, version="Rushed", alpha=alpha)
-    dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size, alpha=alpha)
+    dao = DAO(m=m, n=n, reality=reality, lr=lr, alpha=alpha)
     # dao.teams[0].individuals[0].belief = reality.real_code.copy()
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)
