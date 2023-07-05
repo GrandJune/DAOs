@@ -29,11 +29,12 @@ class DAO:
         self.consensus = [0] * self.policy_num
         self.consensus_payoff = 0
         self.individuals = []
-        for i in range(self.n):
-            individual = Individual(m=m, reality=reality, lr=lr, alpha=alpha)
-            self.individuals.append(individual)
         for index in range(self.n):
-            self.individuals[index].connections = np.random.choice(range(self.n), group_size, replace=False)
+            individual = Individual(m=m, reality=reality, lr=lr, alpha=alpha, index=index)
+            self.individuals.append(individual)
+        for individual in self.individuals:
+            connections = np.random.choice(range(self.n), group_size, replace=False).tolist()
+            individual.connections = [one for one in self.individuals if one.index in connections]
         self.performance_across_time = []
         self.variance_across_time = []
         self.diversity_across_time = []
@@ -71,8 +72,7 @@ class DAO:
         self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
         # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
         for one in self.individuals:
-            superior_peer = [another for another in self.individuals[one.connections] if another.payoff > one.payoff]
-            superior_belief_pool = [individual.belief for individual in superior_peer]
+            superior_belief_pool = [another.belief for another in one.connections if another.payoff > one.payoff]
             majority_view = self.get_one_majority_view(superior_belief_pool=superior_belief_pool)
             if len(majority_view) == 0:
                 continue
@@ -116,8 +116,7 @@ class DAO:
                         individual.token += incentive / self.policy_num
         # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
         for one in self.individuals:
-            superior_peer = [another for another in self.individuals[one.connections] if another.payoff > one.payoff]
-            superior_belief_pool = [individual.belief for individual in superior_peer]
+            superior_belief_pool = [another.belief for another in one.connections if another.payoff > one.payoff]
             majority_view = self.get_one_majority_view(superior_belief_pool=superior_belief_pool)
             if len(majority_view) == 0:
                 continue
@@ -179,17 +178,19 @@ class DAO:
 if __name__ == '__main__':
     m = 60
     n = 350
-    search_loop = 100
+    search_loop = 50
     lr = 0.3
     alpha = 3
     reality = Reality(m=m, version="Rushed", alpha=alpha)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, alpha=alpha)
-    # dao.teams[0].individuals[0].belief = reality.real_code.copy()
-    # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
-    # print(dao.teams[0].individuals[0].belief)
-    # print(dao.teams[0].individuals[0].payoff)
+    # for individual in dao.individuals:
+    #     print(individual.belief, individual.payoff)
+    #     print(individual.index, individual.connections)
+    #     print("*"*10)
+
+
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.55)
+        dao.search(threshold_ratio=0.50)
         print(dao.consensus)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].policy,
         #       dao.teams[0].individuals[0].payoff)
@@ -226,5 +227,3 @@ if __name__ == '__main__':
     # plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
-
-

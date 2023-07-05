@@ -10,9 +10,9 @@ from Reality import Reality
 
 
 class Individual:
-    def __init__(self, m=None, reality=None, lr=None, alpha=3):
+    def __init__(self, m=None, reality=None, lr=None, alpha=3, index: int = None):
         self.m = m
-        self.index = None  # the ID of individual
+        self.index = index  # the ID of individual
         self.connections = []  # the linkage to others' ID
         self.alpha = alpha
         self.policy_num = self.m // self.alpha
