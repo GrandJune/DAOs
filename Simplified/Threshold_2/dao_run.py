@@ -33,7 +33,7 @@ if __name__ == '__main__':
     lr = 0.3
     repetition = 50
     search_loop = 2000
-    threshold_ratio_list = np.arange(0.40, 0.55, 0.01)
+    threshold_ratio_list = np.arange(0.55, 0.71, 0.01)
 
     performance_across_para = []  # remove the time dimension
     consensus_performance_across_para = []
