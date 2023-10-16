@@ -87,13 +87,13 @@ if __name__ == '__main__':
         variance_across_p1p2.append(variance_across_p2)
 
     # save the without-time data
-    with open("hierarchy_performance_across_p1p2", 'wb') as out_file:
+    with open("hierarchy_performance_across_p1p2_2", 'wb') as out_file:
         pickle.dump(performance_across_p1p2, out_file)
-    with open("superior_performance_across_p1p2", 'wb') as out_file:
+    with open("superior_performance_across_p1p2_2", 'wb') as out_file:
         pickle.dump(superior_performance_across_p1p2, out_file)
-    with open("hierarchy_diversity_across_p1p2", 'wb') as out_file:
+    with open("hierarchy_diversity_across_p1p2_2", 'wb') as out_file:
         pickle.dump(diversity_across_p1p2, out_file)
-    with open("hierarchy_variance_across_p1p2", 'wb') as out_file:
+    with open("hierarchy_variance_across_p1p2_2", 'wb') as out_file:
         pickle.dump(variance_across_p1p2, out_file)
 
     t1 = time.time()
