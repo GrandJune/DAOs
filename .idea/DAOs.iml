@@ -13,7 +13,6 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Asymmetry" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Comparison" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/DHA" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4/TT" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/TTT" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Threshold" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turnover" isTestSource="false" />
@@ -35,8 +34,6 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/TurbulenceEvery" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Team_test" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/ignore0" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4/TurbulenceFreq" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4/TurbulenceRate" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/TurbulenceStrategy" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4.2" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Threshold2" isTestSource="false" />
@@ -73,6 +70,10 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Lr" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Scale" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Supervision_p1p2" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence/TT" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence/TurbulenceFreq" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence/TurbulenceRate" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />
       <excludeFolder url="file://$MODULE_DIR$/Identity" />
