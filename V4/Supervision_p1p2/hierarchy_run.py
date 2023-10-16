@@ -37,8 +37,10 @@ if __name__ == '__main__':
     repetition = 200
     search_loop = 1000
     concurrency = 50
-    p1_list = np.arange(0.1, 1.0, 0.1)
-    group_size = 7  # the smallest group size in Fang's model: 7
+    p1_list = [0, 0.1]
+    # [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9]
+    p2_list = [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9]
+    group_size = 7  # the smallest group size in Fang's model: 7s
     # DVs
     performance_across_para = []
     superior_performance_across_para = []

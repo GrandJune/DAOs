@@ -55,7 +55,6 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Incentive_no_theta" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Incentive_theta" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/TypicalRun" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4/Supervision_p1" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turnover_2" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Interactions" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Interactions/DHA" isTestSource="false" />
@@ -72,6 +71,7 @@
       <sourceFolder url="file://$MODULE_DIR$/Simplified/Asymmetry" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Simplified/Incentive" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Simplified/Threshold" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Supervision_p1p2" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />
       <excludeFolder url="file://$MODULE_DIR$/Identity" />
