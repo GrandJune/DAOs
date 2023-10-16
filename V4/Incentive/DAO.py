@@ -109,7 +109,7 @@ class DAO:
             else:
                 individual.active = 1
         threshold = threshold_ratio * sum([individual.token for individual in individuals])
-        # consider the active status
+        # consider the active status  With the threshold!!!
         for i in range(self.policy_num):
             overall_sum = sum([individual.policy[i] * individual.token * individual.active for individual in individuals])
             positive_count = sum([individual.token for individual in individuals if (individual.policy[i] == 1) and (individual.active == 1)])

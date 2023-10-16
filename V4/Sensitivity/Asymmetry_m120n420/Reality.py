@@ -90,8 +90,9 @@ class Reality:
 
 if __name__ == '__main__':
     m = 30
+    s = 1
     version = "Rushed"
-    reality = Reality(m=m, version=version)
+    reality = Reality(m=m, s=s, version=version)
     belief = reality.real_code.copy()
     belief[-1] *= -1
     payoff = reality.get_payoff(belief=belief)

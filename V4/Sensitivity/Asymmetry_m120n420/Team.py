@@ -10,7 +10,7 @@ from Reality import Reality
 import numpy as np
 
 class Team:
-    def __init__(self, m=None, index=None, alpha=3, reality=None):
+    def __init__(self, m=None, index=None, alpha=None, reality=None):
         self.index = index
         self.m = m
         self.alpha = alpha
