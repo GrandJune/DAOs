@@ -44,11 +44,6 @@ if __name__ == '__main__':
     diversity_across_para = []
     variance_across_para = []
 
-    performance_across_para_time = []  # retain the across_time dimension
-    consensus_performance_across_para_time = []
-    diversity_across_para_time = []
-    variance_across_para_time = []
-
     concurrency = 50
     for threshold_ratio in threshold_ratio_list:
         sema = Semaphore(concurrency)
@@ -78,54 +73,15 @@ if __name__ == '__main__':
         diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
         variance_across_para.append(sum(variance_across_repeat) / len(variance_across_repeat))
 
-        # retain the time dimension
-        performance_across_repeat_time = [result[0] for result in results]
-        consensus_performance_across_repeat_time = [result[1] for result in results]
-        diversity_across_repeat_time = [result[2] for result in results]
-        variance_across_repeat_time = [result[3] for result in results]
-
-        # take an average across repetition, for each time iteration, integrate into 600 values for one parameter
-        performance_across_time = []  # under the same parameter
-        consensus_performance_across_time = []
-        diversity_across_time = []
-        variance_across_time = []
-        for iteration in range(search_loop):
-            temp_performance = [performance_list[iteration] for performance_list in performance_across_repeat_time]
-            performance_across_time.append(sum(temp_performance) / len(temp_performance))
-
-            temp_consensus = [consensus_list[iteration] for consensus_list in consensus_performance_across_repeat_time]
-            consensus_performance_across_time.append(sum(temp_consensus) / len(temp_consensus))
-
-            temp_diversity = [diversity_list[iteration] for diversity_list in diversity_across_repeat_time]
-            diversity_across_time.append(sum(temp_diversity) / len(temp_diversity))
-
-            temp_variance = [variance_list[iteration] for variance_list in variance_across_repeat_time]
-            variance_across_time.append(sum(temp_variance) / len(temp_variance))
-        # retain the time dimension
-        performance_across_para_time.append(performance_across_time)
-        consensus_performance_across_para_time.append(consensus_performance_across_time)
-        diversity_across_para_time.append(diversity_across_time)
-        variance_across_para_time.append(variance_across_time)
-
     # save the without-time data (ready for figure)
-    with open("dao_performance_across_threshold", 'wb') as out_file:
+    with open("dao_performance_across_threshold_3", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("dao_consensus_performance_across_threshold", 'wb') as out_file:
+    with open("dao_consensus_performance_across_threshold_3", 'wb') as out_file:
         pickle.dump(consensus_performance_across_para, out_file)
-    with open("dao_diversity_across_threshold", 'wb') as out_file:
+    with open("dao_diversity_across_threshold_3", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("dao_variance_across_threshold", 'wb') as out_file:
+    with open("dao_variance_across_threshold_3", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
-
-    # save the with-time data
-    with open("dao_performance_across_threshold_time", 'wb') as out_file:
-        pickle.dump(performance_across_para_time, out_file)
-    with open("dao_consensus_performance_across_threshold_time", 'wb') as out_file:
-        pickle.dump(consensus_performance_across_para_time, out_file)
-    with open("dao_diversity_across_threshold_time", 'wb') as out_file:
-        pickle.dump(diversity_across_para_time, out_file)
-    with open("dao_variance_across_threshold_time", 'wb') as out_file:
-        pickle.dump(variance_across_para_time, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
