@@ -13,14 +13,14 @@ from multiprocessing import Semaphore
 import pickle
 
 
-def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
+def func(m=None, n=None, group_size=None, lr=None, turbulence_rate=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
     autonomy = Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr)
     for period in range(search_loop):
-        if (period + 1) % turbulence_freq == 0:
-            reality.change(reality_change_rate=0.15)
+        if (period + 1) % 50 == 0:
+            reality.change(reality_change_rate=turbulence_rate)
             for team in autonomy.teams:
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
@@ -33,7 +33,7 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    turbulence_freq_list = [20, 40, 60, 80, 100]
+    turbulence_rate_list = [0.10, 0.12, 0.14, 0.16, 0.18, 0.20]
     group_size = 7
     n = 350
     lr_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     concurrency = 50
     search_loop = 1000
     for lr in lr_list:
-        for turbulence_freq in turbulence_freq_list:
+        for turbulence_rate in turbulence_rate_list:
             sema = Semaphore(concurrency)
             manager = mp.Manager()
             return_dict = manager.dict()
@@ -49,7 +49,7 @@ if __name__ == '__main__':
             for loop in range(repetition):
                 sema.acquire()
                 p = mp.Process(target=func,
-                               args=(m, n, group_size, lr, turbulence_freq, search_loop, loop, return_dict, sema))
+                               args=(m, n, group_size, lr, turbulence_rate, search_loop, loop, return_dict, sema))
                 jobs.append(p)
                 p.start()
             for proc in jobs:
@@ -74,11 +74,11 @@ if __name__ == '__main__':
                 variance_across_time.append(sum(temp_variance) / len(temp_variance))
 
             # save the with-time data
-            with open("autonomy_performance_across_time_freq_{}_lr_{}".format(turbulence_freq, lr), 'wb') as out_file:
+            with open("autonomy_performance_across_time_rate_{}_lr_{}".format(turbulence_rate, lr), 'wb') as out_file:
                 pickle.dump(performance_across_time, out_file)
-            with open("autonomy_diversity_across_time_freq_{}_lr_{}".format(turbulence_freq, lr), 'wb') as out_file:
+            with open("autonomy_diversity_across_time_rate_{}_lr_{}".format(turbulence_rate, lr), 'wb') as out_file:
                 pickle.dump(diversity_across_time, out_file)
-            with open("autonomy_variance_across_time_freq_{}_lr_{}".format(turbulence_freq, lr), 'wb') as out_file:
+            with open("autonomy_variance_across_time_rate_{}_lr_{}".format(turbulence_rate, lr), 'wb') as out_file:
                 pickle.dump(variance_across_time, out_file)
 
     t1 = time.time()
