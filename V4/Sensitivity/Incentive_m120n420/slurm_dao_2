@@ -8,4 +8,4 @@
 #SBATCH --cpus-per-task=50
 #SBATCH --nodes=1
 #SBATCH --exclude=xcng[0-1]
-python dao_run_2.py
+srun python dao_run_2.py

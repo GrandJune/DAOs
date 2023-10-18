@@ -7,4 +7,5 @@
 #SBATCH --partition=long
 #SBATCH --cpus-per-task=51
 #SBATCH --ntasks=1
-python dao_run.py
+#SBATCH --exclude=xcng[0-1]
+srun python dao_run.py

@@ -7,4 +7,5 @@
 #SBATCH --partition=long
 #SBATCH --cpus-per-task=50
 #SBATCH --ntasks=1
-python hierarchy_run.py
+#SBATCH --exclude=xcng[0-1]
+srun python hierarchy_run.py
