@@ -79,6 +79,7 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Rewiring" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Threshold_m120n420" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence/TurbulenceRate_m120n420" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence/Turbulence_Lr" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />
       <excludeFolder url="file://$MODULE_DIR$/Identity" />

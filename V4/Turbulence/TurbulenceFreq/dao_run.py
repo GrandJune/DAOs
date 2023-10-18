@@ -28,9 +28,6 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
             for team in dao.teams:
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
-        for team in dao.teams:
-            for individual in team.individuals:
-                individual.payoff = reality.get_payoff(belief=individual.belief)
         dao.search(threshold_ratio=0.5)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
