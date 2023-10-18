@@ -1,10 +1,11 @@
 #!/bin/bash
 #SBATCH --time=3-00:00:00
-#SBATCH --job-name=N_A
+#SBATCH --job-name=CrowdSizeH
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=50gb
+#SBATCH --mem=100gb
 #SBATCH --partition=long
 #SBATCH --cpus-per-task=50
 #SBATCH --ntasks=1
-python autonomy_run.py
+#SBATCH --exclude=xcng[0-1]
+srun python hierarchy_run.py

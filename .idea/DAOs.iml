@@ -69,12 +69,12 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Group_size" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Initialization" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Lr" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Scale" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Supervision_p1p2" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence/TT" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence/TurbulenceFreq" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence/TurbulenceRate" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/CrowdSize" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Incentive_m120n420" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Rewiring" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Threshold_m120n420" isTestSource="false" />
