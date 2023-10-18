@@ -4,7 +4,6 @@
 # @FileName: Superior.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
-import math
 from Individual import Individual
 from Team import Team
 from Reality import Reality

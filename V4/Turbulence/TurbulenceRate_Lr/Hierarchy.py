@@ -1,48 +1,65 @@
 # -*- coding: utf-8 -*-
 # @Time     : 7/19/2022 19:05
 # @Author   : Junyi
-# @FileName: Superior.py
+# @FileName: Hierarchy.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 from Individual import Individual
 import numpy as np
-import math
 from Reality import Reality
+from Superior import Superior
 from Team import Team
+import time
 
 
-class Autonomy:
-    def __init__(self, m=None, n=None, reality=None, group_size=None, lr=None, alpha=3):
+class Hierarchy:
+    def __init__(self, m=None, n=None, reality=None, lr=None, alpha=3,
+                 group_size=None, p1=0.1, p2=0.9, manager_num=50, confirmation=True):
         """
         :param m: problem space
+        :param s: the first complexity
+        :param t: the second complexity
         :param n: the number of agents
         :param reality: to provide feedback
-        :param confirm: the extent to which agents confirm to their superior
         """
         self.m = m  # state length
-        self.n = n  # the number of subunits under this superior
-        self.reality = reality
+        self.n = n
+        self.manager_num = manager_num
         self.group_size = group_size
-        self.lr = lr  # learning rate; learn from majority view
-        if self.n % self.group_size != 0:
-            raise ValueError("N must be divisible by subgroup size")
+        self.confirmation = confirmation  # whether or the lower-level individual initially confirm to the upper-level
+        if self.manager_num * self.group_size != self.n:
+            print("auto-adjust the unfit manager_num")
+            self.manager_num = self.n // self.group_size
         self.alpha = alpha
         self.policy_num = self.m // self.alpha
+        self.lr = lr  # learning rate
+        self.reality = reality
+        manager_num = self.n // self.group_size
+        self.superior = Superior(policy_num=self.policy_num, reality=self.reality, manager_num=manager_num, p1=p1, p2=p2)
+        # n is the number of managers, instead of employers;  In March's paper, n=50
+        # p1, p2 is set to be the best one in March's paper
         self.teams = []
         for i in range(self.n // self.group_size):
             team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
-                individual = Individual(m=self.m, reality=self.reality, lr=self.lr, alpha=self.alpha)
+                individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
+            team.manager = self.superior.managers[i]
+            if self.confirmation:
+                team.confirm(policy=team.manager.policy)
             self.teams.append(team)
+        # DVs
         self.performance_across_time = []
-        self.diversity_across_time = []
         self.variance_across_time = []
+        self.diversity_across_time = []
+        self.superior_performance_across_time = []
 
     def search(self):
-        # For autonomy, only learn from an isolated subgroup, according to Fang (2010)'s paper
+        # Supervision Formation
+        self.superior.search()
         # Autonomous team learning
         for team in self.teams:
+            team.confirm(policy=team.manager.policy)
             team.form_individual_majority_view()
             team.learn()
         performance_list = []
@@ -51,18 +68,6 @@ class Autonomy:
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
-
-    def get_majority_view(self, superior_belief=None):
-        majority_view = []
-        for i in range(self.m):
-            temp = [belief[i] for belief in superior_belief]
-            if sum(temp) > 0:
-                majority_view.append(1)
-            elif sum(temp) < 0:
-                majority_view.append(-1)
-            else:
-                majority_view.append(0)
-        return majority_view
 
     def get_diversity(self):
         diversity = 0
@@ -91,47 +96,55 @@ class Autonomy:
 
 
 if __name__ == '__main__':
+    t0 = time.time()
     m = 60
     s = 1
-    n = 350
+    n = 350  # 50 managers, each manager control one autonomous team; 50*7=350
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
-    # according to the practice, such a subdivision of an organization, such a size of autonomous team cannot be large.
+    p1 = 0.1  # belief learning from code
+    p2 = 0.9  # code learning from belief
+    search_iteration = 100
     reality = Reality(m=m, s=s)
-    autonomy = Autonomy(m=m, s=s, n=n, group_size=group_size, reality=reality, lr=lr)
-    for period in range(100):
-        autonomy.search()
-        print(period)
+    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=p2)
+    for i in range(search_iteration):
+        hierarchy.search()
+        print(i)
     import matplotlib.pyplot as plt
-
-    x = range(100)
-    plt.plot(x, autonomy.performance_across_time, "k-", label="Autonomy")
+    x = range(search_iteration)
+    plt.plot(x, hierarchy.performance_across_time, "k-", label="Mean")
+    plt.plot(x, hierarchy.superior.performance_average_across_time, "r-", label="Superior")
     plt.title('Performance')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Autonomy_performance.png", transparent=False, dpi=1200)
+    plt.savefig("Hierarchy_performance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
-    plt.plot(x, autonomy.diversity_across_time, "k-", label="Mean")
-    plt.title('Diversity')
+
+    plt.plot(x, hierarchy.diversity_across_time, "k-", label="Hierarchy")
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Diversity', fontweight='bold', fontsize=10)
+    plt.title('Diversity')
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Autonomy_diversity.png", transparent=False, dpi=1200)
+    plt.savefig("Hierarchy_diversity.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
-    plt.plot(x, autonomy.variance_across_time, "k-", label="Autonomy")
-    plt.title('Variance')
+    plt.plot(x, hierarchy.variance_across_time, "k-", label="Hierarchy")
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Variance', fontweight='bold', fontsize=10)
+    plt.title('Variance')
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Autonomy_variance.png", transparent=False, dpi=1200)
+    plt.savefig("Hierarchy_variance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
+    t1 = time.time()
+    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
     print("END")
+
+
 
 

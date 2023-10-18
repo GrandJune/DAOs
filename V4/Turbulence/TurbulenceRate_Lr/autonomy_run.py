@@ -5,16 +5,12 @@
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import numpy as np
-from DAO import DAO
-from Hierarchy import Hierarchy
 from Autonomy import Autonomy
 from Reality import Reality
 import multiprocessing as mp
 import time
-from multiprocessing import Pool
 from multiprocessing import Semaphore
 import pickle
-import math
 
 
 def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,

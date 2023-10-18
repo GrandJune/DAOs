@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH --time=3-00:00:00
-#SBATCH --job-name=freq_lr_h
+#SBATCH --job-name=freq_lr_d
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=50gb
+#SBATCH --mem=200gb
 #SBATCH --partition=long
 #SBATCH --cpus-per-task=50
 #SBATCH --ntasks=1
 #SBATCH --exclude=xcng[0-1]
-srun python hierarchy_run.py
+srun python dao_run.py
