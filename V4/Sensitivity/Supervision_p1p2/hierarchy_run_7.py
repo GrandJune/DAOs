@@ -40,7 +40,7 @@ if __name__ == '__main__':
     repetition = 200
     search_loop = 500
     concurrency = 50
-    p1_list = [0.35, 0.40]
+    p1_list = [0.65, 0.70]
     # [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9]
     p2_list = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9]
     group_size = 7  # the smallest group size in Fang's model: 7s
@@ -87,13 +87,13 @@ if __name__ == '__main__':
         variance_across_p1p2.append(variance_across_p2)
 
     # save the without-time data
-    with open("hierarchy_performance_across_p1p2_4", 'wb') as out_file:
+    with open("hierarchy_performance_across_p1p2_7", 'wb') as out_file:
         pickle.dump(performance_across_p1p2, out_file)
-    with open("superior_performance_across_p1p2_4", 'wb') as out_file:
+    with open("superior_performance_across_p1p2_7", 'wb') as out_file:
         pickle.dump(superior_performance_across_p1p2, out_file)
-    with open("hierarchy_diversity_across_p1p2_4", 'wb') as out_file:
+    with open("hierarchy_diversity_across_p1p2_7", 'wb') as out_file:
         pickle.dump(diversity_across_p1p2, out_file)
-    with open("hierarchy_variance_across_p1p2_4", 'wb') as out_file:
+    with open("hierarchy_variance_across_p1p2_7", 'wb') as out_file:
         pickle.dump(variance_across_p1p2, out_file)
 
     t1 = time.time()
