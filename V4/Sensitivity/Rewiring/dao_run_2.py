@@ -43,7 +43,7 @@ if __name__ == '__main__':
         return_dict = manager.dict()
         for loop in range(repetition):
             sema.acquire()
-            p = mp.Process(target=func, args=(m, n, group_size, lr, threshold_ratio, search_loop, loop, return_dict, sema))
+            p = mp.Process(target=func, args=(m, n, group_size, lr, threshold_ratio, beta, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
