@@ -16,13 +16,37 @@ class Individual:
         self.policy_num = self.m // self.alpha
         self.lr = lr  # learning rate, learning from (adjusted) majority view
         self.token = None  # should introduce more dimensions of token
-
+        self.cluster = None  # for rewiring
+        self.index = None  # for rewiring
+        self.connections = []  # for rewiring
         self.reality = reality
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
         # self.belief = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)  # a fake policy for voting
         self.superior_majority_view = None
+
+    def form_majority_view(self, belief_pool: list):
+        majority_view = []
+        for i in range(self.m):
+            temp = [belief[i] for belief in belief_pool]
+            if sum(temp) > 0:
+                majority_view.append(1)
+            elif sum(temp) < 0:
+                majority_view.append(-1)
+            else:  # when there is no inclination as reference, agents will become uncertain
+                majority_view.append(0)
+        self.superior_majority_view = majority_view
+
+    def adjust_majority_view_2_consensus(self, policy=None):
+        if self.superior_majority_view is None:
+            return
+        for index in range(self.policy_num):
+            # if the consensus is zero, agents will learn from chaos
+            if sum(self.superior_majority_view
+                   [index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
+                self.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
+                    self.reality.policy_2_belief(policy=policy[index])
 
     def learning_from_belief(self, belief=None):
         if len(belief) != self.m:
