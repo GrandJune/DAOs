@@ -29,7 +29,7 @@ class Hierarchy:
         self.group_size = group_size
         self.confirmation = confirmation  # whether or the lower-level individual initially confirm to the upper-level
         if self.manager_num * self.group_size != self.n:
-            print("auto-adjust the unfit manager_num")
+            # print("auto-adjust the unfit manager_num")
             self.manager_num = self.n // self.group_size
         self.alpha = alpha
         self.policy_num = self.m // self.alpha
