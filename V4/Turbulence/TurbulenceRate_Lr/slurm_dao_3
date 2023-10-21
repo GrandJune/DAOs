@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --time=3-00:00:00
-#SBATCH --job-name=rate_2
+#SBATCH --job-name=D_rate_lr_3
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
 #SBATCH --mem=200gb
@@ -8,4 +8,4 @@
 #SBATCH --cpus-per-task=50
 #SBATCH --ntasks=1
 #SBATCH --exclude=xcng[0-1]
-srun python dao_run.py
+srun python dao_run_3.py

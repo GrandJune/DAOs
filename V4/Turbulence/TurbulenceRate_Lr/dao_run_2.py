@@ -37,7 +37,7 @@ if __name__ == '__main__':
     turbulence_rate_list = [0.10, 0.12, 0.14, 0.16, 0.18, 0.20]
     group_size = 7
     n = 350
-    lr_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    lr_list = [0.3, 0.4]
     repetition = 200
     concurrency = 50
     search_loop = 1000
