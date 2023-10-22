@@ -59,8 +59,8 @@ def gini(array):
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 120
-    n = 420
+    m = 150
+    n = 490
     lr = 0.3
     hyper_iteration = 10
     repetition = 50
