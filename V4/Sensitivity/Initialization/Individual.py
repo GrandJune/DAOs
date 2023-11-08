@@ -20,6 +20,7 @@ class Individual:
         self.reality = reality
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
         if initialization != 1:
+            np.random.seed(None)
             correct_indexes = np.random.choice(range(m), int(initialization*m), replace=False).tolist()
             for index in range(m):
                 if index in correct_indexes:

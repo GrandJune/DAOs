@@ -36,8 +36,8 @@ if __name__ == '__main__':
     n = 350
     group_size = 7
     lr = 0.3
-    repetition = 200
-    concurrency = 50
+    repetition = 400
+    concurrency = 100
     search_loop = 500
     # DVs
     performance_across_para = []

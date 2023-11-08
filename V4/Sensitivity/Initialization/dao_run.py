@@ -35,8 +35,8 @@ if __name__ == '__main__':
     initialization_bar_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     n = 350
     lr = 0.3
-    repetition = 200
-    concurrency = 50
+    repetition = 400
+    concurrency = 100
     search_loop = 500
     threshold_ratio = 0.5
     group_size = 7
