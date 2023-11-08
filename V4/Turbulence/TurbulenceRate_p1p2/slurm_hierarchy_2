@@ -3,9 +3,8 @@
 #SBATCH --job-name=TbR_H
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=100gb
+#SBATCH --mem=200gb
 #SBATCH --partition=long
-#SBATCH --cpus-per-task=50
+#SBATCH --cpus-per-task=100
 #SBATCH --nodes=1
-#SBATCH --exclude=xcng[0-1]
-srun python hierarchy_run.py
+srun python hierarchy_run_2.py
