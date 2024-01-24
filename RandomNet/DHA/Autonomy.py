@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @Time     : 7/19/2022 19:05
+# @Time     : 24/01/2024 19:05
 # @Author   : Junyi
 # @FileName: Superior.py
 # @Software  : PyCharm
@@ -12,65 +12,59 @@ from Team import Team
 
 
 class Autonomy:
-    def __init__(self, m=None, n=None, reality=None, group_size=None, lr=None, alpha=3):
+    def __init__(self, m=None, n=None, reality=None, lr=None, group_size=None,
+                 alpha=3):
         """
         :param m: problem space
         :param n: the number of agents
         :param reality: to provide feedback
-        :param confirm: the extent to which agents confirm to their superior
         """
         self.m = m  # state length
         self.n = n  # the number of subunits under this superior
-        self.reality = reality
-        self.group_size = group_size
-        self.lr = lr  # learning rate; learn from majority view
-        if self.n % self.group_size != 0:
-            raise ValueError("N must be divisible by subgroup size")
-        self.alpha = alpha
+        self.alpha = alpha  # The aggregation degree
         self.policy_num = self.m // self.alpha
-        self.teams = []
-        for i in range(self.n // self.group_size):
-            team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
-            for _ in range(self.group_size):
-                individual = Individual(m=self.m, reality=self.reality, lr=self.lr, alpha=self.alpha)
-                team.individuals.append(individual)
-            self.teams.append(team)
+        self.reality = reality
+        self.lr = lr  # learning from consensus
+        self.group_size = group_size
+        self.consensus = [0] * self.policy_num
+        self.consensus_payoff = 0
+        self.individuals = []
+        for i in range(self.n):
+            individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr)
+            self.individuals.append(individual)
+        self.form_network()
         self.performance_across_time = []
-        self.diversity_across_time = []
         self.variance_across_time = []
+        self.diversity_across_time = []
+
+    def form_network(self):
+        for individual in self.individuals:
+            individual.connections = np.random.choice(range(self.n), self.group_size, replace=False)
 
     def search(self):
-        # For autonomy, only learn from an isolated subgroup, according to Fang (2010)'s paper
-        # Autonomous team learning
-        for team in self.teams:
-            team.form_individual_majority_view()
-            team.learn()
-        performance_list = []
-        for team in self.teams:
-            performance_list += [individual.payoff for individual in team.individuals]
+        for individual in self.individuals:
+            # 1) Generate Majority View
+            superior_belief_pool = []
+            for connect in individual.connections:
+                if self.individuals[connect].payoff > individual.payoff:
+                    superior_belief_pool.append(self.individuals[connect].belief)
+            if len(superior_belief_pool) == 0:
+                # The best performing actors will not learn from peers
+                continue
+            individual.form_superior_majority_view(superior_belief_pool=superior_belief_pool)
+            # 2) Adjust Majority View to Consensus
+            individual.adjust_majority_view_2_policy(policy=self.consensus)
+            # 3) Learn From Adjusted Majority View
+            individual.learning_from_belief(belief=individual.superior_majority_view)
+        performance_list = [individual.payoff for individual in self.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
 
-    def get_majority_view(self, superior_belief=None):
-        majority_view = []
-        for i in range(self.m):
-            temp = [belief[i] for belief in superior_belief]
-            if sum(temp) > 0:
-                majority_view.append(1)
-            elif sum(temp) < 0:
-                majority_view.append(-1)
-            else:
-                majority_view.append(0)
-        return majority_view
-
     def get_diversity(self):
         diversity = 0
-        individuals = []
-        for team in self.teams:
-            individuals += team.individuals
-        belief_pool = [individual.belief for individual in individuals]
-        for index, individual in enumerate(individuals):
+        belief_pool = [individual.belief for individual in self.individuals]
+        for index, individual in enumerate(self.individuals):
             selected_pool = belief_pool[index + 1::]
             one_pair_diversity = [self.get_distance(individual.belief, belief) for belief in selected_pool]
             diversity += sum(one_pair_diversity)
@@ -85,9 +79,8 @@ class Autonomy:
 
     def turnover(self, turnover_rate=None):
         if turnover_rate:
-            for team in self.teams:
-                for individual in team.individuals:
-                    individual.turnover(turnover_rate=turnover_rate)
+            for individual in self.individuals:
+                individual.turnover(turnover_rate=turnover_rate)
 
 
 if __name__ == '__main__':
