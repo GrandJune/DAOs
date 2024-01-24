@@ -85,6 +85,8 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Incentive_m150n490" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Threshold_m150n490" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence/TurbulenceRate_p1p2" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/RandomNet" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/RandomNet/DHA" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />
       <excludeFolder url="file://$MODULE_DIR$/Identity" />
