@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @Time     : 7/19/2022 19:05
+# @Time     : 24/01/2024 19:05
 # @Author   : Junyi
 # @FileName: Hierarchy.py
 # @Software  : PyCharm
@@ -39,44 +39,59 @@ class Hierarchy:
         self.superior = Superior(policy_num=self.policy_num, reality=self.reality, manager_num=manager_num, p1=p1, p2=p2)
         # n is the number of managers, instead of employers;  In March's paper, n=50
         # p1, p2 is set to be the best one in March's paper
-        self.teams = []
-        for i in range(self.n // self.group_size):
-            team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
-            for _ in range(self.group_size):
-                individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr)
-                team.individuals.append(individual)
-            team.manager = self.superior.managers[i]
-            if self.confirmation:
-                team.confirm(policy=team.manager.policy)
-            self.teams.append(team)
+        self.individuals = []
+        for i in range(self.n):
+            individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr)
+            self.individuals.append(individual)
+        self.form_network()
         # DVs
         self.performance_across_time = []
         self.variance_across_time = []
         self.diversity_across_time = []
         self.superior_performance_across_time = []
 
+    def form_network(self):
+        # define individuals' connections
+        for individual in self.individuals:
+            individual.connections = np.random.choice(range(self.n), self.group_size, replace=False)
+        # define managers' scope
+        manager_positions = np.random.choice(range(self.n), self.manager_num, replace=False)
+        for index, manager in enumerate(self.superior.managers):
+            manager.scope = self.individuals[manager_positions[index]].connections.copy()
+        # Enforce Supervision
+        for manager in self.superior.managers:
+            for index in manager.scope:
+                self.individuals[index].adjust_belief_2_supervision(policy=manager.policy)
+
     def search(self):
-        # Supervision Formation
+        # Managers Search
         self.superior.search()
-        # Autonomous team learning
-        for team in self.teams:
-            team.confirm(policy=team.manager.policy)
-            team.form_individual_majority_view()
-            team.learn()
-        performance_list = []
-        for team in self.teams:
-            performance_list += [individual.payoff for individual in team.individuals]
+        # Enforce Supervision from Managers
+        for manager in self.superior.managers:
+            for index in manager.scope:
+                self.individuals[index].adjust_belief_2_supervision(policy=manager.policy)
+        # Supervised team learning
+        for individual in self.individuals:
+            # 1) Generate Majority View
+            superior_belief_pool = []
+            for connect in individual.connections:
+                if self.individuals[connect].payoff > individual.payoff:
+                    superior_belief_pool.append(self.individuals[connect].belief)
+            if len(superior_belief_pool) == 0:
+                # The best performing actors will not learn from peers
+                continue
+            individual.form_superior_majority_view(superior_belief_pool=superior_belief_pool)
+            # 2) Learn From Majority View
+            individual.learning_from_belief(belief=individual.superior_majority_view)
+        performance_list = [individual.payoff for individual in self.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
 
     def get_diversity(self):
         diversity = 0
-        individuals = []
-        for team in self.teams:
-            individuals += team.individuals
-        belief_pool = [individual.belief for individual in individuals]
-        for index, individual in enumerate(individuals):
+        belief_pool = [individual.belief for individual in self.individuals]
+        for index, individual in enumerate(self.individuals):
             selected_pool = belief_pool[index + 1::]
             one_pair_diversity = [self.get_distance(individual.belief, belief) for belief in selected_pool]
             diversity += sum(one_pair_diversity)
@@ -91,9 +106,13 @@ class Hierarchy:
 
     def turnover(self, turnover_rate=None):
         if turnover_rate:
-            for team in self.teams:
-                for individual in team.individuals:
-                    individual.turnover(turnover_rate=turnover_rate)
+            self.superior.turnover(turnover_rate=turnover_rate)
+            for individual in self.individuals:
+                individual.turnover(turnover_rate=turnover_rate)
+            # Enforce Supervision
+            for manager in self.superior.managers:
+                for index in manager.scope:
+                    self.individuals[index].adjust_belief_2_supervision(policy=manager.policy)
 
 
 if __name__ == '__main__':
@@ -106,8 +125,8 @@ if __name__ == '__main__':
     p1 = 0.1  # belief learning from code
     p2 = 0.9  # code learning from belief
     search_iteration = 100
-    reality = Reality(m=m, s=s)
-    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=p2)
+    reality = Reality(m=m)
+    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=p2)
     for i in range(search_iteration):
         hierarchy.search()
         print(i)
@@ -119,7 +138,7 @@ if __name__ == '__main__':
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Hierarchy_performance.png", transparent=False, dpi=1200)
+    # plt.savefig("Hierarchy_performance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
@@ -129,7 +148,7 @@ if __name__ == '__main__':
     plt.ylabel('Diversity', fontweight='bold', fontsize=10)
     plt.title('Diversity')
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Hierarchy_diversity.png", transparent=False, dpi=1200)
+    # plt.savefig("Hierarchy_diversity.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
@@ -138,7 +157,7 @@ if __name__ == '__main__':
     plt.ylabel('Variance', fontweight='bold', fontsize=10)
     plt.title('Variance')
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Hierarchy_variance.png", transparent=False, dpi=1200)
+    # plt.savefig("Hierarchy_variance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
