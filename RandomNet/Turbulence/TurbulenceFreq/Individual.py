@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @Time     : 24/01/2024 19:05
+# @Time     : 6/9/2022 19:53
 # @Author   : Junyi
 # @FileName: Individual.py
 # @Software  : PyCharm
@@ -16,13 +16,13 @@ class Individual:
         self.policy_num = self.m // self.alpha
         self.lr = lr  # learning rate, learning from (adjusted) majority view
         self.token = None  # should introduce more dimensions of token
-        self.connections = []  # id for learning reference
+
         self.reality = reality
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
         # self.belief = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)  # a fake policy for voting
-        self.superior_majority_view = []
+        self.superior_majority_view = None
 
     def learning_from_belief(self, belief=None):
         if len(belief) != self.m:
@@ -35,43 +35,6 @@ class Individual:
                     self.belief[i] = belief[i]
             else:
                 pass  # retain the previous belief
-        self.payoff = self.reality.get_payoff(belief=self.belief)
-        self.policy = self.reality.belief_2_policy(belief=self.belief)
-
-    def form_superior_majority_view(self, superior_belief_pool=None):
-        if len(superior_belief_pool) == 0:
-            # The best performing actors will not learn from peers
-            self.superior_majority_view = []
-        else:
-            majority_view = []
-            for i in range(self.m):
-                temp = [belief[i] for belief in superior_belief_pool]
-                if sum(temp) > 0:
-                    majority_view.append(1)
-                elif sum(temp) < 0:
-                    majority_view.append(-1)
-                else:  # when there is no inclination as reference, agents will become uncertain
-                    majority_view.append(0)
-            self.superior_majority_view = majority_view
-
-    def adjust_majority_view_2_consensus(self, consensus=None):
-        if len(self.superior_majority_view) == 0:
-            return
-        for index in range(self.policy_num):
-            # if the consensus is zero, agents will learn from chaos
-            if sum(self.superior_majority_view
-                   [index * self.alpha: (index + 1) * self.alpha]) != consensus[index]:
-                self.superior_majority_view[index * self.alpha: (index + 1) * self.alpha] = \
-                    self.reality.policy_2_belief(policy=consensus[index])
-
-    def adjust_belief_2_supervision(self, policy=None):
-        for index in range(self.policy_num):
-            # if the supervision is zero, will retain the previous belief (lazy employee)
-            if policy[index] == 0:
-                continue
-            else:
-                if sum(self.belief[index * self.alpha: (index + 1) * self.alpha]) != policy[index]:
-                    self.belief[index * self.alpha: (index + 1) * self.alpha] = self.reality.policy_2_belief(policy=policy[index])
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)
 
@@ -91,10 +54,10 @@ if __name__ == '__main__':
     lr = 0.3
     version = "Rushed"
     loop = 100
-    reality = Reality(m=m, version=version)
+    reality = Reality(m=m, s=s, version=version)
     team = []
     for _ in range(n):
-        individual = Individual(m=m, reality=reality, lr=lr)
+        individual = Individual(m=m, s=s, reality=reality, lr=lr)
         team.append(individual)
     consensus = reality.real_policy
     performance_across_time = []
