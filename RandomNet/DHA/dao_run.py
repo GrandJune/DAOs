@@ -6,15 +6,11 @@
 # Observing PEP 8 coding style
 import numpy as np
 from DAO import DAO
-from Hierarchy import Hierarchy
-from Autonomy import Autonomy
 from Reality import Reality
 import multiprocessing as mp
 import time
-from multiprocessing import Pool
 from multiprocessing import Semaphore
 import pickle
-import math
 
 
 def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None,
@@ -35,9 +31,9 @@ if __name__ == '__main__':
     n = 350
     lr = 0.3
     threshold_ratio = 0.5
-    hyper_iteration = 10
-    repetition = 50
-    concurrency = 50
+    hyper_iteration = 5
+    repetition = 100
+    concurrency = 100
     search_loop = 300
     group_size = 7  # the smallest group size in Fang's model: 7
     performance_hyper = []

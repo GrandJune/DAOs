@@ -3,8 +3,8 @@
 #SBATCH --job-name=Autonomy
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=50gb
+#SBATCH --mem=100
 #SBATCH --partition=long
-#SBATCH --cpus-per-task=50
+#SBATCH --cpus-per-task=100
 #SBATCH --ntasks=1
 python autonomy_run.py

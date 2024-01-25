@@ -5,16 +5,12 @@
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import numpy as np
-from DAO import DAO
 from Hierarchy import Hierarchy
-from Autonomy import Autonomy
 from Reality import Reality
 import multiprocessing as mp
 import time
-from multiprocessing import Pool
 from multiprocessing import Semaphore
 import pickle
-import math
 
 
 def func(m=None, n=None, group_size=None, lr=None, turbulence_rate=None,
@@ -26,9 +22,8 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_rate=None,
         if (period + 1) % 50 == 0:
             reality.change(reality_change_rate=turbulence_rate)
             # update the individual payoff
-            for team in hierarchy.teams:
-                for individual in team.individuals:
-                    individual.payoff = reality.get_payoff(belief=individual.belief)
+            for individual in hierarchy.individuals:
+                individual.payoff = reality.get_payoff(belief=individual.belief)
             # update the manager payoff
             for manager in hierarchy.superior.managers:
                 manager.payoff = reality.get_policy_payoff(policy=manager.policy)
@@ -48,7 +43,7 @@ if __name__ == '__main__':
     n = 350
     lr = 0.3
     repetition = 200
-    concurrency = 50
+    concurrency = 100
     search_loop = 2000
     # DVs
     performance_across_para = []

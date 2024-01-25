@@ -6,9 +6,7 @@
 # Observing PEP 8 coding style
 from Individual import Individual
 import numpy as np
-import math
 from Reality import Reality
-from Team import Team
 
 
 class Autonomy:
