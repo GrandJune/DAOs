@@ -83,7 +83,7 @@ if __name__ == '__main__':
         pickle.dump(num_subnetwork_across_autonomy, out_file)
     with open("num_isolated_node_across_autonomy_1", 'wb') as out_file:
         pickle.dump(num_isolated_node_across_autonomy, out_file)
-    with open("distance_across_autonomy", 'wb') as out_file:
+    with open("distance_across_autonomy_1", 'wb') as out_file:
         pickle.dump(distance_across_autonomy, out_file)
 
     t1 = time.time()
