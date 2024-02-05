@@ -100,8 +100,10 @@ class DAO:
         for individual in individuals:
             individual.policy = self.reality.belief_2_policy(belief=individual.belief)
         for individual in individuals:
-            if np.random.uniform(0, 1) < inactive_rate:  # e.g., 0.3
-                if np.random.uniform(0, 1) > incentive:   # if not be incentivized e.g., 1 - 0.7
+            if np.random.uniform(0, 1) < inactive_rate:  # if inactive, e.g., 0.2
+                if np.random.uniform(0, 1) < incentive:   # if incentivized, e.g., 0.8
+                    individual.active = 1
+                else:
                     individual.active = 0
             else:
                 individual.active = 1
@@ -224,24 +226,24 @@ if __name__ == '__main__':
     plt.show()
     plt.clf()
 
-    # Gini Index
-    plt.plot(x, dao.gini_across_time, "k-", label="DAO")
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-    plt.ylabel('Gini Index', fontweight='bold', fontsize=10)
-    plt.title('Gini Index')
-    plt.legend(frameon=False, ncol=3, fontsize=10)
-    # plt.savefig("DAO_gini.png", transparent=False, dpi=1200)
-    plt.show()
-    plt.clf()
+    # # Gini Index
+    # plt.plot(x, dao.gini_across_time, "k-", label="DAO")
+    # plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    # plt.ylabel('Gini Index', fontweight='bold', fontsize=10)
+    # plt.title('Gini Index')
+    # plt.legend(frameon=False, ncol=3, fontsize=10)
+    # # plt.savefig("DAO_gini.png", transparent=False, dpi=1200)
+    # plt.show()
+    # plt.clf()
 
     # Reward number
-    plt.plot(x, dao.reward_num_across_time, "k-", label="DAO")
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-    plt.ylabel('Reward Number', fontweight='bold', fontsize=10)
-    plt.title('Reward Number')
-    plt.legend(frameon=False, ncol=3, fontsize=10)
-    # plt.savefig("DAO_gini.png", transparent=False, dpi=1200)
-    plt.show()
-    plt.clf()
+    # plt.plot(x, dao.reward_num_across_time, "k-", label="DAO")
+    # plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    # plt.ylabel('Reward Number', fontweight='bold', fontsize=10)
+    # plt.title('Reward Number')
+    # plt.legend(frameon=False, ncol=3, fontsize=10)
+    # # plt.savefig("DAO_gini.png", transparent=False, dpi=1200)
+    # plt.show()
+    # plt.clf()
 
 

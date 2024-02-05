@@ -37,12 +37,12 @@ if __name__ == '__main__':
     m = 90
     n = 350
     lr = 0.3
-    repetition = 50
+    repetition = 200
     search_loop = 2000
     threshold_ratio_list = np.arange(0.40, 0.71, 0.01)
     inactive_list = [0.2]
     group_size = 7  # the smallest group size in Fang's model: 7
-    concurrency = 50
+    concurrency = 100
     for inactive in inactive_list:
         performance_across_para = []  # remove the time dimension
         consensus_performance_across_para = []

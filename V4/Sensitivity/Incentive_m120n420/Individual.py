@@ -16,7 +16,7 @@ class Individual:
         self.policy_num = self.m // self.alpha
         self.lr = lr  # learning rate, learning from (adjusted) majority view
         self.token = None  # should introduce more dimensions of token
-        self.active = 1  # introduce the active/inactive status for voting, 0: inactive, 1: active
+        self.active = 1  # For the incentive search
         self.reality = reality
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
         # self.belief = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
@@ -51,9 +51,8 @@ if __name__ == '__main__':
     m = 30
     n = 10
     lr = 0.3
-    version = "Rushed"
     loop = 100
-    reality = Reality(m=m, version=version)
+    reality = Reality(m=m)
     team = []
     for _ in range(n):
         individual = Individual(m=m, reality=reality, lr=lr)

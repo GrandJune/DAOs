@@ -17,16 +17,23 @@ import pickle
 import math
 
 
-def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None, inactive=None,
+def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None, asymmetry=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
+    mode = 1
     reality = Reality(m=m)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
-    for team in dao.teams:
-        for individual in team.individuals:
-            individual.token = 1
-    for _ in range(search_loop):
-        dao.incentive_search(threshold_ratio=threshold_ratio, incentive=0, inactive_rate=inactive)
+    # pre-assign the token according to the asymmetry degree
+    if asymmetry == 0:
+        for team in dao.teams:
+            for individual in team.individuals:
+                individual.token = 1
+    else:
+        for team in dao.teams:
+            for individual in team.individuals:
+                individual.token = (np.random.pareto(a=asymmetry) + 1) * mode
+    for period in range(search_loop):
+        dao.search(threshold_ratio=threshold_ratio, token=True)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
     sema.release()
@@ -37,13 +44,13 @@ if __name__ == '__main__':
     m = 90
     n = 350
     lr = 0.3
-    repetition = 50
+    repetition = 200
     search_loop = 2000
     threshold_ratio_list = np.arange(0.40, 0.71, 0.01)
-    inactive_list = [0.1]
+    asymmetry_list = [1]
     group_size = 7  # the smallest group size in Fang's model: 7
-    concurrency = 50
-    for inactive in inactive_list:
+    concurrency = 100
+    for asymmetry in asymmetry_list:
         performance_across_para = []  # remove the time dimension
         consensus_performance_across_para = []
         diversity_across_para = []
@@ -61,7 +68,7 @@ if __name__ == '__main__':
             for loop in range(repetition):
                 sema.acquire()
                 p = mp.Process(target=func,
-                               args=(m, n, group_size, lr, threshold_ratio, inactive, search_loop, loop, return_dict, sema))
+                               args=(m, n, group_size, lr, threshold_ratio, asymmetry, search_loop, loop, return_dict, sema))
                 jobs.append(p)
                 p.start()
             for proc in jobs:
@@ -111,23 +118,23 @@ if __name__ == '__main__':
             variance_across_para_time.append(variance_across_time)
 
         # save the without-time data (ready for figure)
-        with open("dao_performance_across_threshold_{0}".format(inactive), 'wb') as out_file:
+        with open("dao_performance_across_threshold_{0}".format(asymmetry), 'wb') as out_file:
             pickle.dump(performance_across_para, out_file)
-        with open("dao_consensus_performance_across_threshold_{0}".format(inactive), 'wb') as out_file:
+        with open("dao_consensus_performance_across_threshold_{0}".format(asymmetry), 'wb') as out_file:
             pickle.dump(consensus_performance_across_para, out_file)
-        with open("dao_diversity_across_threshold_{0}".format(inactive), 'wb') as out_file:
+        with open("dao_diversity_across_threshold_{0}".format(asymmetry), 'wb') as out_file:
             pickle.dump(diversity_across_para, out_file)
-        with open("dao_variance_across_threshold_{0}".format(inactive), 'wb') as out_file:
+        with open("dao_variance_across_threshold_{0}".format(asymmetry), 'wb') as out_file:
             pickle.dump(variance_across_para, out_file)
 
         # save the with-time data
-        with open("dao_performance_across_threshold_time_{0}".format(inactive), 'wb') as out_file:
+        with open("dao_performance_across_threshold_time_{0}".format(asymmetry), 'wb') as out_file:
             pickle.dump(performance_across_para_time, out_file)
-        with open("dao_consensus_performance_across_threshold_time_{0}".format(inactive), 'wb') as out_file:
+        with open("dao_consensus_performance_across_threshold_time_{0}".format(asymmetry), 'wb') as out_file:
             pickle.dump(consensus_performance_across_para_time, out_file)
-        with open("dao_diversity_across_threshold_time_{0}".format(inactive), 'wb') as out_file:
+        with open("dao_diversity_across_threshold_time_{0}".format(asymmetry), 'wb') as out_file:
             pickle.dump(diversity_across_para_time, out_file)
-        with open("dao_variance_across_threshold_time_{0}".format(inactive), 'wb') as out_file:
+        with open("dao_variance_across_threshold_time_{0}".format(asymmetry), 'wb') as out_file:
             pickle.dump(variance_across_para_time, out_file)
 
     t1 = time.time()

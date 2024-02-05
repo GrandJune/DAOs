@@ -92,33 +92,36 @@ class DAO:
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
 
-    def incentive_search(self, threshold_ratio=None, incentive=1):
+    def incentive_search(self, threshold_ratio=None, incentive=1, inactive_rate=None):
         new_consensus = []
         individuals = []
         for team in self.teams:
             individuals += team.individuals
         for individual in individuals:
             individual.policy = self.reality.belief_2_policy(belief=individual.belief)
+        for individual in individuals:
+            if np.random.uniform(0, 1) < inactive_rate:  # if inactive, e.g., 0.2
+                if np.random.uniform(0, 1) < incentive:   # if incentivized, e.g., 0.8
+                    individual.active = 1
+                else:
+                    individual.active = 0
+            else:
+                individual.active = 1
         threshold = threshold_ratio * sum([individual.token for individual in individuals])
+        # consider the active status
         for i in range(self.policy_num):
-            overall_sum = sum([individual.policy[i] * individual.token for individual in individuals])
-            positive_count = sum([individual.token for individual in individuals if individual.policy[i] == 1])
-            negative_count = sum([individual.token for individual in individuals if individual.policy[i] == -1])
+            overall_sum = sum([individual.policy[i] * individual.token * individual.active for individual in individuals])
+            positive_count = sum([individual.token for individual in individuals if (individual.policy[i] == 1) and (individual.active == 1)])
+            negative_count = sum([individual.token for individual in individuals if (individual.policy[i] == -1) and (individual.active == 1)])
             if (positive_count > threshold) and overall_sum > 0:
                 new_consensus.append(1)
             elif (negative_count > threshold) and overall_sum < 0:
                 new_consensus.append(-1)
             else:
                 new_consensus.append(0)
-        # Once there is a change in consensus, reward the contributor
-        for old_bit, new_bit, index in zip(self.consensus, new_consensus, range(self.policy_num)):
-            if old_bit != new_bit:
-                for individual in individuals:
-                    if individual.policy[index] == new_bit:
-                        individual.token += incentive / self.policy_num
         self.consensus = new_consensus
         self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
-        # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
+        # 1) Generate and 2) adjust the superior majority view and 3) learn from it
         for team in self.teams:
             team.form_individual_majority_view()
             team.adjust_majority_view_2_consensus(policy=self.consensus)
@@ -151,6 +154,19 @@ class DAO:
                 acc += 1
         return acc
 
+    def get_gini(self):
+        array = []
+        for team in self.teams:
+            for individual in team.individuals:
+                array.append(individual.token)
+        array = sorted(array)
+        n = len(array)
+        coefficient = 0
+        for i, value in enumerate(array):
+            coefficient += (2 * i - n) * value
+        coefficient /= n * sum(array)
+        return coefficient
+
     def turnover(self, turnover_rate=None):
         if turnover_rate:
             for team in self.teams:
@@ -160,21 +176,20 @@ class DAO:
 
 if __name__ == '__main__':
     m = 60
-    s = 1
-    n = 350
+    n = 280
     search_loop = 100
     lr = 0.3
-    alpha = 5
+    alpha = 3
     group_size = 7  # the smallest group size in Fang's model: 7
-    reality = Reality(m=m, s=s, version="Rushed", alpha=alpha)
-    dao = DAO(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, alpha=alpha)
+    reality = Reality(m=m, version="Rushed", alpha=3)
+    dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size, alpha=3)
     # dao.teams[0].individuals[0].belief = reality.real_code.copy()
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
     for period in range(search_loop):
-        dao.search(threshold_ratio=0.6)
-        print(dao.consensus)
+        dao.incentive_search(threshold_ratio=0.5, incentive=50)
+        # print(period, dao.consensus, reality.real_policy, reality.real_code)
         # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].policy,
         #       dao.teams[0].individuals[0].payoff)
         print("--{0}--".format(period))
@@ -210,5 +225,25 @@ if __name__ == '__main__':
     # plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
+
+    # # Gini Index
+    # plt.plot(x, dao.gini_across_time, "k-", label="DAO")
+    # plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    # plt.ylabel('Gini Index', fontweight='bold', fontsize=10)
+    # plt.title('Gini Index')
+    # plt.legend(frameon=False, ncol=3, fontsize=10)
+    # # plt.savefig("DAO_gini.png", transparent=False, dpi=1200)
+    # plt.show()
+    # plt.clf()
+
+    # Reward number
+    # plt.plot(x, dao.reward_num_across_time, "k-", label="DAO")
+    # plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    # plt.ylabel('Reward Number', fontweight='bold', fontsize=10)
+    # plt.title('Reward Number')
+    # plt.legend(frameon=False, ncol=3, fontsize=10)
+    # # plt.savefig("DAO_gini.png", transparent=False, dpi=1200)
+    # plt.show()
+    # plt.clf()
 
 

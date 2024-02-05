@@ -26,7 +26,7 @@ def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None, incenti
         for individual in team.individuals:
             individual.token = 1
     for _ in range(search_loop):
-        dao.incentive_search(threshold_ratio=threshold_ratio, incentive=incentive, inactive_rate=0)
+        dao.incentive_search(threshold_ratio=threshold_ratio, incentive=incentive, inactive_rate=0.2)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
     sema.release()

@@ -41,8 +41,6 @@ class DAO:
         self.variance_across_time = []
         self.diversity_across_time = []
         self.consensus_performance_across_time = []
-        self.gini_across_time = []
-        self.reward_num_across_time = []
 
     def search(self, threshold_ratio=None, token=False):
         # Consensus Formation
@@ -93,7 +91,6 @@ class DAO:
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
-        self.gini_across_time.append(0)
 
     def incentive_search(self, threshold_ratio=None, incentive=1, inactive_rate=None):
         new_consensus = []
@@ -103,13 +100,15 @@ class DAO:
         for individual in individuals:
             individual.policy = self.reality.belief_2_policy(belief=individual.belief)
         for individual in individuals:
-            if np.random.uniform(0, 1) < inactive_rate:  # e.g., 0.3
-                if np.random.uniform(0, 1) > incentive:   # if not be incentivized e.g., 1 - 0.7
+            if np.random.uniform(0, 1) < inactive_rate:  # if inactive, e.g., 0.2
+                if np.random.uniform(0, 1) < incentive:   # if incentivized, e.g., 0.8
+                    individual.active = 1
+                else:
                     individual.active = 0
             else:
                 individual.active = 1
         threshold = threshold_ratio * sum([individual.token for individual in individuals])
-        # consider the active status  With the threshold!!!
+        # consider the active status
         for i in range(self.policy_num):
             overall_sum = sum([individual.policy[i] * individual.token * individual.active for individual in individuals])
             positive_count = sum([individual.token for individual in individuals if (individual.policy[i] == 1) and (individual.active == 1)])
@@ -120,14 +119,6 @@ class DAO:
                 new_consensus.append(-1)
             else:
                 new_consensus.append(0)
-        # Once there is a change in consensus, reward the contributor
-        # reward_count = 0
-        for old_bit, new_bit, index in zip(self.consensus, new_consensus, range(self.policy_num)):
-            if old_bit != new_bit:
-                # reward_count += 1
-                for individual in individuals:
-                    if (individual.policy[index] == new_bit) and (individual.active == 1):  # individual active and vote correctly
-                        individual.token += incentive
         self.consensus = new_consensus
         self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
         # 1) Generate and 2) adjust the superior majority view and 3) learn from it
@@ -143,8 +134,6 @@ class DAO:
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
-        self.gini_across_time.append(self.get_gini())
-        # self.reward_num_across_time.append(reward_count)
 
     def get_diversity(self):
         diversity = 0
@@ -237,24 +226,24 @@ if __name__ == '__main__':
     plt.show()
     plt.clf()
 
-    # Gini Index
-    plt.plot(x, dao.gini_across_time, "k-", label="DAO")
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-    plt.ylabel('Gini Index', fontweight='bold', fontsize=10)
-    plt.title('Gini Index')
-    plt.legend(frameon=False, ncol=3, fontsize=10)
-    # plt.savefig("DAO_gini.png", transparent=False, dpi=1200)
-    plt.show()
-    plt.clf()
+    # # Gini Index
+    # plt.plot(x, dao.gini_across_time, "k-", label="DAO")
+    # plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    # plt.ylabel('Gini Index', fontweight='bold', fontsize=10)
+    # plt.title('Gini Index')
+    # plt.legend(frameon=False, ncol=3, fontsize=10)
+    # # plt.savefig("DAO_gini.png", transparent=False, dpi=1200)
+    # plt.show()
+    # plt.clf()
 
     # Reward number
-    plt.plot(x, dao.reward_num_across_time, "k-", label="DAO")
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-    plt.ylabel('Reward Number', fontweight='bold', fontsize=10)
-    plt.title('Reward Number')
-    plt.legend(frameon=False, ncol=3, fontsize=10)
-    # plt.savefig("DAO_gini.png", transparent=False, dpi=1200)
-    plt.show()
-    plt.clf()
+    # plt.plot(x, dao.reward_num_across_time, "k-", label="DAO")
+    # plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    # plt.ylabel('Reward Number', fontweight='bold', fontsize=10)
+    # plt.title('Reward Number')
+    # plt.legend(frameon=False, ncol=3, fontsize=10)
+    # # plt.savefig("DAO_gini.png", transparent=False, dpi=1200)
+    # plt.show()
+    # plt.clf()
 
 

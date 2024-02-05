@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --time=3-00:00:00
-#SBATCH --job-name=ThreIncen
+#SBATCH --job-name=ThreInac1
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=100gb
+#SBATCH --mem=300gb
 #SBATCH --partition=long
-#SBATCH --cpus-per-task=51
+#SBATCH --cpus-per-task=100
 #SBATCH --nodes=1
-python dao_run.py
+python dao_run_1.py

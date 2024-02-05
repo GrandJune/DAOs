@@ -10,23 +10,15 @@ from Reality import Reality
 
 
 class Individual:
-    def __init__(self, m=None, reality=None, lr=None, alpha=3, initialization=1):
+    def __init__(self, m=None, reality=None, lr=None, alpha=3):
         self.m = m
         self.alpha = alpha
         self.policy_num = self.m // self.alpha
         self.lr = lr  # learning rate, learning from (adjusted) majority view
         self.token = None  # should introduce more dimensions of token
-
+        self.active = 1  # For the incentive search
         self.reality = reality
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
-        if initialization != 1:
-            np.random.seed(None)
-            correct_indexes = np.random.choice(range(m), int(initialization*m), replace=False).tolist()
-            for index in range(m):
-                if index in correct_indexes:
-                    self.belief[index] = int(reality.real_code[index])
-                else:
-                    self.belief[index] = np.random.choice((0, -1 * reality.real_code[index]))
         # self.belief = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
         self.payoff = self.reality.get_payoff(belief=self.belief)
         self.policy = self.reality.belief_2_policy(belief=self.belief)  # a fake policy for voting
@@ -57,15 +49,13 @@ class Individual:
 
 if __name__ == '__main__':
     m = 30
-    s = 1
     n = 10
     lr = 0.3
-    version = "Rushed"
     loop = 100
-    reality = Reality(m=m, s=s, version=version)
+    reality = Reality(m=m)
     team = []
     for _ in range(n):
-        individual = Individual(m=m, s=s, reality=reality, lr=lr)
+        individual = Individual(m=m, reality=reality, lr=lr)
         team.append(individual)
     consensus = reality.real_policy
     performance_across_time = []
