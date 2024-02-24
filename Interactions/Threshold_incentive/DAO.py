@@ -92,7 +92,7 @@ class DAO:
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
 
-    def incentive_search(self, threshold_ratio=None, incentive=1, inactive_rate=None):
+    def incentive_search(self, threshold_ratio=None, incentive=0, inactive_rate=None):
         new_consensus = []
         individuals = []
         for team in self.teams:
@@ -121,6 +121,13 @@ class DAO:
                 new_consensus.append(0)
         self.consensus = new_consensus
         self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
+
+        # Reward those voting for the new consensus
+        for individual in individuals:
+            for i in range(self.policy_num):
+                if individual.policy[i] == self.consensus[i]:
+                    individual.token += incentive
+
         # 1) Generate and 2) adjust the superior majority view and 3) learn from it
         for team in self.teams:
             team.form_individual_majority_view()

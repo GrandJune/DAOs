@@ -26,7 +26,7 @@ def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None, incenti
         for individual in team.individuals:
             individual.token = 1
     for _ in range(search_loop):
-        dao.incentive_search(threshold_ratio=threshold_ratio, incentive=incentive, inactive_rate=0.2)
+        dao.incentive_search(threshold_ratio=threshold_ratio, incentive=incentive, inactive_rate=0.6)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
     sema.release()
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     threshold_ratio_list = np.arange(0.40, 0.71, 0.01)
     incentive_list = [0.8]
     group_size = 7  # the smallest group size in Fang's model: 7
-    concurrency = 80
+    concurrency = 100
     for incentive in incentive_list:
         performance_across_para = []  # remove the time dimension
         consensus_performance_across_para = []
