@@ -3,8 +3,8 @@
 #SBATCH --job-name=p1p2
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=200gb
+#SBATCH --mem=300gb
 #SBATCH --partition=long
-#SBATCH --cpus-per-task=51
+#SBATCH --cpus-per-task=100
 #SBATCH --nodes=1
 python hierarchy_run.py
