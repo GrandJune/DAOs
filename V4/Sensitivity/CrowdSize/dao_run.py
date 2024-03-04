@@ -34,8 +34,8 @@ if __name__ == '__main__':
     m = 90
     n_list = [280, 350, 420, 490]
     lr = 0.3
-    repetition = 200
-    concurrency = 50
+    repetition = 240
+    concurrency = 80
     search_loop = 500
     group_size = 7  # the smallest group size in Fang's model: 7
     threshold_ratio = 0.5

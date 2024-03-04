@@ -32,12 +32,12 @@ def func(m=None, n=None, group_size=None, lr=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    group_size_list = [7, 14, 70]
-    n = 350
+    group_size_list = [7, 14, 21, 28] # 7, 2, 3
+    n = 420
     lr = 0.3
     repetition = 200
-    concurrency = 50
-    search_loop = 300
+    concurrency = 80
+    search_loop = 500
     # DVs
     # after taking an average across repetitions
     performance_across_para = []

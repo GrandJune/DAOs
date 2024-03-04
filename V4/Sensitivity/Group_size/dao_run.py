@@ -32,12 +32,12 @@ def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    group_size_list = [7, 14, 28]
-    n = 350
+    group_size_list = [7, 14, 21, 28]
+    n = 420
     lr = 0.3
     repetition = 200
-    concurrency = 50
-    search_loop = 300
+    concurrency = 80
+    search_loop = 500
     threshold_ratio = 0.5
     # DVs
     performance_across_para = []
