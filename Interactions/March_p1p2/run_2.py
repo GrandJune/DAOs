@@ -21,7 +21,7 @@ def func(m=None, n=None, p1=None, p2=None, loop=None, return_dict=None, sema=Non
     np.random.seed(None)
     reality = Reality(m=m)
     organization = Organization(m=m, n=n, p1=p1, p2=p2, reality=reality)
-    organization.process(search_round=200)
+    organization.process(search_round=500)
     return_dict[loop] = [organization.performance_curve]
     sema.release()
 
@@ -29,11 +29,11 @@ def func(m=None, n=None, p1=None, p2=None, loop=None, return_dict=None, sema=Non
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    n = 50
+    n = 350
     repetition = 400
     concurrency = 100
     p1_list = np.arange(0.05, 1.0, 0.05)
-    p2_list = np.arange(0.5, 1.0, 0.05)
+    p2_list = np.arange(0.50, 1.0, 0.05)
     group_size = 7  # the smallest group size in Fang's model: 7
     # DVs
     performance_across_p1p2 = []
