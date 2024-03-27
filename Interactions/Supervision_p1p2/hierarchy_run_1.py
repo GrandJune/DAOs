@@ -37,11 +37,11 @@ if __name__ == '__main__':
     search_loop = 500
     concurrency = 100
     p1_list = np.arange(0.05, 1.0, 0.05)
-    p2_list = np.arange(0.25, 0.50, 0.05)
+    p2_list = np.arange(0.05, 0.25, 0.05)
     group_size = 7  # the smallest group size in Fang's model: 7
     # DVs
     performance_across_p1p2 = []
-    for p1 in p1_list: # learning from code
+    for p1 in p1_list:  # learning from code
         performance_across_p2 = []
         for p2 in p2_list:  # learning from individuals
             sema = Semaphore(concurrency)
@@ -62,7 +62,7 @@ if __name__ == '__main__':
             performance_across_p2.append(sum(performance_across_repeat) / len(performance_across_repeat))
         performance_across_p1p2.append(performance_across_p2)
     # save the without-time data
-    with open("hierarchy_performance_2", 'wb') as out_file:
+    with open("hierarchy_performance_1", 'wb') as out_file:
         pickle.dump(performance_across_p1p2, out_file)
 
     t1 = time.time()

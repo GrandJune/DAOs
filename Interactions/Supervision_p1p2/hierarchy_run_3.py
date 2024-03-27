@@ -17,11 +17,11 @@ import pickle
 import math
 
 
-def func(m=None, n=None, group_size=None, lr=None, p1=None,
+def func(m=None, n=None, group_size=None, lr=None, p1=None, p2=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
-    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=0.9)
+    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=p2)
     for _ in range(search_loop):
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time]
@@ -37,13 +37,13 @@ if __name__ == '__main__':
     search_loop = 500
     concurrency = 100
     p1_list = np.arange(0.05, 1.0, 0.05)
-    p2_list = np.arange(0.05, 0.50, 0.05)
+    p2_list = np.arange(0.50, 0.75, 0.05)
     group_size = 7  # the smallest group size in Fang's model: 7
     # DVs
     performance_across_p1p2 = []
-    for p1 in p1_list:
+    for p1 in p1_list:  # learning from code
         performance_across_p2 = []
-        for p2 in p2_list:
+        for p2 in p2_list:  # learning from individuals
             sema = Semaphore(concurrency)
             manager = mp.Manager()
             return_dict = manager.dict()
@@ -51,7 +51,7 @@ if __name__ == '__main__':
             for loop in range(repetition):
                 sema.acquire()
                 p = mp.Process(target=func,
-                               args=(m, n, group_size, lr, p1, search_loop, loop, return_dict, sema))
+                               args=(m, n, group_size, lr, p1, p2, search_loop, loop, return_dict, sema))
                 jobs.append(p)
                 p.start()
             for proc in jobs:
@@ -62,7 +62,7 @@ if __name__ == '__main__':
             performance_across_p2.append(sum(performance_across_repeat) / len(performance_across_repeat))
         performance_across_p1p2.append(performance_across_p2)
     # save the without-time data
-    with open("hierarchy_performance", 'wb') as out_file:
+    with open("hierarchy_performance_3", 'wb') as out_file:
         pickle.dump(performance_across_p1p2, out_file)
 
     t1 = time.time()
