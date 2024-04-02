@@ -33,12 +33,12 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    turnover_rate_list = [0.02, 0.04, 0.06, 0.08, 0.10]
+    turnover_rate_list = [0.02, 0.04]
     group_size = 7
     n = 350
     lr = 0.3
-    repetition = 200
-    concurrency = 50
+    repetition = 400
+    concurrency = 100
     search_loop = 1000
     # DVs
     # after taking an average across repetitions

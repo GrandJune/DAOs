@@ -7,4 +7,4 @@
 #SBATCH --partition=long
 #SBATCH --cpus-per-task=100
 #SBATCH --nodes=1
-python hierarchy_run.py
+python hierarchy_run_2.py
