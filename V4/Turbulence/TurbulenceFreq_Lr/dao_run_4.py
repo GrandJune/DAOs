@@ -34,12 +34,11 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    turbulence_freq_list = [20, 40, 60, 80, 100]
+    turbulence_freq_list = [100]
     group_size = 7
     n = 350
     lr_list = [0.7, 0.8, 0.9]
-    repetition = 200
-    concurrency = 50
+    concurrency = 100
     search_loop = 1000
     for lr in lr_list:
         for turbulence_freq in turbulence_freq_list:

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time     : 10/13/2022 15:20
 # @Author   : Junyi
-# @FileName: autonomy_run.py
+# @FileName: hierarchy_run.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import numpy as np
@@ -21,19 +21,19 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
-    autonomy = Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr)
+    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size, p1=0.1, p2=0.9)
     for period in range(search_loop):
-        autonomy.turnover(turnover_rate=turnover_rate)
-        autonomy.search()
-    return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time,
-                         autonomy.variance_across_time]
+        hierarchy.turnover(turnover_rate=turnover_rate)
+        hierarchy.search()
+    return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
+                         hierarchy.diversity_across_time, hierarchy.variance_across_time]
     sema.release()
 
 
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    turnover_rate_list = [0.1, 0.2]
+    turnover_rate_list = [0.02, 0.04]
     group_size = 7
     n = 350
     lr = 0.3
@@ -41,20 +41,13 @@ if __name__ == '__main__':
     concurrency = 100
     search_loop = 1000
     # DVs
-    # after taking an average across repetitions
     performance_across_para = []
-    consensus_across_para = []
+    superior_performance_across_para = []
     diversity_across_para = []
     variance_across_para = []
-    # before taking an average across repetitions
-    performance_hyper = []
-    consensus_hyper = []
-    diversity_hyper = []
-    variance_hyper = []
-    # retian the time dimension
-    # before taking an average across repetitions
+
     performance_across_para_time = []
-    consensus_across_para_time = []
+    superior_performance_across_para_time = []
     diversity_across_para_time = []
     variance_across_para_time = []
     for turnover_rate in turnover_rate_list:
@@ -73,27 +66,35 @@ if __name__ == '__main__':
         results = return_dict.values()  # Don't need dict index, since it is repetition.
 
         # remove the time dimension, only keep the last value
-        performance_hyper += [result[0][-1] for result in results]
-        diversity_hyper += [result[1][-1] for result in results]
-        variance_hyper += [result[2][-1] for result in results]
+        performance_across_repeat = [result[0][-1] for result in results]
+        superior_performance_across_repeat = [result[1][-1] for result in results]
+        diversity_across_repeat = [result[2][-1] for result in results]
+        variance_across_repeat = [result[3][-1] for result in results]
 
         # take an average across repetition, only one value for one parameter
-        performance_across_para.append(sum(performance_hyper) / len(performance_hyper))
-        diversity_across_para.append(sum(diversity_hyper) / len(diversity_hyper))
-        variance_across_para.append(sum(variance_hyper) / len(variance_hyper))
+        performance_across_para.append(sum(performance_across_repeat) / len(performance_across_repeat))
+        superior_performance_across_para.append(
+            sum(superior_performance_across_repeat) / len(superior_performance_across_repeat))
+        diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
+        variance_across_para.append(sum(variance_across_repeat) / len(variance_across_repeat))
 
         # keep the time dimension
         performance_across_repeat_time = [result[0] for result in results]
-        diversity_across_repeat_time = [result[1] for result in results]
-        variance_across_repeat_time = [result[2] for result in results]
+        superior_performance_across_repeat_time = [result[1] for result in results]
+        diversity_across_repeat_time = [result[2] for result in results]
+        variance_across_repeat_time = [result[3] for result in results]
 
-        # take an average across repetition, for each time iteration, integrate into [loop] values for one parameter
+        # take an average across repetition, for each time iteration, integrate into 600 values for one parameter
         performance_across_time = []  # under the same parameter
+        superior_performance_across_time = []
         diversity_across_time = []
         variance_across_time = []
         for period in range(search_loop):
             temp_performance = [performance_list[period] for performance_list in performance_across_repeat_time]
             performance_across_time.append(sum(temp_performance) / len(temp_performance))
+            temp_superior_performance = [performance_list[period] for performance_list in
+                                         superior_performance_across_repeat_time]
+            superior_performance_across_time.append(sum(temp_superior_performance) / len(temp_superior_performance))
 
             temp_diversity = [diversity_list[period] for diversity_list in diversity_across_repeat_time]
             diversity_across_time.append(sum(temp_diversity) / len(temp_diversity))
@@ -102,23 +103,28 @@ if __name__ == '__main__':
             variance_across_time.append(sum(temp_variance) / len(temp_variance))
         # retain the time dimension
         performance_across_para_time.append(performance_across_time)
+        superior_performance_across_para_time.append(superior_performance_across_time)
         diversity_across_para_time.append(diversity_across_time)
         variance_across_para_time.append(variance_across_time)
 
     # save the without-time data
-    with open("autonomy_performance_across_turnover", 'wb') as out_file:
+    with open("hierarchy_performance_across_turnover", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("autonomy_diversity_across_turnover", 'wb') as out_file:
+    with open("superior_performance_across_turnover", 'wb') as out_file:
+        pickle.dump(superior_performance_across_para, out_file)
+    with open("hierarchy_diversity_across_turnover", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("autonomy_variance_across_turnover", 'wb') as out_file:
+    with open("hierarchy_variance_across_turnover", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
 
     # save the with-time data
-    with open("autonomy_performance_across_turnover_time", 'wb') as out_file:
+    with open("hierarchy_performance_across_turnover_time", 'wb') as out_file:
         pickle.dump(performance_across_para_time, out_file)
-    with open("autonomy_diversity_across_turnover_time", 'wb') as out_file:
+    with open("superior_performance_across_turnover_time", 'wb') as out_file:
+        pickle.dump(superior_performance_across_para_time, out_file)
+    with open("hierarchy_diversity_across_turnover_time", 'wb') as out_file:
         pickle.dump(diversity_across_para_time, out_file)
-    with open("autonomy_variance_across_turnover_time", 'wb') as out_file:
+    with open("hierarchy_variance_across_turnover_time", 'wb') as out_file:
         pickle.dump(variance_across_para_time, out_file)
 
     t1 = time.time()

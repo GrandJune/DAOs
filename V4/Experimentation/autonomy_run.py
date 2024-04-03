@@ -33,7 +33,7 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    turnover_rate_list = [0.1, 0.2]
+    turnover_rate_list = [0.02, 0.04]
     group_size = 7
     n = 350
     lr = 0.3

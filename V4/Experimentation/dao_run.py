@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# @Time     : 10/13/2022 15:20
+# @Time     : 10/9/2022 22:52
 # @Author   : Junyi
-# @FileName: autonomy_run.py
+# @FileName: dao_run.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import numpy as np
@@ -21,19 +21,19 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
-    autonomy = Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr)
+    dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
     for period in range(search_loop):
-        autonomy.turnover(turnover_rate=turnover_rate)
-        autonomy.search()
-    return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time,
-                         autonomy.variance_across_time]
+        dao.turnover(turnover_rate=turnover_rate)
+        dao.search(threshold_ratio=0.5, token=False)
+    return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
+                         dao.diversity_across_time, dao.variance_across_time]
     sema.release()
 
 
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    turnover_rate_list = [0.1, 0.2]
+    turnover_rate_list = [0.02, 0.04]
     group_size = 7
     n = 350
     lr = 0.3
@@ -41,21 +41,14 @@ if __name__ == '__main__':
     concurrency = 100
     search_loop = 1000
     # DVs
-    # after taking an average across repetitions
     performance_across_para = []
-    consensus_across_para = []
+    consensus_performance_across_para = []
     diversity_across_para = []
     variance_across_para = []
-    # before taking an average across repetitions
-    performance_hyper = []
-    consensus_hyper = []
-    diversity_hyper = []
-    variance_hyper = []
-    # retian the time dimension
-    # before taking an average across repetitions
+
     performance_across_para_time = []
-    consensus_across_para_time = []
     diversity_across_para_time = []
+    consensus_performance_across_para_time = []
     variance_across_para_time = []
     for turnover_rate in turnover_rate_list:
         sema = Semaphore(concurrency)
@@ -73,27 +66,34 @@ if __name__ == '__main__':
         results = return_dict.values()  # Don't need dict index, since it is repetition.
 
         # remove the time dimension, only keep the last value
-        performance_hyper += [result[0][-1] for result in results]
-        diversity_hyper += [result[1][-1] for result in results]
-        variance_hyper += [result[2][-1] for result in results]
+        performance_across_repeat = [result[0][-1] for result in results]
+        consensus_performance_across_repeat = [result[1][-1] for result in results]
+        diversity_across_repeat = [result[2][-1] for result in results]
+        variance_across_repeat = [result[3][-1] for result in results]
 
         # take an average across repetition, only one value for one parameter
-        performance_across_para.append(sum(performance_hyper) / len(performance_hyper))
-        diversity_across_para.append(sum(diversity_hyper) / len(diversity_hyper))
-        variance_across_para.append(sum(variance_hyper) / len(variance_hyper))
+        performance_across_para.append(sum(performance_across_repeat) / len(performance_across_repeat))
+        consensus_performance_across_para.append(
+            sum(consensus_performance_across_repeat) / len(consensus_performance_across_repeat))
+        diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
+        variance_across_para.append(sum(variance_across_repeat) / len(variance_across_repeat))
 
         # keep the time dimension
         performance_across_repeat_time = [result[0] for result in results]
-        diversity_across_repeat_time = [result[1] for result in results]
-        variance_across_repeat_time = [result[2] for result in results]
-
-        # take an average across repetition, for each time iteration, integrate into [loop] values for one parameter
+        consensus_performance_across_repeat_time = [result[1] for result in results]
+        diversity_across_repeat_time = [result[2] for result in results]
+        variance_across_repeat_time = [result[3] for result in results]
+        # take an average across repetition, for each time iteration, integrate into 600 values for one parameter
         performance_across_time = []  # under the same parameter
+        consensus_performance_across_time = []
         diversity_across_time = []
         variance_across_time = []
         for period in range(search_loop):
             temp_performance = [performance_list[period] for performance_list in performance_across_repeat_time]
             performance_across_time.append(sum(temp_performance) / len(temp_performance))
+            temp_consensus_performance = [performance_list[period] for performance_list in
+                                          consensus_performance_across_repeat_time]
+            consensus_performance_across_time.append(sum(temp_consensus_performance) / len(temp_consensus_performance))
 
             temp_diversity = [diversity_list[period] for diversity_list in diversity_across_repeat_time]
             diversity_across_time.append(sum(temp_diversity) / len(temp_diversity))
@@ -102,23 +102,28 @@ if __name__ == '__main__':
             variance_across_time.append(sum(temp_variance) / len(temp_variance))
         # retain the time dimension
         performance_across_para_time.append(performance_across_time)
+        consensus_performance_across_para_time.append(consensus_performance_across_time)
         diversity_across_para_time.append(diversity_across_time)
         variance_across_para_time.append(variance_across_time)
 
-    # save the without-time data
-    with open("autonomy_performance_across_turnover", 'wb') as out_file:
+    # save the without-time data (ready for figure)
+    with open("dao_performance_across_turnover", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("autonomy_diversity_across_turnover", 'wb') as out_file:
+    with open("consensus_performance_across_turnover", 'wb') as out_file:
+        pickle.dump(consensus_performance_across_para, out_file)
+    with open("dao_diversity_across_turnover", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("autonomy_variance_across_turnover", 'wb') as out_file:
+    with open("dao_variance_across_turnover", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
 
     # save the with-time data
-    with open("autonomy_performance_across_turnover_time", 'wb') as out_file:
+    with open("dao_performance_across_turnover_time", 'wb') as out_file:
         pickle.dump(performance_across_para_time, out_file)
-    with open("autonomy_diversity_across_turnover_time", 'wb') as out_file:
+    with open("consensus_performance_across_turnover_time", 'wb') as out_file:
+        pickle.dump(consensus_performance_across_para_time, out_file)
+    with open("dao_diversity_across_turnover_time", 'wb') as out_file:
         pickle.dump(diversity_across_para_time, out_file)
-    with open("autonomy_variance_across_turnover_time", 'wb') as out_file:
+    with open("dao_variance_across_turnover_time", 'wb') as out_file:
         pickle.dump(variance_across_para_time, out_file)
 
     t1 = time.time()
