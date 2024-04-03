@@ -17,13 +17,13 @@ import pickle
 import math
 
 
-def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
+def func(m=None, n=None, group_size=None, lr=None, experimentation_rate=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
     for period in range(search_loop):
-        dao.turnover(turnover_rate=turnover_rate)
+        dao.experimentation(experimentation_rate=experimentation_rate)
         dao.search(threshold_ratio=0.5, token=False)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
@@ -33,11 +33,11 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    turnover_rate_list = [0.02, 0.04]
+    experimentation_rate_list = [0.02, 0.04, 0.06, 0.08, 0.10]
     group_size = 7
     n = 350
     lr = 0.3
-    repetition = 400
+    repetition = 300
     concurrency = 100
     search_loop = 1000
     # DVs
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     diversity_across_para_time = []
     consensus_performance_across_para_time = []
     variance_across_para_time = []
-    for turnover_rate in turnover_rate_list:
+    for experimentation_rate in experimentation_rate_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
         return_dict = manager.dict()
@@ -58,7 +58,7 @@ if __name__ == '__main__':
         for loop in range(repetition):
             sema.acquire()
             p = mp.Process(target=func,
-                           args=(m, n, group_size, lr, turnover_rate, search_loop, loop, return_dict, sema))
+                           args=(m, n, group_size, lr, experimentation_rate, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
@@ -107,23 +107,23 @@ if __name__ == '__main__':
         variance_across_para_time.append(variance_across_time)
 
     # save the without-time data (ready for figure)
-    with open("dao_performance_across_turnover", 'wb') as out_file:
+    with open("dao_performance_across_experimentation", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("consensus_performance_across_turnover", 'wb') as out_file:
+    with open("consensus_performance_across_experimentation", 'wb') as out_file:
         pickle.dump(consensus_performance_across_para, out_file)
-    with open("dao_diversity_across_turnover", 'wb') as out_file:
+    with open("dao_diversity_across_experimentation", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("dao_variance_across_turnover", 'wb') as out_file:
+    with open("dao_variance_across_experimentation", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
 
     # save the with-time data
-    with open("dao_performance_across_turnover_time", 'wb') as out_file:
+    with open("dao_performance_across_experimentation_time", 'wb') as out_file:
         pickle.dump(performance_across_para_time, out_file)
-    with open("consensus_performance_across_turnover_time", 'wb') as out_file:
+    with open("consensus_performance_across_experimentation_time", 'wb') as out_file:
         pickle.dump(consensus_performance_across_para_time, out_file)
-    with open("dao_diversity_across_turnover_time", 'wb') as out_file:
+    with open("dao_diversity_across_experimentation_time", 'wb') as out_file:
         pickle.dump(diversity_across_para_time, out_file)
-    with open("dao_variance_across_turnover_time", 'wb') as out_file:
+    with open("dao_variance_across_experimentation_time", 'wb') as out_file:
         pickle.dump(variance_across_para_time, out_file)
 
     t1 = time.time()

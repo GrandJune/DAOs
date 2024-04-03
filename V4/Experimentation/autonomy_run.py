@@ -17,13 +17,13 @@ import pickle
 import math
 
 
-def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
+def func(m=None, n=None, group_size=None, lr=None, experimentation_rate=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
     autonomy = Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr)
     for period in range(search_loop):
-        autonomy.turnover(turnover_rate=turnover_rate)
+        autonomy.experimentation(experimentation_rate=experimentation_rate)
         autonomy.search()
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time,
                          autonomy.variance_across_time]
@@ -33,11 +33,11 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    turnover_rate_list = [0.02, 0.04]
+    experimentation_rate_list = [0.02, 0.04, 0.06, 0.08, 0.10]
     group_size = 7
     n = 350
     lr = 0.3
-    repetition = 400
+    repetition = 300
     concurrency = 100
     search_loop = 1000
     # DVs
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     consensus_across_para_time = []
     diversity_across_para_time = []
     variance_across_para_time = []
-    for turnover_rate in turnover_rate_list:
+    for experimentation_rate in experimentation_rate_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
         return_dict = manager.dict()
@@ -65,7 +65,7 @@ if __name__ == '__main__':
         for loop in range(repetition):
             sema.acquire()
             p = mp.Process(target=func,
-                           args=(m, n, group_size, lr, turnover_rate, search_loop, loop, return_dict, sema))
+                           args=(m, n, group_size, lr, experimentation_rate, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
@@ -106,19 +106,19 @@ if __name__ == '__main__':
         variance_across_para_time.append(variance_across_time)
 
     # save the without-time data
-    with open("autonomy_performance_across_turnover", 'wb') as out_file:
+    with open("autonomy_performance_across_experimentation", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("autonomy_diversity_across_turnover", 'wb') as out_file:
+    with open("autonomy_diversity_across_experimentation", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("autonomy_variance_across_turnover", 'wb') as out_file:
+    with open("autonomy_variance_across_experimentation", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
 
     # save the with-time data
-    with open("autonomy_performance_across_turnover_time", 'wb') as out_file:
+    with open("autonomy_performance_across_experimentation_time", 'wb') as out_file:
         pickle.dump(performance_across_para_time, out_file)
-    with open("autonomy_diversity_across_turnover_time", 'wb') as out_file:
+    with open("autonomy_diversity_across_experimentation_time", 'wb') as out_file:
         pickle.dump(diversity_across_para_time, out_file)
-    with open("autonomy_variance_across_turnover_time", 'wb') as out_file:
+    with open("autonomy_variance_across_experimentation_time", 'wb') as out_file:
         pickle.dump(variance_across_para_time, out_file)
 
     t1 = time.time()
