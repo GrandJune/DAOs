@@ -23,7 +23,8 @@ def func(m=None, n=None, group_size=None, lr=None, experimentation_rate=None,
     reality = Reality(m=m)
     autonomy = Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr)
     for period in range(search_loop):
-        autonomy.experimentation(experimentation_rate=experimentation_rate)
+        if period % 100 == 0:
+            autonomy.experimentation(experimentation_rate=experimentation_rate)
         autonomy.search()
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time,
                          autonomy.variance_across_time]

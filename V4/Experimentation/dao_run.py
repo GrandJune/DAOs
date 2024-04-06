@@ -23,7 +23,8 @@ def func(m=None, n=None, group_size=None, lr=None, experimentation_rate=None,
     reality = Reality(m=m)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
     for period in range(search_loop):
-        dao.experimentation(experimentation_rate=experimentation_rate)
+        if period % 100 == 0:
+            dao.experimentation(experimentation_rate=experimentation_rate)
         dao.search(threshold_ratio=0.5, token=False)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]

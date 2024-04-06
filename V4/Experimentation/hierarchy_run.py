@@ -23,7 +23,8 @@ def func(m=None, n=None, group_size=None, lr=None, experimentation_rate=None,
     reality = Reality(m=m)
     hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size, p1=0.1, p2=0.9)
     for period in range(search_loop):
-        hierarchy.experimentation(experimentation_rate=experimentation_rate)
+        if period % 100 == 0:
+            hierarchy.experimentation(experimentation_rate=experimentation_rate)
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
                          hierarchy.diversity_across_time, hierarchy.variance_across_time]

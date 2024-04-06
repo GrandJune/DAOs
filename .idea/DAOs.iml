@@ -67,7 +67,6 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Group_size" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Initialization" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Lr" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Supervision_p1p2" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence/TT" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence/TurbulenceFreq" isTestSource="false" />
@@ -91,6 +90,7 @@
       <sourceFolder url="file://$MODULE_DIR$/RandomNet/Turbulence/TurbulenceRate" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Interactions/Supervision_p1p2" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Experimentation" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Supervision_p2" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />
       <excludeFolder url="file://$MODULE_DIR$/Identity" />

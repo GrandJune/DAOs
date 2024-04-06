@@ -23,7 +23,8 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
     reality = Reality(m=m)
     autonomy = Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr)
     for period in range(search_loop):
-        autonomy.turnover(turnover_rate=turnover_rate)
+        if period % 100 == 0:
+            autonomy.turnover(turnover_rate=turnover_rate)
         autonomy.search()
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time,
                          autonomy.variance_across_time]
@@ -33,7 +34,7 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    turnover_rate_list = [0.1, 0.2]
+    turnover_rate_list = [0.02, 0.04, 0.06, 0.08, 0.1]
     group_size = 7
     n = 350
     lr = 0.3

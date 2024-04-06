@@ -23,7 +23,8 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
     reality = Reality(m=m)
     hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size, p1=0.1, p2=0.9)
     for period in range(search_loop):
-        hierarchy.turnover(turnover_rate=turnover_rate)
+        if period % 100 == 0:
+            hierarchy.turnover(turnover_rate=turnover_rate)
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
                          hierarchy.diversity_across_time, hierarchy.variance_across_time]
@@ -33,7 +34,7 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    turnover_rate_list = [0.1, 0.2]
+    turnover_rate_list = [0.02, 0.04, 0.06, 0.08, 0.1]
     group_size = 7
     n = 350
     lr = 0.3

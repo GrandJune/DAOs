@@ -36,12 +36,12 @@ if __name__ == '__main__':
     repetition = 300
     search_loop = 300
     concurrency = 100
-    p1_list = np.arange(0.05, 1.0, 0.05)
-    p2_list = np.arange(0.50, 0.75, 0.05)
+    p1_list = np.arange(0.05, 1.0, 0.1)
+    p2_list = np.arange(0.65, 1.0, 0.1)
     group_size = 7  # the smallest group size in Fang's model: 7
     # DVs
     performance_across_p1p2 = []
-    for p1 in p1_list:  # learning from code
+    for p1 in p1_list: # learning from code
         performance_across_p2 = []
         for p2 in p2_list:  # learning from individuals
             sema = Semaphore(concurrency)
