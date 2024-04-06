@@ -90,7 +90,8 @@
       <sourceFolder url="file://$MODULE_DIR$/RandomNet/Turbulence/TurbulenceRate" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Interactions/Supervision_p1p2" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Experimentation" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Supervision_p2" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Interactions/Supervision_p1" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Interactions/Supervision_p2" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />
       <excludeFolder url="file://$MODULE_DIR$/Identity" />
