@@ -21,7 +21,7 @@ def func(m=None, n=None, group_size=None, lr=None, p2=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
-    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size, p1=0.5, p2=p2)
+    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size, p1=0.2, p2=p2)
     for _ in range(search_loop):
         hierarchy.search()
     performance = hierarchy.performance_across_time[-1]
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     repetition = 400
     search_loop = 500
     concurrency = 100
-    # [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9]
+    # [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
     p2_list = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
     group_size = 7  # the smallest group size in Fang's model: 7s
     # DVs
