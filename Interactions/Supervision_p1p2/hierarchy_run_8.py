@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 # @Time     : 10/13/2022 15:20
 # @Author   : Junyi
@@ -36,13 +37,12 @@ if __name__ == '__main__':
     repetition = 300
     search_loop = 300
     concurrency = 100
-    # p_whole = [0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95]
     p1_list = [0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95]
-    p2_list = [0.05, 0.10]
+    p2_list = [0.75, 0.80]
     group_size = 7  # the smallest group size in Fang's model: 7
     # DVs
     performance_across_p1p2 = []
-    for p1 in p1_list:  # learning from code
+    for p1 in p1_list: # learning from code
         performance_across_p2 = []
         for p2 in p2_list:  # learning from individuals
             sema = Semaphore(concurrency)
@@ -63,7 +63,7 @@ if __name__ == '__main__':
             performance_across_p2.append(sum(performance_across_repeat) / len(performance_across_repeat))
         performance_across_p1p2.append(performance_across_p2)
     # save the without-time data
-    with open("hierarchy_performance_1", 'wb') as out_file:
+    with open("hierarchy_performance_8", 'wb') as out_file:
         pickle.dump(performance_across_p1p2, out_file)
 
     t1 = time.time()
