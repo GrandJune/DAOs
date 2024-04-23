@@ -31,13 +31,13 @@ def func(m=None, n=None, group_size=None, lr=None, alpha=None, threshold_ratio=N
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 90
+    m = 105
     n = 350
     lr = 0.3
-    alpha_list = [1, 3, 5]  # alpha does not matter for autonomy
-    repetition = 200
-    concurrency = 50
-    search_loop = 300
+    alpha_list = [1, 3, 5, 7]  # alpha does not matter for autonomy; 21*5=105
+    repetition = 400
+    concurrency = 100
+    search_loop = 500
     group_size = 7  # the smallest group size in Fang's model: 7
     threshold_ratio = 0.5
     # DVs
