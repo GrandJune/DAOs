@@ -34,13 +34,13 @@ def func(m=None, n=None, group_size=None, lr=None, experimentation_rate=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    experimentation_rate_list = [0.02, 0.04, 0.06, 0.08, 0.10]
+    experimentation_rate_list = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09]
     group_size = 7
     n = 350
     lr = 0.3
-    repetition = 300
+    repetition = 400
     concurrency = 100
-    search_loop = 1000
+    search_loop = 300
     # DVs
     # after taking an average across repetitions
     performance_across_para = []
