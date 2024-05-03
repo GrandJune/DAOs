@@ -44,7 +44,7 @@ def func(m=None, n=None, group_size=None, lr=None, initialization_bar=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    initialization_bar_list = [0.05, 0.1, 0.15, 0.2, 0.25]
+    initialization_bar_list = [0.3, 0.35, 0.4, 0.45, 0.5]
     n = 350
     lr = 0.3
     repetition = 400
