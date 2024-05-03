@@ -34,10 +34,10 @@ if __name__ == '__main__':
     m = 90
     n = 350
     lr = 0.3
-    alpha_list = [1, 3, 5]  # alpha does not matter for autonomy
-    repetition = 200
-    concurrency = 50
-    search_loop = 300
+    alpha_list = [1, 3, 5, 7]  # alpha does not matter for autonomy
+    repetition = 500
+    concurrency = 100
+    search_loop = 500
     group_size = 7  # the smallest group size in Fang's model: 7
     # DVs
     performance_across_para = []
