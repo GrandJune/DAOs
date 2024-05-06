@@ -2,10 +2,10 @@
 #SBATCH --time=3-00:00:00
 #SBATCH --job-name=DAO
 #SBATCH --mail-type=FAIL
-#SBATCH --mail-user=junyili@u.nus.edu
+#SBATCH --mail-user=@u.nus.edu
 #SBATCH --mem=200gb
 #SBATCH --partition=long
-#SBATCH --cpus-per-task=50
+#SBATCH --cpus-per-task=100
 #SBATCH --ntasks=1
 #SBATCH --exclude=xcng[0-1]
 srun python hierarchy_run.py

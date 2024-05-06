@@ -5,7 +5,7 @@
 #SBATCH --mail-user=junyili@u.nus.edu
 #SBATCH --mem=200gb
 #SBATCH --partition=long
-#SBATCH --cpus-per-task=50
+#SBATCH --cpus-per-task=90
 #SBATCH --ntasks=1
 #SBATCH --exclude=xcng[0-1]
 srun python dao_run.py
