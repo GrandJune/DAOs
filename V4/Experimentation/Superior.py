@@ -79,11 +79,6 @@ class Superior:
             pass  # if there is no superior group, the code remain unchanged.
         self.code_payoff = self.reality.get_policy_payoff(policy=self.code)
 
-    def turnover(self, turnover_rate=None):
-        if turnover_rate:
-            for manager in self.managers:
-                manager.turnover(turnover_rate=turnover_rate)
-
 
 if __name__ == '__main__':
     # m = 30

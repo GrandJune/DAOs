@@ -15,7 +15,7 @@ import time
 
 class Hierarchy:
     def __init__(self, m=None, n=None, reality=None, lr=None, alpha=3,
-                 group_size=None, p1=0.1, p2=0.9, manager_num=50, confirmation=True, initialization=1):
+                 group_size=None, p1=0.1, p2=0.9, manager_num=50, confirmation=True):
         """
         :param m: problem space
         :param s: the first complexity
@@ -36,8 +36,7 @@ class Hierarchy:
         self.lr = lr  # learning rate
         self.reality = reality
         manager_num = self.n // self.group_size
-        self.superior = Superior(policy_num=self.policy_num, reality=self.reality,
-                                 manager_num=manager_num, p1=p1, p2=p2, initialization=initialization)
+        self.superior = Superior(policy_num=self.policy_num, reality=self.reality, manager_num=manager_num, p1=p1, p2=p2)
         # n is the number of managers, instead of employers;  In March's paper, n=50
         # p1, p2 is set to be the best one in March's paper
         self.teams = []
@@ -92,9 +91,23 @@ class Hierarchy:
 
     def turnover(self, turnover_rate=None):
         if turnover_rate:
+            # individual turnover
             for team in self.teams:
                 for individual in team.individuals:
                     individual.turnover(turnover_rate=turnover_rate)
+            # manager turnover
+            for manager in self.superior.managers:
+                manager.turnover(turnover_rate=turnover_rate)
+
+    def experimentation(self, experimentation_rate=None):
+        if experimentation_rate:
+            # individual experimentation
+            for team in self.teams:
+                for individual in team.individuals:
+                    individual.experimentation(experimentation_rate=experimentation_rate)
+            # manager experimentation
+            for manager in self.superior.managers:
+                manager.experimentation(experimentation_rate=experimentation_rate)
 
 
 if __name__ == '__main__':

@@ -12,8 +12,7 @@ from Team import Team
 
 
 class Autonomy:
-    def __init__(self, m=None, n=None, reality=None, group_size=None,
-                 lr=None, alpha=3, initialization=1):
+    def __init__(self, m=None, n=None, reality=None, group_size=None, lr=None, alpha=3):
         """
         :param m: problem space
         :param n: the number of agents
@@ -33,7 +32,7 @@ class Autonomy:
         for i in range(self.n // self.group_size):
             team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
-                individual = Individual(m=self.m, reality=self.reality, lr=self.lr, alpha=self.alpha, initialization=initialization)
+                individual = Individual(m=self.m, reality=self.reality, lr=self.lr, alpha=self.alpha)
                 team.individuals.append(individual)
             self.teams.append(team)
         self.performance_across_time = []
@@ -89,6 +88,12 @@ class Autonomy:
             for team in self.teams:
                 for individual in team.individuals:
                     individual.turnover(turnover_rate=turnover_rate)
+
+    def experimentation(self, experimentation_rate=None):
+        if experimentation_rate:
+            for team in self.teams:
+                for individual in team.individuals:
+                    individual.experimentation(experimentation_rate=experimentation_rate)
 
 
 if __name__ == '__main__':

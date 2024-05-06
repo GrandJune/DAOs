@@ -6,6 +6,7 @@
 # Observing PEP 8 coding style
 from Individual import Individual
 import numpy as np
+import math
 from Reality import Reality
 from Team import Team
 
@@ -87,6 +88,12 @@ class Autonomy:
             for team in self.teams:
                 for individual in team.individuals:
                     individual.turnover(turnover_rate=turnover_rate)
+
+    def experimentation(self, experimentation_rate=None):
+        if experimentation_rate:
+            for team in self.teams:
+                for individual in team.individuals:
+                    individual.experimentation(experimentation_rate=experimentation_rate)
 
 
 if __name__ == '__main__':

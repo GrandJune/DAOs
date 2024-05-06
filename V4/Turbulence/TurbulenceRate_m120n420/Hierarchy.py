@@ -29,7 +29,7 @@ class Hierarchy:
         self.group_size = group_size
         self.confirmation = confirmation  # whether or the lower-level individual initially confirm to the upper-level
         if self.manager_num * self.group_size != self.n:
-            # print("auto-adjust the unfit manager_num")
+            print("auto-adjust the unfit manager_num")
             self.manager_num = self.n // self.group_size
         self.alpha = alpha
         self.policy_num = self.m // self.alpha
@@ -91,9 +91,23 @@ class Hierarchy:
 
     def turnover(self, turnover_rate=None):
         if turnover_rate:
+            # individual turnover
             for team in self.teams:
                 for individual in team.individuals:
                     individual.turnover(turnover_rate=turnover_rate)
+            # manager turnover
+            for manager in self.superior.managers:
+                manager.turnover(turnover_rate=turnover_rate)
+
+    def experimentation(self, experimentation_rate=None):
+        if experimentation_rate:
+            # individual experimentation
+            for team in self.teams:
+                for individual in team.individuals:
+                    individual.experimentation(experimentation_rate=experimentation_rate)
+            # manager experimentation
+            for manager in self.superior.managers:
+                manager.experimentation(experimentation_rate=experimentation_rate)
 
 
 if __name__ == '__main__':
