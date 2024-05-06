@@ -24,7 +24,7 @@ def func(m=None, n=None, group_size=None, lr=None, initialization_bar=None,
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
     for team in dao.teams:
         for individual in team.individuals:
-            if individual.fitness >= initialization_bar:
+            if individual.payoff >= initialization_bar:
                 correct_bit_num = int(initialization_bar * m)
                 correct_bit_index = np.random.choice(range(m), correct_bit_num)
                 for index in range(m):
