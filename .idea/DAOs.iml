@@ -16,6 +16,7 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/TTT" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Threshold" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turnover" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Turnover" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4-2" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4-2/Aggregation" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4-2/Asymmetry" isTestSource="false" />
@@ -68,7 +69,6 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Initialization" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Lr" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence/TT" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence/TurbulenceFreq" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence/TurbulenceRate" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/CrowdSize" isTestSource="false" />

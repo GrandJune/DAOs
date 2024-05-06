@@ -89,12 +89,6 @@ class Autonomy:
                 for individual in team.individuals:
                     individual.turnover(turnover_rate=turnover_rate)
 
-    def experimentation(self, experimentation_rate=None):
-        if experimentation_rate:
-            for team in self.teams:
-                for individual in team.individuals:
-                    individual.experimentation(experimentation_rate=experimentation_rate)
-
 
 if __name__ == '__main__':
     m = 60
