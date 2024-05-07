@@ -14,6 +14,7 @@ import time
 from multiprocessing import Pool
 from multiprocessing import Semaphore
 import pickle
+import os
 import math
 
 
@@ -23,6 +24,7 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
     reality = Reality(m=m)
     hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size, p1=0.1, p2=0.9)
     for period in range(search_loop):
+        # Turbulence
         if (period + 1) % 50 == 0:
             reality.change(reality_change_rate=0.15)
             # update the individual payoff
@@ -34,9 +36,8 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
                 manager.payoff = reality.get_policy_payoff(policy=manager.policy)
             # update the code payoff
             hierarchy.superior.code_payoff = reality.get_policy_payoff(policy=hierarchy.superior.code)
+        # Turnover
         hierarchy.turnover(turnover_rate=turnover_rate)
-        # also turnover the managers
-        hierarchy.superior.turnover(turnover_rate=turnover_rate)
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
                          hierarchy.diversity_across_time, hierarchy.variance_across_time]
@@ -46,23 +47,23 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    turnover_rate_list = [0.10, 0.12, 0.14, 0.16, 0.18, 0.20, 0.22, 0.24]
+    turnover_rate_list = [0.05, 0.10, 0.15, 0.20, 0.25]
     group_size = 7
     n = 350
     lr = 0.3
-    repetition = 200
+    repetition = 50
     concurrency = 50
-    search_loop = 2000
+    search_loop = 399
     # DVs
     performance_across_para = []
     superior_performance_across_para = []
     diversity_across_para = []
     variance_across_para = []
 
-    performance_across_para_time = []
-    superior_performance_across_para_time = []
-    diversity_across_para_time = []
-    variance_across_para_time = []
+    # performance_across_para_time = []
+    # superior_performance_across_para_time = []
+    # diversity_across_para_time = []
+    # variance_across_para_time = []
     for turnover_rate in turnover_rate_list:
         sema = Semaphore(concurrency)
         manager = mp.Manager()
@@ -92,54 +93,64 @@ if __name__ == '__main__':
         variance_across_para.append(sum(variance_across_repeat) / len(variance_across_repeat))
 
         # keep the time dimension
-        performance_across_repeat_time = [result[0] for result in results]
-        superior_performance_across_repeat_time = [result[1] for result in results]
-        diversity_across_repeat_time = [result[2] for result in results]
-        variance_across_repeat_time = [result[3] for result in results]
+        # performance_across_repeat_time = [result[0] for result in results]
+        # superior_performance_across_repeat_time = [result[1] for result in results]
+        # diversity_across_repeat_time = [result[2] for result in results]
+        # variance_across_repeat_time = [result[3] for result in results]
 
         # take an average across repetition, for each time iteration, integrate into 600 values for one parameter
-        performance_across_time = []  # under the same parameter
-        superior_performance_across_time = []
-        diversity_across_time = []
-        variance_across_time = []
-        for period in range(search_loop):
-            temp_performance = [performance_list[period] for performance_list in performance_across_repeat_time]
-            performance_across_time.append(sum(temp_performance) / len(temp_performance))
+        # performance_across_time = []  # under the same parameter
+        # superior_performance_across_time = []
+        # diversity_across_time = []
+        # variance_across_time = []
+        # for period in range(search_loop):
+        #     temp_performance = [performance_list[period] for performance_list in performance_across_repeat_time]
+        #     performance_across_time.append(sum(temp_performance) / len(temp_performance))
+        #
+        #     temp_superior_performance = [performance_list[period] for performance_list in
+        #                                  superior_performance_across_repeat_time]
+        #     superior_performance_across_time.append(sum(temp_superior_performance) / len(temp_superior_performance))
+        #
+        #     temp_diversity = [diversity_list[period] for diversity_list in diversity_across_repeat_time]
+        #     diversity_across_time.append(sum(temp_diversity) / len(temp_diversity))
+        #
+        #     temp_variance = [variance_list[period] for variance_list in variance_across_repeat_time]
+        #     variance_across_time.append(sum(temp_variance) / len(temp_variance))
 
-            temp_superior_performance = [performance_list[period] for performance_list in
-                                         superior_performance_across_repeat_time]
-            superior_performance_across_time.append(sum(temp_superior_performance) / len(temp_superior_performance))
-
-            temp_diversity = [diversity_list[period] for diversity_list in diversity_across_repeat_time]
-            diversity_across_time.append(sum(temp_diversity) / len(temp_diversity))
-
-            temp_variance = [variance_list[period] for variance_list in variance_across_repeat_time]
-            variance_across_time.append(sum(temp_variance) / len(temp_variance))
         # retain the time dimension
-        performance_across_para_time.append(performance_across_time)
-        superior_performance_across_para_time.append(superior_performance_across_time)
-        diversity_across_para_time.append(diversity_across_time)
-        variance_across_para_time.append(variance_across_time)
+        # performance_across_para_time.append(performance_across_time)
+        # superior_performance_across_para_time.append(superior_performance_across_time)
+        # diversity_across_para_time.append(diversity_across_time)
+        # variance_across_para_time.append(variance_across_time)
+
+    delay = np.random.uniform(1, 6)
+    time.sleep(delay)
+    file_index = 1
+    performance_file_name = f"hierarchy_performance_across_turnover_{file_index}"
+
+    while os.path.exists(performance_file_name):
+        file_index += 1
+        performance_file_name = f"hierarchy_performance_across_turnover_{file_index}"
 
     # save the without-time data
-    with open("hierarchy_performance_TTT", 'wb') as out_file:
+    with open("hierarchy_performance_across_turnover_{0}".format(file_index), 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("superior_performance_TTT", 'wb') as out_file:
+    with open("superior_performance_across_turnover_{0}".format(file_index), 'wb') as out_file:
         pickle.dump(superior_performance_across_para, out_file)
-    with open("hierarchy_diversity_TTT", 'wb') as out_file:
+    with open("hierarchy_diversity_across_turnover_{0}".format(file_index), 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("hierarchy_variance_TTT", 'wb') as out_file:
+    with open("hierarchy_variance_across_turnover_{0}".format(file_index), 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
 
     # save the with-time data
-    with open("hierarchy_performance_across_time_TTT", 'wb') as out_file:
-        pickle.dump(performance_across_para_time, out_file)
-    with open("superior_performance_across_time_TTT", 'wb') as out_file:
-        pickle.dump(superior_performance_across_para_time, out_file)
-    with open("hierarchy_diversity_across_time_TTT", 'wb') as out_file:
-        pickle.dump(diversity_across_para_time, out_file)
-    with open("hierarchy_variance_across_time_TTT", 'wb') as out_file:
-        pickle.dump(variance_across_para_time, out_file)
+    # with open("hierarchy_performance_across_time_TTT", 'wb') as out_file:
+    #     pickle.dump(performance_across_para_time, out_file)
+    # with open("superior_performance_across_time_TTT", 'wb') as out_file:
+    #     pickle.dump(superior_performance_across_para_time, out_file)
+    # with open("hierarchy_diversity_across_time_TTT", 'wb') as out_file:
+    #     pickle.dump(diversity_across_para_time, out_file)
+    # with open("hierarchy_variance_across_time_TTT", 'wb') as out_file:
+    #     pickle.dump(variance_across_para_time, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))

@@ -1,10 +1,11 @@
 #!/bin/bash
-#SBATCH --time=3-00:00:00
-#SBATCH --job-name=Exp_a
+#SBATCH --time=03:00:00
+#SBATCH --job-name=Autonomy
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=300gb
-#SBATCH --partition=long
-#SBATCH --cpus-per-task=100
+#SBATCH --mem=100gb
+#SBATCH --partition=normal
+#SBATCH --cpus-per-task=50
 #SBATCH --nodes=1
+#SBATCH --constraint="select[1] && (xcnf[0-21])"
 srun python autonomy_run.py

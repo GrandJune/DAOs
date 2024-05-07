@@ -14,6 +14,7 @@ import time
 from multiprocessing import Pool
 from multiprocessing import Semaphore
 import pickle
+import os
 import math
 
 
@@ -44,7 +45,7 @@ if __name__ == '__main__':
     group_size = 7
     n = 350
     lr = 0.3
-    repetition = 200
+    repetition = 50
     concurrency = 50
     search_loop = 399
     # DVs
@@ -114,14 +115,24 @@ if __name__ == '__main__':
         # diversity_across_para_time.append(diversity_across_time)
         # variance_across_para_time.append(variance_across_time)
 
+    delay = np.random.uniform(1, 6)
+    time.sleep(delay)
+
+    file_index = 1
+    performance_file_name = f"dao_performance_across_experimentation_{file_index}"
+
+    while os.path.exists(performance_file_name):
+        file_index += 1
+        performance_file_name = f"dao_performance_across_experimentation_{file_index}"
+
     # save the without-time data (ready for figure)
-    with open("dao_performance_across_experimentation_2", 'wb') as out_file:
+    with open("dao_performance_across_experimentation_{0}".format(file_index), 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("consensus_performance_across_experimentation_2", 'wb') as out_file:
+    with open("consensus_performance_across_experimentation_{0}".format(file_index), 'wb') as out_file:
         pickle.dump(consensus_performance_across_para, out_file)
-    with open("dao_diversity_across_experimentation_2", 'wb') as out_file:
+    with open("dao_diversity_across_experimentation_{0}".format(file_index), 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("dao_variance_across_experimentation_2", 'wb') as out_file:
+    with open("dao_variance_across_experimentation_{0}".format(file_index), 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
 
     # save the with-time data
