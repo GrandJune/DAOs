@@ -29,9 +29,6 @@ def func(m=None, n=None, group_size=None, lr=None, experimentation_rate=None,
             for team in dao.teams:
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
-        for team in dao.teams:
-            for individual in team.individuals:
-                individual.payoff = reality.get_payoff(belief=individual.belief)
         # Experimentation
         dao.experimentation(experimentation_rate=experimentation_rate)
         dao.search(threshold_ratio=0.5)
@@ -118,13 +115,13 @@ if __name__ == '__main__':
         # variance_across_para_time.append(variance_across_time)
 
     # save the without-time data (ready for figure)
-    with open("dao_performance_across_experimentation_1", 'wb') as out_file:
+    with open("dao_performance_across_experimentation_2", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("consensus_performance_across_experimentation_1", 'wb') as out_file:
+    with open("consensus_performance_across_experimentation_2", 'wb') as out_file:
         pickle.dump(consensus_performance_across_para, out_file)
-    with open("dao_diversity_across_experimentation_1", 'wb') as out_file:
+    with open("dao_diversity_across_experimentation_2", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("dao_variance_across_experimentation_1", 'wb') as out_file:
+    with open("dao_variance_across_experimentation_2", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
 
     # save the with-time data
