@@ -122,7 +122,7 @@ if __name__ == '__main__':
 
     while os.path.exists(performance_file_name):
         file_index += 1
-        performance_file_name = f"dao_performance_across_experimentation_{file_index}"
+        performance_file_name = f"dao_performance_across_turnover_{file_index}"
 
     # save the without-time data (ready for figure)
     with open("dao_performance_across_turnover_{0}".format(file_index), 'wb') as out_file:
