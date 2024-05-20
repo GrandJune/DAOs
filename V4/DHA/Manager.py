@@ -18,8 +18,8 @@ class Manager:
     def turnover(self, turnover_rate=None):
         for index in range(self.policy_num):
             if np.random.uniform(0, 1) < turnover_rate:
-                self.policy *= -1
-        self.payoff = self.reality.get_policy_payoff(policy=self.policy)
+                self.policy = np.random.choice([-1, 0, 1], self.policy_num, p=[1 / 3, 1 / 3, 1 / 3])
+                self.payoff = self.reality.get_policy_payoff(policy=self.policy)
 
     def experimentation(self, experimentation_rate=None):
         for index in range(self.policy_num):
