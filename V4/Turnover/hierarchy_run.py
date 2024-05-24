@@ -25,8 +25,8 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
     hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size, p1=0.1, p2=0.9)
     for period in range(search_loop):
         # Turbulence
-        if (period + 1) % 50 == 0:
-            reality.change(reality_change_rate=0.15)
+        if (period + 1) % 100 == 0:
+            reality.change(reality_change_rate=0.1)
             # update the individual payoff
             for team in hierarchy.teams:
                 for individual in team.individuals:
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     lr = 0.3
     repetition = 50
     concurrency = 50
-    search_loop = 498
+    search_loop = 499
     # DVs
     performance_across_para = []
     superior_performance_across_para = []
