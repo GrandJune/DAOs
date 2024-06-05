@@ -42,13 +42,13 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    turnover_rate_list = [0.5, 0.6, 0.7, 0.8, 0.9]
+    turnover_rate_list = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     group_size = 7
     n = 350
     lr = 0.3
-    repetition = 50
-    concurrency = 50
-    search_loop = 300
+    repetition = 400
+    concurrency = 100
+    search_loop = 400
     # DVs
     # after taking an average across repetitions
     performance_across_para = []
@@ -107,35 +107,52 @@ if __name__ == '__main__':
         # performance_across_para_time.append(performance_across_time)
         # diversity_across_para_time.append(diversity_across_time)
         # variance_across_para_time.append(variance_across_time)
-    delay = np.random.uniform(1, 6)
+
+    # small tasks
+    # =============================
+    # delay = np.random.uniform(1, 6)
+    # time.sleep(delay)
+    # performance_file_name = "autonomy_performance_across_turnover_1"
+    #
+    # if os.path.exists(performance_file_name):
+    #     with open("autonomy_performance_across_turnover_1", 'rb') as infile:
+    #         prior_performance = pickle.load(infile)
+    #     with open("autonomy_diversity_across_turnover_1", 'rb') as infile:
+    #         prior_diversity = pickle.load(infile)
+    #     with open("autonomy_variance_across_turnover_1", 'rb') as infile:
+    #         prior_variance = pickle.load(infile)
+    #     performance_final = [(each_1 + each_2) / 2 for each_1, each_2 in zip(prior_performance, performance_across_para)]
+    #     diversity_final = [(each_1 + each_2) / 2 for each_1, each_2 in zip(prior_diversity, diversity_across_para)]
+    #     variance_final = [(each_1 + each_2) / 2 for each_1, each_2 in zip(prior_variance, variance_across_para)]
+    #     with open("autonomy_performance_across_turnover_1", 'wb') as out_file:
+    #         pickle.dump(performance_final, out_file)
+    #     with open("autonomy_diversity_across_turnover_1", 'wb') as out_file:
+    #         pickle.dump(diversity_final, out_file)
+    #     with open("autonomy_variance_across_turnover_1", 'wb') as out_file:
+    #         pickle.dump(variance_final, out_file)
+    #
+    # else:
+    #     with open("autonomy_performance_across_turnover_1", 'wb') as out_file:
+    #         pickle.dump(performance_across_para, out_file)
+    #     with open("autonomy_diversity_across_turnover_1", 'wb') as out_file:
+    #         pickle.dump(diversity_across_para, out_file)
+    #     with open("autonomy_variance_across_turnover_1", 'wb') as out_file:
+    #         pickle.dump(variance_across_para, out_file)
+    # =============================
+    delay = np.random.uniform(10, 60)
     time.sleep(delay)
-    performance_file_name = "autonomy_performance_across_turnover_2"
+    index = 1
+    performance_file_name = "autonomy_performance_across_turnover_{0}".format(index)
+    while os.path.exists(performance_file_name):
+        index += 1
+        performance_file_name = "autonomy_performance_across_turnover_{0}".format(index)
 
-    if os.path.exists(performance_file_name):
-        with open("autonomy_performance_across_turnover_2", 'rb') as infile:
-            prior_performance = pickle.load(infile)
-        with open("autonomy_diversity_across_turnover_2", 'rb') as infile:
-            prior_diversity = pickle.load(infile)
-        with open("autonomy_variance_across_turnover_2", 'rb') as infile:
-            prior_variance = pickle.load(infile)
-        performance_final = [(each_1 + each_2) / 2 for each_1, each_2 in
-                             zip(prior_performance, performance_across_para)]
-        diversity_final = [(each_1 + each_2) / 2 for each_1, each_2 in zip(prior_diversity, diversity_across_para)]
-        variance_final = [(each_1 + each_2) / 2 for each_1, each_2 in zip(prior_variance, variance_across_para)]
-        with open("autonomy_performance_across_turnover_2", 'wb') as out_file:
-            pickle.dump(performance_final, out_file)
-        with open("autonomy_diversity_across_turnover_2", 'wb') as out_file:
-            pickle.dump(diversity_final, out_file)
-        with open("autonomy_variance_across_turnover_2", 'wb') as out_file:
-            pickle.dump(variance_final, out_file)
-
-    else:
-        with open("autonomy_performance_across_turnover_2", 'wb') as out_file:
-            pickle.dump(performance_across_para, out_file)
-        with open("autonomy_diversity_across_turnover_2", 'wb') as out_file:
-            pickle.dump(diversity_across_para, out_file)
-        with open("autonomy_variance_across_turnover_2", 'wb') as out_file:
-            pickle.dump(variance_across_para, out_file)
+    with open("autonomy_performance_across_turnover_{0}".format(index), 'wb') as out_file:
+        pickle.dump(performance_across_para, out_file)
+    with open("autonomy_diversity_across_turnover_{0}".format(index), 'wb') as out_file:
+        pickle.dump(diversity_across_para, out_file)
+    with open("autonomy_variance_across_turnover_{0}".format(index), 'wb') as out_file:
+        pickle.dump(variance_across_para, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
