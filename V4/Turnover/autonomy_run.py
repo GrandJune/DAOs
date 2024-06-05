@@ -46,8 +46,8 @@ if __name__ == '__main__':
     group_size = 7
     n = 350
     lr = 0.3
-    repetition = 400
-    concurrency = 100
+    repetition = 50
+    concurrency = 50
     search_loop = 400
     # DVs
     # after taking an average across repetitions

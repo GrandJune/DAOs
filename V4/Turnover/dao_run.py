@@ -48,7 +48,7 @@ if __name__ == '__main__':
     lr = 0.3
     repetition = 50
     concurrency = 50
-    search_loop = 300
+    search_loop = 400
     # DVs
     performance_across_para = []
     consensus_performance_across_para = []
@@ -116,35 +116,53 @@ if __name__ == '__main__':
         # consensus_performance_across_para_time.append(consensus_performance_across_time)
         # diversity_across_para_time.append(diversity_across_time)
         # variance_across_para_time.append(variance_across_time)
-    delay = np.random.uniform(1, 6)
+
+    # small tasks
+    # =============================
+    # delay = np.random.uniform(1, 6)
+    # time.sleep(delay)
+    # performance_file_name = "dao_performance_across_turnover_1"
+    #
+    # if os.path.exists(performance_file_name):
+    #     with open("dao_performance_across_turnover_1", 'rb') as infile:
+    #         prior_performance = pickle.load(infile)
+    #     with open("dao_diversity_across_turnover_1", 'rb') as infile:
+    #         prior_diversity = pickle.load(infile)
+    #     with open("dao_variance_across_turnover_1", 'rb') as infile:
+    #         prior_variance = pickle.load(infile)
+    #     performance_final = [(each_1 + each_2) / 2 for each_1, each_2 in
+    #                          zip(prior_performance, performance_across_para)]
+    #     diversity_final = [(each_1 + each_2) / 2 for each_1, each_2 in zip(prior_diversity, diversity_across_para)]
+    #     variance_final = [(each_1 + each_2) / 2 for each_1, each_2 in zip(prior_variance, variance_across_para)]
+    #     with open("dao_performance_across_turnover_1", 'wb') as out_file:
+    #         pickle.dump(performance_final, out_file)
+    #     with open("dao_diversity_across_turnover_1", 'wb') as out_file:
+    #         pickle.dump(diversity_final, out_file)
+    #     with open("dao_variance_across_turnover_1", 'wb') as out_file:
+    #         pickle.dump(variance_final, out_file)
+    #
+    # else:
+    #     with open("dao_performance_across_turnover_1", 'wb') as out_file:
+    #         pickle.dump(performance_across_para, out_file)
+    #     with open("dao_diversity_across_turnover_1", 'wb') as out_file:
+    #         pickle.dump(diversity_across_para, out_file)
+    #     with open("dao_variance_across_turnover_1", 'wb') as out_file:
+    #         pickle.dump(variance_across_para, out_file)
+    # ==============================
+    delay = np.random.uniform(10, 60)
     time.sleep(delay)
-    performance_file_name = "dao_performance_across_turnover_1"
+    index = 1
+    performance_file_name = "dao_performance_across_turnover_{0}".format(index)
+    while os.path.exists(performance_file_name):
+        index += 1
+        performance_file_name = "dao_performance_across_turnover_{0}".format(index)
 
-    if os.path.exists(performance_file_name):
-        with open("dao_performance_across_turnover_1", 'rb') as infile:
-            prior_performance = pickle.load(infile)
-        with open("dao_diversity_across_turnover_1", 'rb') as infile:
-            prior_diversity = pickle.load(infile)
-        with open("dao_variance_across_turnover_1", 'rb') as infile:
-            prior_variance = pickle.load(infile)
-        performance_final = [(each_1 + each_2) / 2 for each_1, each_2 in
-                             zip(prior_performance, performance_across_para)]
-        diversity_final = [(each_1 + each_2) / 2 for each_1, each_2 in zip(prior_diversity, diversity_across_para)]
-        variance_final = [(each_1 + each_2) / 2 for each_1, each_2 in zip(prior_variance, variance_across_para)]
-        with open("dao_performance_across_turnover_1", 'wb') as out_file:
-            pickle.dump(performance_final, out_file)
-        with open("dao_diversity_across_turnover_1", 'wb') as out_file:
-            pickle.dump(diversity_final, out_file)
-        with open("dao_variance_across_turnover_1", 'wb') as out_file:
-            pickle.dump(variance_final, out_file)
-
-    else:
-        with open("dao_performance_across_turnover_1", 'wb') as out_file:
-            pickle.dump(performance_across_para, out_file)
-        with open("dao_diversity_across_turnover_1", 'wb') as out_file:
-            pickle.dump(diversity_across_para, out_file)
-        with open("dao_variance_across_turnover_1", 'wb') as out_file:
-            pickle.dump(variance_across_para, out_file)
+    with open("dao_performance_across_turnover_{0}".format(index), 'wb') as out_file:
+        pickle.dump(performance_across_para, out_file)
+    with open("dao_diversity_across_turnover_{0}".format(index), 'wb') as out_file:
+        pickle.dump(diversity_across_para, out_file)
+    with open("dao_variance_across_turnover_{0}".format(index), 'wb') as out_file:
+        pickle.dump(variance_across_para, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
