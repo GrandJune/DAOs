@@ -42,13 +42,13 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    turnover_rate_list = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    turnover_rate_list = [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4]
     group_size = 7
     n = 350
     lr = 0.3
     repetition = 50
     concurrency = 50
-    search_loop = 400
+    search_loop = 300
     # DVs
     # after taking an average across repetitions
     performance_across_para = []
