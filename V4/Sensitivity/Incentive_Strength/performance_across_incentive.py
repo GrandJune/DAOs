@@ -87,6 +87,9 @@ def func(m=None, n=None, group_size=None, lr=None, incentive=None, incentive_str
 if __name__ == '__main__':
     import os
     t0 = time.time()
+    print("xxxx")
+    x, y = 1, 1
+    print(x + y)
     m = 90
     n = 350
     lr = 0.3
@@ -124,7 +127,7 @@ if __name__ == '__main__':
 
         delay = np.random.uniform(1, 60)
         time.sleep(delay)
-        index = 1
+        index = 5
         performance_file_name = r"dao_performance_across_strength_incentive_{0}_{1}".format(incentive, index)
         while os.path.exists(performance_file_name):
             index += 1

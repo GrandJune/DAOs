@@ -1,11 +1,10 @@
 #!/bin/bash
 #SBATCH --time=3-00:00:00
-#SBATCH --job-name=strength
+#SBATCH --job-name=performance
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=100gb
+#SBATCH --mem=90gb
 #SBATCH --partition=long
 #SBATCH --cpus-per-task=50
 #SBATCH --nodes=1
-#SBATCH --exclude=xcne[0-7]
-python dao_run_across_incentive_strength.py
+python performance_across_incentive.py
