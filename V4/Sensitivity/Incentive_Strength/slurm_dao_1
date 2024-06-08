@@ -1,11 +1,10 @@
 #!/bin/bash
 #SBATCH --time=03:00:00
-#SBATCH --job-name=tth
+#SBATCH --job-name=Incentive
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=100gb
+#SBATCH --mem=70gb
 #SBATCH --partition=normal
 #SBATCH --cpus-per-task=50
 #SBATCH --nodes=1
-#SBATCH --exclude=xcne[0-7]
-srun python hierarchy_keep_managers_run.py
+python dao_run_1.py
