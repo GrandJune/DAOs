@@ -59,7 +59,7 @@ def func(m=None, n=None, group_size=None, lr=None, incentive=None, incentive_str
                 else:
                     new_consensus.append(0)
             # Once there is a change in consensus, reward the contributor
-            for old_bit, new_bit, index in zip(dao.consensus, new_consensus, m // 3):
+            for old_bit, new_bit, index in zip(dao.consensus, new_consensus, range(m // 3)):
                 if old_bit != new_bit:
                     for individual in individuals:
                         if (individual.policy[index] == new_bit) and (
