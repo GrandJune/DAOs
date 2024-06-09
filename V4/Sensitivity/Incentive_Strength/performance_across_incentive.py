@@ -87,14 +87,11 @@ def func(m=None, n=None, group_size=None, lr=None, incentive=None, incentive_str
 if __name__ == '__main__':
     import os
     t0 = time.time()
-    print("xxxx")
-    x, y = 1, 1
-    print(x + y)
     m = 90
     n = 350
     lr = 0.3
     repetition = 50
-    incentive_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    incentive_list = [0.5, 0.6, 0.7, 0.8, 0.9]
     active_rate = 0.8
     incentive_strength_list = [1, 5, 10, 20, 40]
     search_loop = 400

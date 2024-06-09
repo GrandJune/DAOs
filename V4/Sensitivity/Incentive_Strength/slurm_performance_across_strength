@@ -1,12 +1,11 @@
 #!/bin/bash
 #SBATCH --time=1-00:00:00
-#SBATCH --job-name=performance
+#SBATCH --job-name=short_task
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --nodes=1
 #SBATCH --mem=90gb
-#SBATCH --partition=gpu-long
-#SBATCH --nodelist=xgpg7
 #SBATCH --cpus-per-task=50
+#SBATCH --nodes=1
+#SBATCH --exclude=xcne[0-7]
 
 python performance_across_incentive.py
