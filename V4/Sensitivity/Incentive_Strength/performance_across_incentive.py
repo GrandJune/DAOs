@@ -91,7 +91,7 @@ if __name__ == '__main__':
     n = 350
     lr = 0.3
     repetition = 50
-    incentive_list = [0.5, 0.6, 0.7, 0.8, 0.9]
+    incentive_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     active_rate = 0.8
     incentive_strength_list = [1, 5, 10, 20, 40]
     search_loop = 400
