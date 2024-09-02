@@ -38,7 +38,7 @@ if __name__ == '__main__':
     n = 350
     repetition = 100
     concurrency = 50
-    search_loop = 1000
+    search_loop = 999
 
     sema = Semaphore(concurrency)
     manager = mp.Manager()
