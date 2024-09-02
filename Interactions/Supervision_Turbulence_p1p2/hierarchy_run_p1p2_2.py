@@ -48,7 +48,7 @@ if __name__ == '__main__':
     search_loop = 999
 
     p1_list = [0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90]
-    p2_list = [0.30, 0.40]
+    p2_list = [0.20]
     # DVs
     performance_across_p1p2 = []
     for p1 in p1_list:  # learning from code

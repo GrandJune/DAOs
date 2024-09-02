@@ -48,7 +48,7 @@ if __name__ == '__main__':
     search_loop = 999
 
     p1_list = [0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90]
-    p2_list = [0.40]
+    p2_list = [0.80]
     # DVs
     performance_across_p1p2 = []
     for p1 in p1_list:  # learning from code
@@ -73,10 +73,10 @@ if __name__ == '__main__':
         performance_across_p1p2.append(performance_across_p2)
 
     index = 1
-    while os.path.exists("hierarchy_performance_4_{0}".format(index)):
+    while os.path.exists("hierarchy_performance_8_{0}".format(index)):
         index += 1
 
-    with open("hierarchy_performance_4_{0}".format(index), 'wb') as out_file:
+    with open("hierarchy_performance_8_{0}".format(index), 'wb') as out_file:
         pickle.dump(performance_across_p1p2, out_file)
 
     t1 = time.time()
