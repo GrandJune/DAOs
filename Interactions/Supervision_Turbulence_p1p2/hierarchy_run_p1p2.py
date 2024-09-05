@@ -12,6 +12,7 @@ import time
 from multiprocessing import Semaphore
 import pickle
 import os
+import itertools
 
 
 def func(m=None, n=None, group_size=None, lr=None, p1=None, p2=None,
@@ -48,36 +49,42 @@ if __name__ == '__main__':
     search_loop = 999
 
     p1_list = [0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90]
-    p2_list = [0.40]
+    p2_list = [0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90]
+    combinations = list(itertools.product(p1_list, p2_list))  # 81; 81/3=27
+    time.sleep(np.random.uniform(low=1, high=9))
+    task_index = 0
+    while task_index < 27:
+        with open("task_info", 'rb') as infile:
+            task_info = pickle.load(infile)
+        if task_info[task_index] < 10:
+            task_info[task_index] += 1
+            break
+        else:
+            task_index += 1
+
+    run_combinations = combinations[3 * task_index: 3 * (task_index + 1)]
     # DVs
-    performance_across_p1p2 = []
-    for p1 in p1_list:  # learning from code
-        performance_across_p2 = []
-        for p2 in p2_list:  # learning from individuals
-            sema = Semaphore(concurrency)
-            manager = mp.Manager()
-            return_dict = manager.dict()
-            jobs = []
-            for loop in range(repetition):
-                sema.acquire()
-                p = mp.Process(target=func,
-                               args=(m, n, group_size, lr, p1, p2, search_loop, loop, return_dict, sema))
-                jobs.append(p)
-                p.start()
-            for proc in jobs:
-                proc.join()
-            results = return_dict.values()  # Don't need dict index, since it is repetition.
-            # remove the time dimension, only keep the last value
-            performance_across_repeat = [result[0] for result in results]
-            performance_across_p2.append(sum(performance_across_repeat) / len(performance_across_repeat))
-        performance_across_p1p2.append(performance_across_p2)
-
-    index = 1
-    while os.path.exists("hierarchy_performance_4_{0}".format(index)):
-        index += 1
-
-    with open("hierarchy_performance_4_{0}".format(index), 'wb') as out_file:
-        pickle.dump(performance_across_p1p2, out_file)
+    for p1, p2 in run_combinations:
+        sema = Semaphore(concurrency)
+        manager = mp.Manager()
+        return_dict = manager.dict()
+        jobs = []
+        for loop in range(repetition):
+            sema.acquire()
+            p = mp.Process(target=func,
+                           args=(m, n, group_size, lr, p1, p2, search_loop, loop, return_dict, sema))
+            jobs.append(p)
+            p.start()
+        for proc in jobs:
+            proc.join()
+        results = return_dict.values()  # Don't need dict index, since it is repetition.
+        results = [result[0] for result in results]
+        if os.path.exists("hierarchy_performance_p1_{0}_p2_{1}".format(p1, p2)):
+            with open("hierarchy_performance_p1_{0}_p2_{1}".format(p1, p2), 'rb') as infile:
+                prior_results = pickle.load(infile)
+                results += prior_results
+        with open("hierarchy_performance_p1_{0}_p2_{1}".format(p1, p2), 'wb') as out_file:
+            pickle.dump(results, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))

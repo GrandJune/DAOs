@@ -8,4 +8,4 @@
 #SBATCH --cpus-per-task=50
 #SBATCH --nodes=1
 #SBATCH --exclude=xcng[0-1]
-srun python hierarchy_run_p1p2_9.py
+srun python hierarchy_run_p1p2.py
