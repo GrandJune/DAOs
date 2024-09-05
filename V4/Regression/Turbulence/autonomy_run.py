@@ -26,7 +26,9 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None, turbule
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
         autonomy.search()
-    return_dict[loop] = [autonomy.performance_across_time[-1], autonomy.diversity_across_time[-1], turbulence_freq, turbulence_level, lr]
+    return_dict[loop] = [autonomy.performance_across_time[-1], autonomy.performance_across_time[-2],
+                         autonomy.performance_across_time[-3], autonomy.performance_across_time[-4],
+                         autonomy.performance_across_time[-5], turbulence_freq, turbulence_level, lr]
     sema.release()
 
 
@@ -38,7 +40,7 @@ if __name__ == '__main__':
     n = 350
     repetition = 100
     concurrency = 50
-    search_loop = 999
+    search_loop = 1000
 
     sema = Semaphore(concurrency)
     manager = mp.Manager()
@@ -46,8 +48,8 @@ if __name__ == '__main__':
     jobs = []
     for loop in range(repetition):
         lr = np.random.uniform(0, 1)
-        turbulence_freq = np.random.uniform(20, 100)
-        turbulence_level = np.random.uniform(0, 0.2)
+        turbulence_freq = np.random.choice([20, 40, 60, 80, 100])
+        turbulence_level = np.random.choice([0.10, 0.12, 0.14, 0.16, 0.18, 0.20])
         sema.acquire()
         p = mp.Process(target=func,
                        args=(m, n, group_size, lr, turbulence_freq, turbulence_level, search_loop, loop, return_dict, sema))
