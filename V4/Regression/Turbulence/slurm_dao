@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH --time=03:00:00
-#SBATCH --job-name=Tb_D
+#SBATCH --job-name=turbulence_2
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=100gb
+#SBATCH --mem=110gb
 #SBATCH --partition=normal
-#SBATCH --cpus-per-task=50
+#SBATCH --cpus-per-task=40
 #SBATCH --nodes=1
 #SBATCH --exclude=xcng[0-1]
 srun python dao_run.py

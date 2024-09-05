@@ -38,8 +38,8 @@ if __name__ == '__main__':
     m = 90
     group_size = 7
     n = 350
-    repetition = 100
-    concurrency = 50
+    repetition = 80
+    concurrency = 40
     search_loop = 1000
 
     sema = Semaphore(concurrency)
