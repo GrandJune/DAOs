@@ -46,12 +46,13 @@ if __name__ == '__main__':
     lr = 0.3
     repetition = 50
     concurrency = 50
-    search_loop = 999
-
+    search_loop = 1000
+    # Full spectrum of parameter space
     p1_list = [0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90]
     p2_list = [0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90]
     combinations = list(itertools.product(p1_list, p2_list))  # 81; 81/3=27
     time.sleep(np.random.uniform(low=1, high=9))
+    # Slide scale
     task_index = 0
     with open("task_info", 'rb') as infile:
         task_info = pickle.load(infile)
@@ -63,7 +64,7 @@ if __name__ == '__main__':
             break
         else:
             task_index += 1
-
+    # Automatic segmentation
     run_combinations = combinations[3 * task_index: 3 * (task_index + 1)]
     # DVs
     for p1, p2 in run_combinations:
@@ -81,6 +82,7 @@ if __name__ == '__main__':
             proc.join()
         results = return_dict.values()  # Don't need dict index, since it is repetition.
         results = [result[0] for result in results]
+        # Automatic integration of results
         if os.path.exists("hierarchy_performance_p1_{0}_p2_{1}".format(p1, p2)):
             with open("hierarchy_performance_p1_{0}_p2_{1}".format(p1, p2), 'rb') as infile:
                 prior_results = pickle.load(infile)
