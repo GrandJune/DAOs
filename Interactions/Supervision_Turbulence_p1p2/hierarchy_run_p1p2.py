@@ -53,11 +53,13 @@ if __name__ == '__main__':
     combinations = list(itertools.product(p1_list, p2_list))  # 81; 81/3=27
     time.sleep(np.random.uniform(low=1, high=9))
     task_index = 0
+    with open("task_info", 'rb') as infile:
+        task_info = pickle.load(infile)
     while task_index < 27:
-        with open("task_info", 'rb') as infile:
-            task_info = pickle.load(infile)
         if task_info[task_index] < 10:
             task_info[task_index] += 1
+            with open("task_info", 'wb') as outfile:
+                pickle.dump(task_info, outfile)
             break
         else:
             task_index += 1
