@@ -66,7 +66,7 @@ if __name__ == '__main__':
             task_index += 1
     # Automatic segmentation
     run_combinations = combinations[3 * task_index: 3 * (task_index + 1)]
-    print("p1: ", run_combinations[0], "p2: ", run_combinations[1])
+    # print("p1: ", run_combinations[0], "p2: ", run_combinations[1])
     # DVs
     for p1, p2 in run_combinations:
         sema = Semaphore(concurrency)
