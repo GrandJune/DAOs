@@ -97,8 +97,8 @@
       <sourceFolder url="file://$MODULE_DIR$/Interactions/Supervision_Turbulence_p1p2" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Regression/Threshold" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Regression/Threshold_Asymmetry" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4/Regression/Threshold_Incentive" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Regression/Turbulence" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Regression/Threshold_Incentive_fixed" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Incentive_Strength" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />
@@ -107,7 +107,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.pytest_cache" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.8 (base) (2)" jdkType="Python SDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">

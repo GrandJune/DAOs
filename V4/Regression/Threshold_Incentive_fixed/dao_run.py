@@ -14,11 +14,27 @@ import pickle
 import os
 
 
-def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None, turbulence_freq=None, turbulence_level=None,
+def func(m=None, n=None, group_size=None, lr=None, incentive=None, active_rate=None,
+         threshold_ratio=None, turbulence_freq=None, turbulence_level=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
+    # Initialized with equal token
+    for team in dao.teams:
+        for individual in team.individuals:
+            individual.token = 1
+    if incentive == 0:
+        for _ in range(search_loop):
+            dao.search(threshold_ratio=0.5)
+    else:
+        for _ in range(search_loop):
+            dao.incentive_search(threshold_ratio=0.5, incentive=incentive, inactive_rate=inactive_rate)
+            # update the real participant rate
+            active_count = 0
+            for team in dao.teams:
+                active_count += sum([individual.active for individual in team.individuals])
+            real_active_rate = active_count / n
     for period in range(search_loop):
         if (period + 1) % turbulence_freq == 0:
             reality.change(reality_change_rate=turbulence_level)

@@ -14,20 +14,32 @@ import pickle
 import os
 
 
-def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None, turbulence_freq=None, turbulence_level=None,
+def func(m=None, n=None, group_size=None, lr=None, asymmetry=None,
+         threshold_ratio=None, turbulence_freq=None, turbulence_level=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
+    mode = 1
     reality = Reality(m=m)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
+    # pre-assign the token according to the asymmetry degree
+    if asymmetry == 0:
+        for team in dao.teams:
+            for individual in team.individuals:
+                individual.token = 1
+    else:
+        for team in dao.teams:
+            for individual in team.individuals:
+                individual.token = (np.random.pareto(a=asymmetry) + 1) * mode
+
     for period in range(search_loop):
         if (period + 1) % turbulence_freq == 0:
             reality.change(reality_change_rate=turbulence_level)
             for team in dao.teams:
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
-        dao.search(threshold_ratio=threshold_ratio, token=False)
+        dao.search(threshold_ratio=threshold_ratio, token=True)
     return_dict[loop] = [dao.performance_across_time[-1], dao.performance_across_time[-2], dao.performance_across_time[-3],
-                         dao.performance_across_time[-4], dao.performance_across_time[-5], threshold_ratio,
+                         dao.performance_across_time[-4], dao.performance_across_time[-5], asymmetry, threshold_ratio,
                          turbulence_freq, turbulence_level, lr]
     sema.release()
 
@@ -41,6 +53,7 @@ if __name__ == '__main__':
     repetition = 50
     search_loop = 300
     threshold_ratio_list = np.arange(0.40, 0.71, 0.01)  # 31 cases
+    asymmetry_list = [0, 1, 2, 3]
     group_size = 7  # the smallest group size in Fang's model: 7
 
     concurrency = 50
@@ -49,13 +62,15 @@ if __name__ == '__main__':
     return_dict = manager.dict()
     jobs = []
     for loop in range(repetition):
+        asymmetry = np.random.choice(asymmetry_list)
         threshold_ratio = np.random.choice(threshold_ratio_list)
         lr = np.random.uniform(0, 1)
         turbulence_freq = np.random.choice([20, 40, 60, 80, 100])
         turbulence_level = np.random.choice([0.10, 0.12, 0.14, 0.16, 0.18, 0.20])
         sema.acquire()
         p = mp.Process(target=func,
-                       args=(m, n, group_size, lr, threshold_ratio, turbulence_freq, turbulence_level, search_loop, loop, return_dict, sema))
+                       args=(m, n, group_size, lr, asymmetry, threshold_ratio, turbulence_freq,
+                             turbulence_level, search_loop, loop, return_dict, sema))
         jobs.append(p)
         p.start()
     for proc in jobs:

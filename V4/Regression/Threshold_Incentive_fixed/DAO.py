@@ -92,7 +92,7 @@ class DAO:
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
 
-    def incentive_search(self, threshold_ratio=None, incentive=1, inactive_rate=None):
+    def incentive_search(self, threshold_ratio=None, incentive=1, active_rate=None):
         new_consensus = []
         individuals = []
         for team in self.teams:
@@ -100,13 +100,13 @@ class DAO:
         for individual in individuals:
             individual.policy = self.reality.belief_2_policy(belief=individual.belief)
         for individual in individuals:
-            if np.random.uniform(0, 1) < inactive_rate:  # if inactive, e.g., 0.2
-                if np.random.uniform(0, 1) < incentive:   # if incentivized, e.g., 0.8
+            if np.random.uniform(0, 1) < active_rate:  # if active rate, e.g., 0.8
+                individual.active = 1
+            else:
+                if np.random.uniform(0, 1) < incentive:  # if incentive into vote, e.g., 0.8
                     individual.active = 1
                 else:
                     individual.active = 0
-            else:
-                individual.active = 1
         threshold = threshold_ratio * sum([individual.token for individual in individuals])
         # consider the active status
         for i in range(self.policy_num):
@@ -119,6 +119,12 @@ class DAO:
                 new_consensus.append(-1)
             else:
                 new_consensus.append(0)
+        # Once there is a change in consensus, reward the contributor
+        for old_bit, new_bit, index in zip(self.consensus, new_consensus, range(self.policy_num)):
+            if old_bit != new_bit:
+                for individual in individuals:
+                    if (individual.policy[index] == new_bit) and (individual.active == 1):  # individual active and vote correctly
+                        individual.token += incentive
         self.consensus = new_consensus
         self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
         # 1) Generate and 2) adjust the superior majority view and 3) learn from it
