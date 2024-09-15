@@ -7,4 +7,5 @@
 #SBATCH --partition=gpu-long
 #SBATCH --cpus-per-task=50
 #SBATCH --nodes=1
+#SBATCH --exclude=xcng[0-1],xcne[0-6]
 python dao_run.py

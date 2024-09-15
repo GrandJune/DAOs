@@ -24,39 +24,22 @@ def func(m=None, n=None, group_size=None, lr=None, incentive=None, active_rate=N
     for team in dao.teams:
         for individual in team.individuals:
             individual.token = 1
-    if incentive == 0:
-        for period in range(search_loop):
-            if (period + 1) % turbulence_freq == 0:
-                reality.change(reality_change_rate=turbulence_level)
-                for team in dao.teams:
-                    for individual in team.individuals:
-                        individual.payoff = reality.get_payoff(belief=individual.belief)
-            dao.search(threshold_ratio=threshold_ratio)
-    else:
-        # fix the participantion rate in the beginning
+    real_active_rate_list = []
+    for period in range(search_loop):
+        if (period + 1) % turbulence_freq == 0:
+            reality.change(reality_change_rate=turbulence_level)
+            for team in dao.teams:
+                for individual in team.individuals:
+                    individual.payoff = reality.get_payoff(belief=individual.belief)
+        dao.incentive_search(threshold_ratio=threshold_ratio, incentive=incentive)
+        # update the real participant rate dynamcis
+        active_count = 0
         for team in dao.teams:
-            for individual in team.individuals:
-                if np.random.uniform(0, 1) < active_rate:  # if active rate, e.g., 0.8
-                    individual.active = 1
-                else:
-                    if np.random.uniform(0, 1) < incentive:  # if incentive into vote, e.g., 0.8
-                        individual.active = 1
-                    else:
-                        individual.active = 0
+            active_count += sum([individual.active for individual in team.individuals])
+        real_active_rate_ = active_count / n
+        real_active_rate_list.append(real_active_rate_)
 
-        for period in range(search_loop):
-            if (period + 1) % turbulence_freq == 0:
-                reality.change(reality_change_rate=turbulence_level)
-                for team in dao.teams:
-                    for individual in team.individuals:
-                        individual.payoff = reality.get_payoff(belief=individual.belief)
-            dao.incentive_search(threshold_ratio=threshold_ratio, incentive=incentive)
-
-    # update the real participant rate
-    active_count = 0
-    for team in dao.teams:
-        active_count += sum([individual.active for individual in team.individuals])
-    real_active_rate = active_count / n
+    real_active_rate = sum(real_active_rate_list) / len(real_active_rate_list)
     return_dict[loop] = [dao.performance_across_time[-1], dao.performance_across_time[-2], dao.performance_across_time[-3],
                          dao.performance_across_time[-4], dao.performance_across_time[-5], incentive, active_rate, real_active_rate,
                          threshold_ratio, turbulence_freq, turbulence_level, lr]
