@@ -30,11 +30,6 @@ def func(m=None, n=None, group_size=None, lr=None, incentive=None, active_rate=N
     else:
         for _ in range(search_loop):
             dao.incentive_search(threshold_ratio=0.5, incentive=incentive, active_rate=active_rate)
-            # update the real participant rate
-            active_count = 0
-            for team in dao.teams:
-                active_count += sum([individual.active for individual in team.individuals])
-            real_active_rate = active_count / n
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
     sema.release()

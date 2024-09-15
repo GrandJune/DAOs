@@ -25,26 +25,41 @@ def func(m=None, n=None, group_size=None, lr=None, incentive=None, active_rate=N
         for individual in team.individuals:
             individual.token = 1
     if incentive == 0:
-        for _ in range(search_loop):
-            dao.search(threshold_ratio=0.5)
+        for period in range(search_loop):
+            if (period + 1) % turbulence_freq == 0:
+                reality.change(reality_change_rate=turbulence_level)
+                for team in dao.teams:
+                    for individual in team.individuals:
+                        individual.payoff = reality.get_payoff(belief=individual.belief)
+            dao.search(threshold_ratio=threshold_ratio)
     else:
-        for _ in range(search_loop):
-            dao.incentive_search(threshold_ratio=0.5, incentive=incentive, inactive_rate=inactive_rate)
-            # update the real participant rate
-            active_count = 0
-            for team in dao.teams:
-                active_count += sum([individual.active for individual in team.individuals])
-            real_active_rate = active_count / n
-    for period in range(search_loop):
-        if (period + 1) % turbulence_freq == 0:
-            reality.change(reality_change_rate=turbulence_level)
-            for team in dao.teams:
-                for individual in team.individuals:
-                    individual.payoff = reality.get_payoff(belief=individual.belief)
-        dao.search(threshold_ratio=threshold_ratio, token=False)
+        # fix the participantion rate in the beginning
+        for team in dao.teams:
+            for individual in team.individuals:
+                if np.random.uniform(0, 1) < active_rate:  # if active rate, e.g., 0.8
+                    individual.active = 1
+                else:
+                    if np.random.uniform(0, 1) < incentive:  # if incentive into vote, e.g., 0.8
+                        individual.active = 1
+                    else:
+                        individual.active = 0
+
+        for period in range(search_loop):
+            if (period + 1) % turbulence_freq == 0:
+                reality.change(reality_change_rate=turbulence_level)
+                for team in dao.teams:
+                    for individual in team.individuals:
+                        individual.payoff = reality.get_payoff(belief=individual.belief)
+            dao.incentive_search(threshold_ratio=threshold_ratio, incentive=incentive)
+
+    # update the real participant rate
+    active_count = 0
+    for team in dao.teams:
+        active_count += sum([individual.active for individual in team.individuals])
+    real_active_rate = active_count / n
     return_dict[loop] = [dao.performance_across_time[-1], dao.performance_across_time[-2], dao.performance_across_time[-3],
-                         dao.performance_across_time[-4], dao.performance_across_time[-5], threshold_ratio,
-                         turbulence_freq, turbulence_level, lr]
+                         dao.performance_across_time[-4], dao.performance_across_time[-5], incentive, active_rate, real_active_rate,
+                         threshold_ratio, turbulence_freq, turbulence_level, lr]
     sema.release()
 
 
@@ -57,6 +72,8 @@ if __name__ == '__main__':
     repetition = 50
     search_loop = 300
     threshold_ratio_list = np.arange(0.40, 0.71, 0.01)  # 31 cases
+    incentive_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    active_rate_list = [0.9, 0.8, 0.7, 0.6]
     group_size = 7  # the smallest group size in Fang's model: 7
 
     concurrency = 50
@@ -65,13 +82,16 @@ if __name__ == '__main__':
     return_dict = manager.dict()
     jobs = []
     for loop in range(repetition):
+        incentive = np.random.choice(incentive_list)
+        active_rate = np.random.choice(active_rate_list)
         threshold_ratio = np.random.choice(threshold_ratio_list)
         lr = np.random.uniform(0, 1)
         turbulence_freq = np.random.choice([20, 40, 60, 80, 100])
         turbulence_level = np.random.choice([0.10, 0.12, 0.14, 0.16, 0.18, 0.20])
         sema.acquire()
         p = mp.Process(target=func,
-                       args=(m, n, group_size, lr, threshold_ratio, turbulence_freq, turbulence_level, search_loop, loop, return_dict, sema))
+                       args=(m, n, group_size, lr, incentive, active_rate, threshold_ratio,
+                             turbulence_freq, turbulence_level, search_loop, loop, return_dict, sema))
         jobs.append(p)
         p.start()
     for proc in jobs:
