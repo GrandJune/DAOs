@@ -31,7 +31,7 @@ def func(m=None, n=None, group_size=None, lr=None, incentive=None, active_rate=N
             for team in dao.teams:
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
-        dao.incentive_search(threshold_ratio=threshold_ratio, incentive=incentive)
+        dao.incentive_search(threshold_ratio=threshold_ratio, incentive=incentive, active_rate=active_rate)
         # update the real participant rate dynamcis
         active_count = 0
         for team in dao.teams:
