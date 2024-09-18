@@ -1,11 +1,10 @@
 #!/bin/bash
-#SBATCH --time=3-00:00:00
+#SBATCH --time=03:00:00
 #SBATCH --job-name=TAsymmetry
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=200gb
-#SBATCH --partition=gpu-long
+#SBATCH --mem=100gb
+#SBATCH --partition=normal
 #SBATCH --cpus-per-task=50
 #SBATCH --nodes=1
-#SBATCH --exclude=xcng[0-1],xcne[0-6]
 python dao_run.py

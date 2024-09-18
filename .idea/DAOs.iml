@@ -98,7 +98,8 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Regression/Threshold" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Regression/Threshold_Asymmetry" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Regression/Turbulence" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4/Regression/Threshold_Incentive_fixed" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Regression/Threshold_Incentive_endogenous" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Regression/Threshold_Incentive_exogenous" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Incentive_Strength" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />

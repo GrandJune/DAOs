@@ -3,9 +3,9 @@
 #SBATCH --job-name=turbulence_1
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=110gb
+#SBATCH --mem=100gb
 #SBATCH --partition=normal
-#SBATCH --cpus-per-task=40
+#SBATCH --cpus-per-task=50
 #SBATCH --nodes=1
 #SBATCH --exclude=xcng[0-1]
 srun python autonomy_run.py

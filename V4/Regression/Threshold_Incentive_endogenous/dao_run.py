@@ -24,22 +24,39 @@ def func(m=None, n=None, group_size=None, lr=None, incentive=None, active_rate=N
     for team in dao.teams:
         for individual in team.individuals:
             individual.token = 1
-    real_active_rate_list = []
-    for period in range(search_loop):
-        if (period + 1) % turbulence_freq == 0:
-            reality.change(reality_change_rate=turbulence_level)
-            for team in dao.teams:
-                for individual in team.individuals:
-                    individual.payoff = reality.get_payoff(belief=individual.belief)
-        dao.incentive_search(threshold_ratio=threshold_ratio, incentive=incentive, active_rate=active_rate)
-        # update the real participant rate dynamcis
-        active_count = 0
+    if incentive == 0:
+        for period in range(search_loop):
+            if (period + 1) % turbulence_freq == 0:
+                reality.change(reality_change_rate=turbulence_level)
+                for team in dao.teams:
+                    for individual in team.individuals:
+                        individual.payoff = reality.get_payoff(belief=individual.belief)
+            dao.search(threshold_ratio=threshold_ratio)
+    else:
+        # make the participation rate an endogenous issue conditional on token amount
         for team in dao.teams:
-            active_count += sum([individual.active for individual in team.individuals])
-        real_active_rate_ = active_count / n
-        real_active_rate_list.append(real_active_rate_)
+            for individual in team.individuals:
+                if np.random.uniform(0, 1) < active_rate:  # if active rate, e.g., 0.8
+                    individual.active = 1
+                else:
+                    if np.random.uniform(0, 1) < incentive:  # if incentive into vote, e.g., 0.8
+                        individual.active = 1
+                    else:
+                        individual.active = 0
 
-    real_active_rate = sum(real_active_rate_list) / len(real_active_rate_list)
+        for period in range(search_loop):
+            if (period + 1) % turbulence_freq == 0:
+                reality.change(reality_change_rate=turbulence_level)
+                for team in dao.teams:
+                    for individual in team.individuals:
+                        individual.payoff = reality.get_payoff(belief=individual.belief)
+            dao.incentive_search(threshold_ratio=threshold_ratio, incentive=incentive)
+
+    # update the real participant rate
+    active_count = 0
+    for team in dao.teams:
+        active_count += sum([individual.active for individual in team.individuals])
+    real_active_rate = active_count / n
     return_dict[loop] = [dao.performance_across_time[-1], dao.performance_across_time[-2], dao.performance_across_time[-3],
                          dao.performance_across_time[-4], dao.performance_across_time[-5], incentive, active_rate, real_active_rate,
                          threshold_ratio, turbulence_freq, turbulence_level, lr]
@@ -52,11 +69,11 @@ if __name__ == '__main__':
     m = 90
     n = 350
     lr = 0.3
-    repetition = 1000
+    repetition = 50
     search_loop = 300
     threshold_ratio_list = np.arange(0.40, 0.71, 0.01)  # 31 cases
     incentive_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-    active_rate_list = [0.9, 0.8, 0.7, 0.6]
+    active_rate_list = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4]
     group_size = 7  # the smallest group size in Fang's model: 7
 
     concurrency = 50
@@ -81,7 +98,7 @@ if __name__ == '__main__':
         proc.join()
     results = return_dict.values()  # Don't need dict index, since it is repetition.
     # Automatic integration of results
-    time.sleep(np.random.uniform(low=2, high=12))
+    time.sleep(np.random.uniform(low=1, high=60))
     if os.path.exists("dao_data"):
         with open("dao_data", 'rb') as infile:
             prior_results = pickle.load(infile)

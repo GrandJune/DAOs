@@ -44,9 +44,9 @@ if __name__ == '__main__':
     m = 90
     group_size = 7
     n = 350
-    repetition = 80
-    concurrency = 40
-    search_loop = 1000
+    repetition = 300
+    concurrency = 50
+    search_loop = 300
 
     sema = Semaphore(concurrency)
     manager = mp.Manager()
@@ -64,12 +64,13 @@ if __name__ == '__main__':
     for proc in jobs:
         proc.join()
     results = return_dict.values()  # Don't need dict index, since it is repetition.
-
-    index = 1
-    while os.path.exists(r"hierarchy_data_{0}".format(index)):
-        index += 1
-
-    with open(r"hierarchy_data_{0}".format(index), 'wb') as out_file:
+    # Automatic integration of results
+    time.sleep(np.random.uniform(low=1, high=60))
+    if os.path.exists("hierarchy_data"):
+        with open("hierarchy_data", 'rb') as infile:
+            prior_results = pickle.load(infile)
+            results += prior_results
+    with open("hierarchy_data", 'wb') as out_file:
         pickle.dump(results, out_file)
 
     t1 = time.time()
