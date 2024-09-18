@@ -5,7 +5,7 @@
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import math
-from Individual import Individual
+from Individual_incentive import Individual
 from Team import Team
 from Reality import Reality
 import numpy as np
@@ -34,7 +34,7 @@ class DAO:
         for i in range(self.n // self.group_size):
             team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
-                individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr, self.sensitivity=sensitivity)
+                individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr, sensitivity=sensitivity)
                 team.individuals.append(individual)
             self.teams.append(team)
         self.performance_across_time = []

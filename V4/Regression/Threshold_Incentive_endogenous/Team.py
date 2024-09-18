@@ -4,10 +4,8 @@
 # @FileName: Team.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
-import math
-from Individual import Individual
 from Reality import Reality
-import numpy as np
+
 
 class Team:
     def __init__(self, m=None, index=None, alpha=None, reality=None):

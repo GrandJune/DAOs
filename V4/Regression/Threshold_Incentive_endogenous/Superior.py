@@ -5,7 +5,6 @@
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import numpy as np
-import math
 from Reality import Reality
 from Manager import Manager
 
