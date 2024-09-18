@@ -13,7 +13,7 @@ import numpy as np
 
 class DAO:
     def __init__(self, m=None, n=None, reality=None, lr=None, group_size=None,
-                 alpha=3):
+                 alpha=3, sensitivity=None):
         """
         :param m: problem space
         :param n: the number of agents
@@ -34,7 +34,7 @@ class DAO:
         for i in range(self.n // self.group_size):
             team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
-                individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr)
+                individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr, self.sensitivity=sensitivity)
                 team.individuals.append(individual)
             self.teams.append(team)
         self.performance_across_time = []
@@ -92,13 +92,21 @@ class DAO:
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
 
-    def incentive_search(self, threshold_ratio=None, incentive=1, active_rate=None):
+    def incentive_search(self, threshold_ratio=None, incentive=1, basic_active_rate=None):
         new_consensus = []
         individuals = []
         for team in self.teams:
             individuals += team.individuals
+        token_sum = sum([individual.token for individual in individuals])
         for individual in individuals:
             individual.policy = self.reality.belief_2_policy(belief=individual.belief)
+            # individuals are sensitive to their token amount in deciding whether to vote
+            prob_to_vote = (basic_active_rate + (1 - basic_active_rate) *
+                            (1 - math.exp(- individual.sensitivity * individual.token / token_sum)))
+            if np.random.uniform(0, 1) < prob_to_vote:
+                individual.active = 1
+            else:
+                individual.active = 0
         # for individual in individuals:
         #     if np.random.uniform(0, 1) < active_rate:  # if active rate, e.g., 0.8
         #         individual.active = 1

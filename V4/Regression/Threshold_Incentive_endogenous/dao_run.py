@@ -5,7 +5,7 @@
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import numpy as np
-from DAO import DAO
+from DAO_incentive import DAO
 from Reality import Reality
 import multiprocessing as mp
 import time
@@ -14,7 +14,7 @@ import pickle
 import os
 
 
-def func(m=None, n=None, group_size=None, lr=None, incentive=None, active_rate=None,
+def func(m=None, n=None, group_size=None, lr=None, incentive=None, sensitivity=None, active_rate=None,
          threshold_ratio=None, turbulence_freq=None, turbulence_level=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
