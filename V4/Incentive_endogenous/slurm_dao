@@ -1,9 +1,9 @@
 #!/bin/bash
 #SBATCH --time=03:00:00
-#SBATCH --job-name=Incen
+#SBATCH --job-name=pptt
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=150gb
+#SBATCH --mem=140gb
 #SBATCH --partition=normal
 #SBATCH --cpus-per-task=50
 #SBATCH --nodes=1

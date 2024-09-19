@@ -44,13 +44,13 @@ if __name__ == '__main__':
     sensitivity_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # * 9
     group_size = 7  # the smallest group size in Fang's model: 7
 
-    concurrency = 200
+    concurrency = 50
     sema = Semaphore(concurrency)
     manager = mp.Manager()
     return_dict = manager.dict()
     jobs = []
 
-    active_rate = 0.5
+    active_rate = 0.7
     for incentive in incentive_list:
         for sensitivity in sensitivity_list:
             for loop in range(repetition):
