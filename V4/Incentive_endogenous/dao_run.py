@@ -45,11 +45,6 @@ if __name__ == '__main__':
     group_size = 7  # the smallest group size in Fang's model: 7
 
     concurrency = 50
-    sema = Semaphore(concurrency)
-    manager = mp.Manager()
-    return_dict = manager.dict()
-    jobs = []
-
     active_rate = 0.8
     performance_final_across_sensitivity_incentive = []
     consensus_final_across_sensitivity_incentive = []
@@ -61,6 +56,10 @@ if __name__ == '__main__':
         diversity_final_across_sensitivity = []
         variance_final_across_sensitivity = []
         for sensitivity in sensitivity_list:
+            sema = Semaphore(concurrency)
+            manager = mp.Manager()
+            return_dict = manager.dict()
+            jobs = []
             for loop in range(repetition):
                 sema.acquire()
                 p = mp.Process(target=func,
