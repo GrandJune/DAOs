@@ -49,7 +49,7 @@ if __name__ == '__main__':
     m = 90
     n = 350
     lr = 0.3
-    repetition = 400
+    repetition = 100
     search_loop = 300
     threshold_ratio_list = np.arange(0.40, 0.71, 0.01)  # 31 cases
     incentive_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # * 9

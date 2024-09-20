@@ -50,8 +50,16 @@ if __name__ == '__main__':
     return_dict = manager.dict()
     jobs = []
 
-    active_rate = 0.6
+    active_rate = 0.8
+    performance_final_across_sensitivity_incentive = []
+    consensus_final_across_sensitivity_incentive = []
+    diversity_final_across_sensitivity_incentive = []
+    variance_final_across_sensitivity_incentive = []
     for incentive in incentive_list:
+        performance_final_across_sensitivity = []
+        consensus_final_across_sensitivity = []
+        diversity_final_across_sensitivity = []
+        variance_final_across_sensitivity = []
         for sensitivity in sensitivity_list:
             for loop in range(repetition):
                 sema.acquire()
@@ -63,74 +71,38 @@ if __name__ == '__main__':
                 proc.join()
             results = return_dict.values()  # Don't need dict index, since it is repetition.
 
-            performance_across_repeat = [result[0] for result in results]
-            consensus_across_repeat = [result[1] for result in results]
-            diversity_across_repeat = [result[2] for result in results]
-            variance_across_repeat = [result[3] for result in results]
+            # remove the time dimension
+            performance_across_repeat = [result[0][-1] for result in results]
+            consensus_across_repeat = [result[1][-1] for result in results]
+            diversity_across_repeat = [result[2][-1] for result in results]
+            variance_across_repeat = [result[3][-1] for result in results]
             # After taking an average across repetitions
-            performance_final = []
-            consensus_final = []
-            diversity_final = []
-            variance_final = []
-            for period in range(search_loop):
-                performance_temp = [performance_list[period] for performance_list in performance_across_repeat]
-                consensus_temp = [consensus_list[period] for consensus_list in consensus_across_repeat]
-                diversity_temp = [diversity_list[period] for diversity_list in diversity_across_repeat]
-                variance_temp = [variance_list[period] for variance_list in variance_across_repeat]
+            performance_final = sum(performance_across_repeat) / len(performance_across_repeat)
+            consensus_final = sum(consensus_across_repeat) / len(consensus_across_repeat)
+            diversity_final = sum(diversity_across_repeat) / len(diversity_across_repeat)
+            variance_final = sum(variance_across_repeat) / len(variance_across_repeat)
 
-                performance_final.append(sum(performance_temp) / len(performance_temp))
-                consensus_final.append(sum(consensus_temp) / len(consensus_temp))
-                diversity_final.append(sum(diversity_temp) / len(diversity_temp))
-                variance_final.append(sum(variance_temp) / len(variance_temp))
+            performance_final_across_sensitivity.append(performance_final)
+            consensus_final_across_sensitivity.append(consensus_final)
+            diversity_final_across_sensitivity.append(diversity_final)
+            variance_final_across_sensitivity.append(variance_final)
 
-            performance_file_name = r"dao_performance_incentive_{0}_sensitivity_{1}".format(incentive, sensitivity)
-            delay = np.random.uniform(1, 20)
-            time.sleep(delay)
-            if os.path.exists(performance_file_name):
-                with open("dao_performance_incentive_{0}_sensitivity_{1}".format(incentive, sensitivity),
-                          'rb') as infile:
-                    prior_performance = pickle.load(infile)
-                with open("dao_consensus_performance_incentive_{0}_sensitivity_{1}".format(incentive, sensitivity),
-                          'wb') as infile:
-                    prior_consensus = pickle.load(infile)
-                with open("dao_diversity_incentive_{0}_sensitivity_{1}".format(incentive, sensitivity),
-                          'wb') as infile:
-                    prior_diversity = pickle.load(infile)
-                with open("dao_variance_incentive_{0}_sensitivity_{1}".format(incentive, sensitivity), 'wb') as infile:
-                    prior_variance = pickle.load(infile)
-                performance_final = [(each_1 + each_2) / 2 for each_1, each_2 in
-                                     zip(prior_performance, performance_final)]
-                consensus_final = [(each_1 + each_2) / 2 for each_1, each_2 in
-                                   zip(prior_consensus, consensus_final)]
-                diversity_final = [(each_1 + each_2) / 2 for each_1, each_2 in
-                                   zip(prior_diversity, diversity_final)]
-                variance_final = [(each_1 + each_2) / 2 for each_1, each_2 in zip(prior_variance, variance_final)]
-                with open("dao_performance_incentive_{0}_inactive_{1}".format(incentive, active_rate),
-                          'wb') as out_file:
-                    pickle.dump(performance_final, out_file)
-                with open("dao_consensus_performance_incentive_{0}_inactive_{1}".format(incentive, active_rate),
-                          'wb') as out_file:
-                    pickle.dump(consensus_final, out_file)
-                with open("dao_diversity_incentive_{0}_inactive_{1}".format(incentive, active_rate),
-                          'wb') as out_file:
-                    pickle.dump(diversity_final, out_file)
-                with open("dao_variance_incentive_{0}_inactive_{1}".format(incentive, active_rate),
-                          'wb') as out_file:
-                    pickle.dump(variance_final, out_file)
+        performance_final_across_sensitivity_incentive.append(performance_final_across_sensitivity)
+        consensus_final_across_sensitivity_incentive.append(consensus_final_across_sensitivity)
+        diversity_final_across_sensitivity_incentive.append(diversity_final_across_sensitivity)
+        variance_final_across_sensitivity_incentive.append(variance_final_across_sensitivity)
 
-            else:
-                with open("dao_performance_incentive_{0}_inactive_{1}".format(incentive, active_rate),
-                          'wb') as out_file:
-                    pickle.dump(performance_final, out_file)
-                with open("dao_consensus_performance_incentive_{0}_inactive_{1}".format(incentive, active_rate),
-                          'wb') as out_file:
-                    pickle.dump(consensus_final, out_file)
-                with open("dao_diversity_incentive_{0}_inactive_{1}".format(incentive, active_rate),
-                          'wb') as out_file:
-                    pickle.dump(diversity_final, out_file)
-                with open("dao_variance_incentive_{0}_inactive_{1}".format(incentive, active_rate),
-                          'wb') as out_file:
-                    pickle.dump(variance_final, out_file)
+    index = 1
+    while os.path.exists(r"dao_performance_{0}".format(index)):
+        index += 1
+    with open("dao_performance_{0}".format(index), 'wb') as out_file:
+        pickle.dump(performance_final_across_sensitivity_incentive, out_file)
+    with open("dao_consensus_performance_{0}".format(index), 'wb') as out_file:
+        pickle.dump(consensus_final_across_sensitivity_incentive, out_file)
+    with open("dao_diversity_{0}".format(index), 'wb') as out_file:
+        pickle.dump(diversity_final_across_sensitivity_incentive, out_file)
+    with open("dao_variance_{0}".format(index), 'wb') as out_file:
+        pickle.dump(variance_final_across_sensitivity_incentive, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))

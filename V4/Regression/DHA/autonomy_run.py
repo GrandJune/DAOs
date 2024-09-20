@@ -53,11 +53,14 @@ if __name__ == '__main__':
         proc.join()
     results = return_dict.values()  # Don't need dict index, since it is repetition.
 
-    index = 1
-    while os.path.exists(r"autonomy_data_{0}".format(index)):
-        index += 1
-
-    with open(r"autonomy_data_{0}".format(index), 'wb') as out_file:
+    # Automatic integration of results
+    time.sleep(np.random.uniform(low=2, high=60))
+    if os.path.exists("autonomy_data"):
+        with open("autonomy_data", 'rb') as infile:
+            prior_results = pickle.load(infile)
+            results += prior_results
+    with open("autonomy_data", 'wb') as out_file:
         pickle.dump(results, out_file)
+
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))

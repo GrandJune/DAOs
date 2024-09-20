@@ -32,14 +32,6 @@ if __name__ == '__main__':
     repetition = 200
     search_loop = 300
 
-    # Randomization
-    m0 = np.random.randint(30, 50)
-    m = m0 * 3
-    group_num = np.random.randint(10, 40)
-    group_size = np.random.randint(7, 28)  # 28*40=1120; 10*7=70
-    n = group_size * group_num
-    lr = np.random.uniform(0, 1)
-
     concurrency = 50
     data = []
     sema = Semaphore(concurrency)
@@ -47,6 +39,13 @@ if __name__ == '__main__':
     return_dict = manager.dict()
     jobs = []
     for loop in range(repetition):
+        # Randomization
+        m0 = np.random.randint(30, 50)
+        m = m0 * 3
+        group_num = np.random.randint(10, 40)
+        group_size = np.random.randint(7, 28)  # 28*40=1120; 10*7=70
+        n = group_size * group_num
+        lr = np.random.uniform(0, 1)
         sema.acquire()
         p = mp.Process(target=func,
                        args=(m, n, group_size, lr, threshold_ratio, search_loop, loop, return_dict, sema))
@@ -56,11 +55,13 @@ if __name__ == '__main__':
         proc.join()
     results = return_dict.values()  # Don't need dict index, since it is repetition.
 
-    index = 1
-    while os.path.exists(r"dao_data_{0}".format(index)):
-        index += 1
-
-    with open(r"dao_data_{0}".format(index), 'wb') as out_file:
+    # Automatic integration of results
+    time.sleep(np.random.uniform(low=2, high=60))
+    if os.path.exists("dao_data"):
+        with open("dao_data", 'rb') as infile:
+            prior_results = pickle.load(infile)
+            results += prior_results
+    with open("dao_data", 'wb') as out_file:
         pickle.dump(results, out_file)
 
     t1 = time.time()

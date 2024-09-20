@@ -1,9 +1,9 @@
 #!/bin/bash
 #SBATCH --time=03:00:00
-#SBATCH --job-name=normalized_3
+#SBATCH --job-name=hierarchy
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=100gb
+#SBATCH --mem=200gb
 #SBATCH --partition=normal
 #SBATCH --cpus-per-task=50
 #SBATCH --ntasks=1
