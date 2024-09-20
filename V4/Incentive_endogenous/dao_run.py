@@ -37,7 +37,7 @@ if __name__ == '__main__':
     m = 90
     n = 350
     lr = 0.3
-    repetition = 400
+    repetition = 100
     search_loop = 300
     incentive_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # * 9
     active_rate_list = [0.9, 0.8, 0.7, 0.6, 0.5]  # * 5
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     return_dict = manager.dict()
     jobs = []
 
-    active_rate = 0.7
+    active_rate = 0.6
     for incentive in incentive_list:
         for sensitivity in sensitivity_list:
             for loop in range(repetition):
