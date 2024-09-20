@@ -37,11 +37,12 @@ if __name__ == '__main__':
     m = 90
     n = 350
     lr = 0.3
-    repetition = 100
+    repetition = 50
     search_loop = 300
     incentive_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # * 9
-    active_rate_list = [0.9, 0.8, 0.7, 0.6, 0.5]  # * 5
-    sensitivity_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # * 9
+    # active_rate_list = [0.9, 0.8, 0.7, 0.6, 0.5]  # * 5
+    # sensitivity_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # * 9
+    sensitivity_list = [7, 8, 9]
     group_size = 7  # the smallest group size in Fang's model: 7
 
     concurrency = 50
@@ -92,15 +93,15 @@ if __name__ == '__main__':
         variance_final_across_sensitivity_incentive.append(variance_final_across_sensitivity)
 
     index = 1
-    while os.path.exists(r"dao_performance_{0}".format(index)):
+    while os.path.exists(r"dao_performance_3_{0}".format(index)):
         index += 1
-    with open("dao_performance_{0}".format(index), 'wb') as out_file:
+    with open("dao_performance_3_{0}".format(index), 'wb') as out_file:
         pickle.dump(performance_final_across_sensitivity_incentive, out_file)
-    with open("dao_consensus_performance_{0}".format(index), 'wb') as out_file:
+    with open("dao_consensus_performance_3_{0}".format(index), 'wb') as out_file:
         pickle.dump(consensus_final_across_sensitivity_incentive, out_file)
-    with open("dao_diversity_{0}".format(index), 'wb') as out_file:
+    with open("dao_diversity_3_{0}".format(index), 'wb') as out_file:
         pickle.dump(diversity_final_across_sensitivity_incentive, out_file)
-    with open("dao_variance_{0}".format(index), 'wb') as out_file:
+    with open("dao_variance_3_{0}".format(index), 'wb') as out_file:
         pickle.dump(variance_final_across_sensitivity_incentive, out_file)
 
     t1 = time.time()
