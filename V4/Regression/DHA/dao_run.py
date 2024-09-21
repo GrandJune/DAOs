@@ -29,10 +29,14 @@ if __name__ == '__main__':
     t0 = time.time()
     np.random.seed(None)
     threshold_ratio = 0.5  # Fix parameters of interest
-    repetition = 200
+    group_num_list = [100, 75, 50, 25]
+    group_size_list = [7, 14, 21, 28]
+    m_list = [60, 90, 120, 150]
+    lr_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    repetition = 60
     search_loop = 300
 
-    concurrency = 50
+    concurrency = 30
     data = []
     sema = Semaphore(concurrency)
     manager = mp.Manager()
@@ -40,12 +44,11 @@ if __name__ == '__main__':
     jobs = []
     for loop in range(repetition):
         # Randomization
-        m0 = np.random.randint(30, 50)
-        m = m0 * 3
-        group_num = np.random.randint(10, 40)
-        group_size = np.random.randint(7, 28)  # 28*40=1120; 10*7=70
+        m = np.random.choice(m_list)
+        group_num = np.random.choice(group_num_list)
+        group_size = np.random.choice(group_size_list)  # 28*40=1120; 10*7=70
         n = group_size * group_num
-        lr = np.random.uniform(0, 1)
+        lr = np.random.choice(lr_list)
         sema.acquire()
         p = mp.Process(target=func,
                        args=(m, n, group_size, lr, threshold_ratio, search_loop, loop, return_dict, sema))
