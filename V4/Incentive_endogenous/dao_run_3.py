@@ -39,14 +39,14 @@ if __name__ == '__main__':
     lr = 0.3
     repetition = 50
     search_loop = 300
-    incentive_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # * 9
+    incentive_list = [1, 5, 9]  # * 9
     # active_rate_list = [0.9, 0.8, 0.7, 0.6, 0.5]  # * 5
     # sensitivity_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # * 9
     sensitivity_list = [7, 8, 9]
     group_size = 7  # the smallest group size in Fang's model: 7
 
     concurrency = 50
-    active_rate = 0.8
+    active_rate = 0.5
     performance_final_across_sensitivity_incentive = []
     consensus_final_across_sensitivity_incentive = []
     diversity_final_across_sensitivity_incentive = []
