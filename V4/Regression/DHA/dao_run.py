@@ -33,10 +33,10 @@ if __name__ == '__main__':
     group_size_list = [7, 14, 21, 28]
     m_list = [60, 90, 120, 150]
     lr_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-    repetition = 60
+    repetition = 100
     search_loop = 300
 
-    concurrency = 30
+    concurrency = 50
     data = []
     sema = Semaphore(concurrency)
     manager = mp.Manager()
