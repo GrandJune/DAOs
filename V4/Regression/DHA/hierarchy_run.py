@@ -27,11 +27,11 @@ def func(m=None, n=None, group_size=None, lr=None, search_loop=None, loop=None, 
 if __name__ == '__main__':
     t0 = time.time()
     np.random.seed(None)
-    group_num_list = [100, 75, 50, 25]
-    group_size_list = [7, 14, 21, 28]
-    m_list = [60, 90, 120, 150]
+    group_num_list = [75, 50, 25]
+    group_size_list = [7, 14, 21]
+    m_list = [60, 90, 120]
     lr_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-    repetition = 100
+    repetition = 50
     search_loop = 300
 
     concurrency = 50
