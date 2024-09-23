@@ -18,7 +18,8 @@ class Individual:
         self.token = None  # should introduce more dimensions of token
         self.active = 1  # For the incentive search
         self.sensitivity = sensitivity  # apply an exponential scaling to the wealth.
-        # a factor controls how strongly the probability increases with wealth.
+        # a factor controls how strongly the probability increases with wealth
+        # larger factor, stronger intention to vote
         self.reality = reality
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])
         # self.belief = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
