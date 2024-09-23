@@ -3,8 +3,8 @@
 #SBATCH --job-name=incentive_plot
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=300gb
+#SBATCH --mem=200gb
 #SBATCH --partition=long
 #SBATCH --cpus-per-task=50
 #SBATCH --nodes=1
-python dao_run_2.py
+python dao_run_across_incentive.py

@@ -102,11 +102,19 @@ class DAO:
             individual.policy = self.reality.belief_2_policy(belief=individual.belief)
             # individuals are sensitive to their token amount in deciding whether to vote
             prob_to_vote = (basic_active_rate + (1 - basic_active_rate) *
-                            (1 - math.exp(- individual.sensitivity * individual.token / token_sum)))
+                            (1 / (1 + np.exp(- individual.token / token_sum * individual.sensitivity))))  # Sigmoid func
             if np.random.uniform(0, 1) < prob_to_vote:
                 individual.active = 1
             else:
                 individual.active = 0
+        # for individual in individuals:
+        #     if np.random.uniform(0, 1) < active_rate:  # if active rate, e.g., 0.8
+        #         individual.active = 1
+        #     else:
+        #         if np.random.uniform(0, 1) < incentive:  # if incentive into vote, e.g., 0.8
+        #             individual.active = 1
+        #         else:
+        #             individual.active = 0
         threshold = threshold_ratio * sum([individual.token for individual in individuals])
         # consider the active status
         for i in range(self.policy_num):
