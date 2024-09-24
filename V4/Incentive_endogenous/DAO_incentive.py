@@ -99,8 +99,8 @@ class DAO:
         for individual in individuals:
             individual.policy = self.reality.belief_2_policy(belief=individual.belief)
             # individuals are sensitive to their token amount in deciding whether to vote
-            prob_to_vote = (basic_active_rate + (1 - basic_active_rate) *
-                            (1 / (1 + np.exp(- individual.token * individual.incentive))))  # Sigmoid func
+            prob_to_vote = basic_active_rate + (1 - basic_active_rate) * (2 / (1 + np.exp(- (individual.token - 1))) - 1)
+            # modify Sigmoid func so that y=0 when x=1
             if np.random.uniform(0, 1) < prob_to_vote:
                 individual.active = 1
             else:
@@ -133,12 +133,9 @@ class DAO:
         consensus_increment_ratio = (new_consensus_payoff - prior_consensus_payoff) / prior_consensus_payoff
         for individual in individuals:
             if individual.active == 1:
-                individual.token = individual.token * incentive
-        for old_bit, new_bit, index in zip(self.consensus, new_consensus, range(self.policy_num)):
-            if old_bit != new_bit:
-                for individual in individuals:
-                    if (individual.policy[index] == new_bit) and (individual.active == 1):  # individual active and vote correctly
-                        individual.token += incentive
+                individual.token = individual.token * incentive * consensus_increment_ratio
+            elif individual.active == 0:
+                individual.token = individual.token * (1 - incentive) * consensus_increment_ratio
         self.consensus = new_consensus
         self.consensus_payoff = new_consensus_payoff
         # 1) Generate and 2) adjust the superior majority view and 3) learn from it

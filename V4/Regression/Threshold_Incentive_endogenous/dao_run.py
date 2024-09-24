@@ -14,12 +14,11 @@ import pickle
 import os
 
 
-def func(m=None, n=None, group_size=None, lr=None, incentive=None, sensitivity=None, active_rate=None, asymmetry=None,
-         threshold_ratio=None, turbulence_freq=None, turbulence_level=None,
-         search_loop=None, loop=None, return_dict=None, sema=None):
+def func(m=None, n=None, group_size=None, lr=None, incentive=None, active_rate=None, asymmetry=None,
+         threshold_ratio=None, turbulence_freq=None, turbulence_level=None, search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
-    dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size, sensitivity=sensitivity)
+    dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
     # pre-assign the token according to the asymmetry degree
     mode = 1
     if asymmetry == 0:
@@ -49,8 +48,8 @@ def func(m=None, n=None, group_size=None, lr=None, incentive=None, sensitivity=N
     # average active rate over time
     real_active_rate = sum(real_active_rate_list) / len(real_active_rate_list)
     gini = dao.get_gini()
-    return_dict[loop] = [dao.performance_across_time[-1], dao.performance_across_time[-2], dao.performance_across_time[-3],
-                         dao.performance_across_time[-4], dao.performance_across_time[-5], incentive, sensitivity, active_rate, real_active_rate,
+    performance = dao.performance_across_time[-1]
+    return_dict[loop] = [performance, incentive, active_rate, real_active_rate,
                          threshold_ratio, turbulence_freq, turbulence_level, lr, gini, asymmetry]
     sema.release()
 
@@ -64,10 +63,9 @@ if __name__ == '__main__':
     repetition = 50
     search_loop = 300
     threshold_ratio_list = np.arange(0.40, 0.71, 0.01)  # 31 cases
-    incentive_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # * 9
+    incentive_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     active_rate_list = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]  # * 5
     asymmetry_list = [1, 2, 3, 4]
-    sensitivity_list = [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # * 9
     lr_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     group_size = 7  # the smallest group size in Fang's model: 7
 
@@ -78,7 +76,6 @@ if __name__ == '__main__':
     jobs = []
     for loop in range(repetition):
         incentive = np.random.choice(incentive_list)
-        sensitivity = np.random.choice(sensitivity_list)
         active_rate = np.random.choice(active_rate_list)
         threshold_ratio = np.random.choice(threshold_ratio_list)
         asymmetry = np.random.choice(asymmetry_list)
@@ -87,7 +84,7 @@ if __name__ == '__main__':
         turbulence_level = np.random.choice([0.10, 0.12, 0.14, 0.16, 0.18, 0.20])
         sema.acquire()
         p = mp.Process(target=func,
-                       args=(m, n, group_size, lr, incentive, sensitivity, active_rate, asymmetry, threshold_ratio,
+                       args=(m, n, group_size, lr, incentive, active_rate, asymmetry, threshold_ratio,
                              turbulence_freq, turbulence_level, search_loop, loop, return_dict, sema))
         jobs.append(p)
         p.start()

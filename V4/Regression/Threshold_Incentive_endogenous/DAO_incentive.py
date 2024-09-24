@@ -12,8 +12,7 @@ import numpy as np
 
 
 class DAO:
-    def __init__(self, m=None, n=None, reality=None, lr=None, group_size=None,
-                 alpha=3, sensitivity=None):
+    def __init__(self, m=None, n=None, reality=None, lr=None, group_size=None, alpha=3):
         """
         :param m: problem space
         :param n: the number of agents
@@ -34,7 +33,7 @@ class DAO:
         for i in range(self.n // self.group_size):
             team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
             for _ in range(self.group_size):
-                individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr, sensitivity=sensitivity)
+                individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
             self.teams.append(team)
         self.performance_across_time = []
@@ -97,12 +96,11 @@ class DAO:
         individuals = []
         for team in self.teams:
             individuals += team.individuals
-        # token_sum = sum([individual.token for individual in individuals])
         for individual in individuals:
             individual.policy = self.reality.belief_2_policy(belief=individual.belief)
             # individuals are sensitive to their token amount in deciding whether to vote
-            prob_to_vote = (basic_active_rate + (1 - basic_active_rate) *
-                            (1 / (1 + np.exp(- individual.token))))  # Sigmoid func
+            prob_to_vote = basic_active_rate + (1 - basic_active_rate) * (2 / (1 + np.exp(- (individual.token - 1))) - 1)
+            # modify Sigmoid func so that y=0 when x=1
             if np.random.uniform(0, 1) < prob_to_vote:
                 individual.active = 1
             else:
@@ -127,14 +125,16 @@ class DAO:
                 new_consensus.append(-1)
             else:
                 new_consensus.append(0)
-        # Once there is a change in consensus, reward the contributor
-        for old_bit, new_bit, index in zip(self.consensus, new_consensus, range(self.policy_num)):
-            if old_bit != new_bit:
-                for individual in individuals:
-                    if (individual.policy[index] == new_bit) and (individual.active == 1):  # individual active and vote correctly
-                        individual.token += incentive
         self.consensus = new_consensus
         self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
+        # Once there is a change in consensus, reward the contributor
+        # Rewards arise from the better-configured consensus quality
+        # Incentive adjust the distribution of value between active voters and inactive voters (1-incentive proportion)
+        prior_performance_list = []
+        for team in self.teams:
+            prior_performance_list += [individual.payoff for individual in team.individuals]
+        prior_performance = sum(prior_performance_list) / len(prior_performance_list)
+
         # 1) Generate and 2) adjust the superior majority view and 3) learn from it
         for team in self.teams:
             team.form_individual_majority_view()
@@ -143,7 +143,13 @@ class DAO:
         performance_list = []
         for team in self.teams:
             performance_list += [individual.payoff for individual in team.individuals]
-
+        new_performance = sum(performance_list) / len(performance_list)
+        performance_increment_ratio = (new_performance - prior_performance) / prior_performance
+        for individual in individuals:
+            if individual.active == 1:
+                individual.token = individual.token * incentive * performance_increment_ratio
+            elif individual.active == 0:
+                individual.token = individual.token * (1 - incentive) * performance_increment_ratio
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
