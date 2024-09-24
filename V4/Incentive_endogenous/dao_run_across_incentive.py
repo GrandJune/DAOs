@@ -14,13 +14,15 @@ import pickle
 import os
 
 
-def func(m=None, n=None, group_size=None, lr=None, incentive=None, sensitivity=None,
-         active_rate=None, asymmetry=None, search_loop=None, loop=None, return_dict=None, sema=None):
+def func(m=None, n=None, group_size=None, lr=None, incentive=None,
+         active_rate=None, search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
-    dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size, sensitivity=sensitivity)
+    dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
     # pre-assign the token according to the asymmetry degree
     mode = 1
+    # Fixing the asymmetry  !!!!!
+    asymmetry = 0
     if asymmetry == 0:
         for team in dao.teams:
             for individual in team.individuals:
@@ -45,11 +47,7 @@ if __name__ == '__main__':
     lr = 0.3
     repetition = 50
     search_loop = 300
-    incentive_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    # active_rate_list = [0.9, 0.8, 0.7, 0.6, 0.5]  # * 5
-    # sensitivity_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # * 9
-    sensitivity = 1
-    asymmetry = 1  # the most asymmetry
+    incentive_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     group_size = 7  # the smallest group size in Fang's model: 7
 
     concurrency = 50
@@ -72,7 +70,7 @@ if __name__ == '__main__':
         for loop in range(repetition):
             sema.acquire()
             p = mp.Process(target=func,
-                           args=(m, n, group_size, lr, incentive, sensitivity, active_rate, asymmetry, search_loop, loop, return_dict, sema))
+                           args=(m, n, group_size, lr, incentive, active_rate, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:

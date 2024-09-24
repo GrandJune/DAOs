@@ -97,12 +97,12 @@ class DAO:
         individuals = []
         for team in self.teams:
             individuals += team.individuals
-        token_sum = sum([individual.token for individual in individuals])
+        # token_sum = sum([individual.token for individual in individuals])
         for individual in individuals:
             individual.policy = self.reality.belief_2_policy(belief=individual.belief)
             # individuals are sensitive to their token amount in deciding whether to vote
             prob_to_vote = (basic_active_rate + (1 - basic_active_rate) *
-                            (1 / (1 + np.exp(- individual.token / token_sum * individual.sensitivity))))  # Sigmoid func
+                            (1 / (1 + np.exp(- individual.token))))  # Sigmoid func
             if np.random.uniform(0, 1) < prob_to_vote:
                 individual.active = 1
             else:
