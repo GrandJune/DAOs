@@ -174,18 +174,25 @@ class DAO:
                 acc += 1
         return acc
 
-    def get_gini(self):
-        array = []
-        for team in self.teams:
-            for individual in team.individuals:
-                array.append(individual.token)
-        array = sorted(array)
-        n = len(array)
-        coefficient = 0
-        for i, value in enumerate(array):
-            coefficient += (2 * i - n) * value
-        coefficient /= n * sum(array)
-        return coefficient
+    def gini(self, array=None):
+        # Ensure the array is a numpy array
+        array = np.array(array)
+
+        # If the array is empty or contains only zeros, return 0
+        if array.size == 0 or np.all(array == 0):
+            return 0
+
+        # Sort the array in ascending order
+        array = np.sort(array)
+
+        # Get the number of elements in the array
+        n = array.size
+
+        # Calculate the Gini coefficient using the efficient formula
+        numerator = np.sum((2 * np.arange(1, n + 1) - n - 1) * array)
+        gini_index = numerator / (n * np.sum(array))
+
+        return gini_index
 
     def turnover(self, turnover_rate=None):
         if turnover_rate:
