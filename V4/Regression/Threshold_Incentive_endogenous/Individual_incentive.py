@@ -17,6 +17,7 @@ class Individual:
         self.lr = lr  # learning rate, learning from (adjusted) majority view
         self.token = None  # should introduce more dimensions of token
         self.active = 1  # For the incentive search
+        self.prob_to_vote = None
         # a factor controls how strongly the probability increases with wealth.
         self.reality = reality
         self.belief = np.random.choice([-1, 0, 1], self.m, p=[1/3, 1/3, 1/3])

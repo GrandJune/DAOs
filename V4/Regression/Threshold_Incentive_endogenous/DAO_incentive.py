@@ -19,7 +19,7 @@ class DAO:
         :param reality: to provide feedback
         """
         self.m = m  # state length
-        self.n = n  # the number of subunits under this superior
+        self.n = n  # the number of individuals
         if self.m % alpha != 0:
             raise ValueError("m is not dividable by {0}".format(alpha))
         self.alpha = alpha  # The aggregation degree
@@ -99,20 +99,28 @@ class DAO:
         for individual in individuals:
             individual.policy = self.reality.belief_2_policy(belief=individual.belief)
             # individuals are sensitive to their token amount in deciding whether to vote
+            # endogenous asymmetry from incentive,
+            # compared to exogenous asymmetry from many factors
+            # unrelated to the value redistribution that comes with growth in organizational performance, such as investment factors, -> captured by exgogenous asymmetry
             prob_to_vote = basic_active_rate + (1 - basic_active_rate) * (2 / (1 + np.exp(- (individual.token - 1))) - 1)
             # modify Sigmoid func so that y=0 when x=1
+            individual.prob_to_vote = prob_to_vote
             if np.random.uniform(0, 1) < prob_to_vote:
                 individual.active = 1
             else:
                 individual.active = 0
-        # for individual in individuals:
-        #     if np.random.uniform(0, 1) < active_rate:  # if active rate, e.g., 0.8
-        #         individual.active = 1
-        #     else:
-        #         if np.random.uniform(0, 1) < incentive:  # if incentive into vote, e.g., 0.8
-        #             individual.active = 1
-        #         else:
-        #             individual.active = 0
+        prob_to_vote_list = []
+        token_list = []
+        active_list = []
+        for individual in individuals:
+            prob_to_vote_list.append(individual.prob_to_vote)
+            token_list.append(individual.token)
+            active_list.append(individual.active)
+        print("*" * 10)
+        print(prob_to_vote_list[:10])
+        print(token_list[:10])
+        print(active_list[:10])
+
         threshold = threshold_ratio * sum([individual.token for individual in individuals])
         # consider the active status
         for i in range(self.policy_num):
@@ -145,11 +153,19 @@ class DAO:
             performance_list += [individual.payoff for individual in team.individuals]
         new_performance = sum(performance_list) / len(performance_list)
         performance_increment_ratio = (new_performance - prior_performance) / prior_performance
-        for individual in individuals:
-            if individual.active == 1:
-                individual.token = individual.token * incentive * performance_increment_ratio
-            elif individual.active == 0:
-                individual.token = individual.token * (1 - incentive) * performance_increment_ratio
+        # The increment ratio/expansion should be mostly attributed/allocated to only active members
+        if performance_increment_ratio > 0:  # if the value is added (for incentive rather than penalty)
+            token_sum, active_sum = 0, 0
+            for individual in individuals:
+                token_sum += individual.token
+                active_sum += individual.active
+            for individual in individuals:
+                if individual.active == 1:
+                    individual.token += (incentive * performance_increment_ratio * token_sum) / active_sum
+                    # most token increments are equally allocate to active members
+                elif individual.active == 0:
+                    individual.token += ((1 - incentive) * performance_increment_ratio * token_sum) / (self.n - active_sum)
+                    # some token increments are equally allocate to inactive members
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
@@ -174,9 +190,13 @@ class DAO:
                 acc += 1
         return acc
 
-    def gini(self, array=None):
+    def get_gini(self,):
+        token_list = []
+        for team in self.teams:
+            for individual in team.individuals:
+                token_list.append(individual.token)
         # Ensure the array is a numpy array
-        array = np.array(array)
+        array = np.array(token_list)
 
         # If the array is empty or contains only zeros, return 0
         if array.size == 0 or np.all(array == 0):
