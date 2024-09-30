@@ -41,8 +41,7 @@ def func(m=None, n=None, group_size=None, lr=None, incentive=None, active_rate=N
             for team in dao.teams:
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
-        dao.incentive_search(threshold_ratio=threshold_ratio, incentive=incentive, basic_active_rate=active_rate,
-                             sigmoid_center=7.5, token_sum_base=token_sum_base)
+        dao.incentive_search(threshold_ratio=threshold_ratio, incentive=incentive, basic_active_rate=active_rate, k=1)
 
         # update the real participant rate
         active_count = 0
@@ -65,16 +64,16 @@ if __name__ == '__main__':
     m = 90
     n = 350
     lr = 0.3
-    repetition = 50
+    repetition = 100
     search_loop = 300
     threshold_ratio_list = np.arange(0.40, 0.71, 0.01)  # 31 cases
-    incentive_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-    active_rate_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    incentive_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+    active_rate_list = [0.5, 0.6, 0.7, 0.8, 0.9]
     asymmetry_list = [1, 2, 3, 4]
     lr_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     group_size = 7  # the smallest group size in Fang's model: 7
 
-    concurrency = 50
+    concurrency = 100
     sema = Semaphore(concurrency)
     manager = mp.Manager()
     return_dict = manager.dict()

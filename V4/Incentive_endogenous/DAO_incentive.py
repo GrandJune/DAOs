@@ -4,9 +4,8 @@
 # @FileName: Superior.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
-import math
 from Individual_incentive import Individual
-from Team import Team
+from Team_incentive import Team
 from Reality import Reality
 import numpy as np
 
@@ -19,7 +18,7 @@ class DAO:
         :param reality: to provide feedback
         """
         self.m = m  # state length
-        self.n = n  # the number of subunits under this superior
+        self.n = n  # the number of individuals
         if self.m % alpha != 0:
             raise ValueError("m is not dividable by {0}".format(alpha))
         self.alpha = alpha  # The aggregation degree
@@ -91,28 +90,39 @@ class DAO:
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
 
-    def incentive_search(self, threshold_ratio=None, incentive=1, basic_active_rate=None):
+    def incentive_search(self, threshold_ratio=None, incentive=1.0, basic_active_rate=None, k=1):
+        prior_performance_list = []
+        for team in self.teams:
+            prior_performance_list += [individual.payoff for individual in team.individuals]
+        prior_performance = sum(prior_performance_list) / len(prior_performance_list)
         new_consensus = []
         individuals = []
         for team in self.teams:
             individuals += team.individuals
         for individual in individuals:
             individual.policy = self.reality.belief_2_policy(belief=individual.belief)
-            # individuals are sensitive to their token amount in deciding whether to vote
-            prob_to_vote = basic_active_rate + (1 - basic_active_rate) * (2 / (1 + np.exp(- (individual.token - 1))) - 1)
+            # individuals are sensitive to the incentivized token amount in deciding whether to vote
+            # endogenous asymmetry from incentive,
+            # compared to exogenous asymmetry from many factors
+            # unrelated to the value redistribution that comes with growth in organizational performance, such as investment factors, -> captured by exgogenous asymmetry
+            x = individual.incentive
+            sigmoid_output = x / (x + (1-x) * np.exp(- k * x))
+            # linear_output = x * k
+            prob_to_vote = basic_active_rate + sigmoid_output
             # modify Sigmoid func so that y=0 when x=1
+            individual.prob_to_vote = prob_to_vote
             if np.random.uniform(0, 1) < prob_to_vote:
                 individual.active = 1
             else:
                 individual.active = 0
-        # for individual in individuals:
-        #     if np.random.uniform(0, 1) < active_rate:  # if active rate, e.g., 0.8
-        #         individual.active = 1
-        #     else:
-        #         if np.random.uniform(0, 1) < incentive:  # if incentive into vote, e.g., 0.8
-        #             individual.active = 1
-        #         else:
-        #             individual.active = 0
+        prob_to_vote_list = []
+        token_list = []
+        active_list = []
+        for individual in individuals:
+            prob_to_vote_list.append(individual.prob_to_vote)
+            token_list.append(individual.token)
+            active_list.append(individual.active)
+
         threshold = threshold_ratio * sum([individual.token for individual in individuals])
         # consider the active status
         for i in range(self.policy_num):
@@ -125,28 +135,25 @@ class DAO:
                 new_consensus.append(-1)
             else:
                 new_consensus.append(0)
-        # Once there is a change in consensus, reward the contributor
-        # Rewards arise from the better-configured consensus quality
-        # Incentive adjust the distribution of value between active voters and inactive voters (1-incentive proportion)
-        prior_consensus_payoff = self.consensus_payoff
-        new_consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
-        consensus_increment_ratio = (new_consensus_payoff - prior_consensus_payoff) / prior_consensus_payoff
-        for individual in individuals:
-            if individual.active == 1:
-                individual.token = individual.token * incentive * consensus_increment_ratio
-            elif individual.active == 0:
-                individual.token = individual.token * (1 - incentive) * consensus_increment_ratio
         self.consensus = new_consensus
-        self.consensus_payoff = new_consensus_payoff
+        self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
         # 1) Generate and 2) adjust the superior majority view and 3) learn from it
         for team in self.teams:
             team.form_individual_majority_view()
             team.adjust_majority_view_2_consensus(policy=self.consensus)
-            team.learn()
+            team.learn()  # only active voters will learn from consensus
         performance_list = []
         for team in self.teams:
             performance_list += [individual.payoff for individual in team.individuals]
-
+        new_performance = sum(performance_list) / len(performance_list)
+        performance_increment_ratio = (new_performance - prior_performance) / prior_performance  # ideally max: 1
+        # The increment ratio/expansion should be mostly attributed/allocated to only active members
+        if (performance_increment_ratio > 0) and self.consensus_payoff > 0:  # if the value is added (for incentive rather than penalty)
+            for individual in individuals:
+                if individual.active == 1:
+                    individual.incentive = incentive * performance_increment_ratio * individual.token
+                    individual.token *= (1 + incentive * performance_increment_ratio)
+                    # token increments are equally allocate to only active members
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
@@ -171,18 +178,29 @@ class DAO:
                 acc += 1
         return acc
 
-    def get_gini(self):
-        array = []
+    def get_gini(self,):
+        token_list = []
         for team in self.teams:
             for individual in team.individuals:
-                array.append(individual.token)
-        array = sorted(array)
-        n = len(array)
-        coefficient = 0
-        for i, value in enumerate(array):
-            coefficient += (2 * i - n) * value
-        coefficient /= n * sum(array)
-        return coefficient
+                token_list.append(individual.token)
+        # Ensure the array is a numpy array
+        array = np.array(token_list)
+
+        # If the array is empty or contains only zeros, return 0
+        if array.size == 0 or np.all(array == 0):
+            return 0
+
+        # Sort the array in ascending order
+        array = np.sort(array)
+
+        # Get the number of elements in the array
+        n = array.size
+
+        # Calculate the Gini coefficient using the efficient formula
+        numerator = np.sum((2 * np.arange(1, n + 1) - n - 1) * array)
+        gini_index = numerator / (n * np.sum(array))
+
+        return gini_index
 
     def turnover(self, turnover_rate=None):
         if turnover_rate:
@@ -200,54 +218,73 @@ class DAO:
 if __name__ == '__main__':
     m = 60
     n = 280
-    search_loop = 100
+    search_loop = 200
     lr = 0.3
     alpha = 3
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, version="Rushed", alpha=3)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size, alpha=3)
-    # dao.teams[0].individuals[0].belief = reality.real_code.copy()
-    # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
-    # print(dao.teams[0].individuals[0].belief)
-    # print(dao.teams[0].individuals[0].payoff)
+    asymmetry = 1
+    mode = 1
+    token_list = []
+    individual_list = []
+    for team in dao.teams:
+        for individual in team.individuals:
+            individual.token = (np.random.pareto(a=asymmetry) + 1) * mode
+            token_list.append(individual.token)
+            individual_list.append(individual)
+    print("Token sum: ", sum(token_list), max(token_list))
     for period in range(search_loop):
-        dao.incentive_search(threshold_ratio=0.5, incentive=50)
-        # print(period, dao.consensus, reality.real_policy, reality.real_code)
-        # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].policy,
-        #       dao.teams[0].individuals[0].payoff)
-        print("--{0}--".format(period))
-    import matplotlib.pyplot as plt
-    x = range(search_loop)
+        dao.incentive_search(threshold_ratio=0.4, incentive=0.8, basic_active_rate=0.2, k=1)
+        active_list = []
+        active_sum, token_sum = 0, 0
+        max_indicator, max_index = 0, 0
+        min_indicator, min_index = np.inf, 0
+        for index, individual in enumerate(individual_list):
+            if individual.token > max_indicator:
+                max_indicator = individual.token
+                max_index = index
+            if individual.token < min_index:
+                min_indicator = individual.token
+                min_index = index
+        print(individual_list[max_index].prob_to_vote, individual_list[max_index].token,
+              individual_list[max_index].incentive, individual_list[max_index].active)
 
-    plt.plot(x, dao.performance_across_time, "k-", label="Mean")
-    plt.plot(x, dao.consensus_performance_across_time, "r-", label="Consensus")
-    plt.title('Performance')
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-    plt.ylabel('Performance', fontweight='bold', fontsize=10)
-    plt.legend(frameon=False, ncol=3, fontsize=10)
-    # plt.savefig("DAO_performance.png", transparent=False, dpi=1200)
-    plt.show()
-    plt.clf()
+        print(individual_list[min_index].prob_to_vote, individual_list[min_index].token,
+              individual_list[min_index].incentive, individual_list[min_index].active)
+        print("-" * 5)
+    # import matplotlib.pyplot as plt
+    # x = range(search_loop)
+    #
+    # plt.plot(x, dao.performance_across_time, "k-", label="Mean")
+    # plt.plot(x, dao.consensus_performance_across_time, "r-", label="Consensus")
+    # plt.title('Performance')
+    # plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    # plt.ylabel('Performance', fontweight='bold', fontsize=10)
+    # plt.legend(frameon=False, ncol=3, fontsize=10)
+    # # plt.savefig("DAO_performance.png", transparent=False, dpi=1200)
+    # plt.show()
+    # plt.clf()
 
     # Diversity
-    plt.plot(x, dao.diversity_across_time, "k-", label="DAO")
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-    plt.ylabel('Diversity', fontweight='bold', fontsize=10)
-    plt.title('Diversity')
-    plt.legend(frameon=False, ncol=3, fontsize=10)
-    # plt.savefig("DAO_diversity.png", transparent=False, dpi=1200)
-    plt.show()
-    plt.clf()
+    # plt.plot(x, dao.diversity_across_time, "k-", label="DAO")
+    # plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    # plt.ylabel('Diversity', fontweight='bold', fontsize=10)
+    # plt.title('Diversity')
+    # plt.legend(frameon=False, ncol=3, fontsize=10)
+    # # plt.savefig("DAO_diversity.png", transparent=False, dpi=1200)
+    # plt.show()
+    # plt.clf()
 
     # Variance
-    plt.plot(x, dao.variance_across_time, "k-", label="DAO")
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-    plt.ylabel('Variance', fontweight='bold', fontsize=10)
-    plt.title('Variance')
-    plt.legend(frameon=False, ncol=3, fontsize=10)
-    # plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
-    plt.show()
-    plt.clf()
+    # plt.plot(x, dao.variance_across_time, "k-", label="DAO")
+    # plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    # plt.ylabel('Variance', fontweight='bold', fontsize=10)
+    # plt.title('Variance')
+    # plt.legend(frameon=False, ncol=3, fontsize=10)
+    # # plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
+    # plt.show()
+    # plt.clf()
 
     # # Gini Index
     # plt.plot(x, dao.gini_across_time, "k-", label="DAO")

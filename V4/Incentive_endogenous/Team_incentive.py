@@ -69,6 +69,8 @@ class Team:
         for individual in self.individuals:
             if individual.superior_majority_view is None:
                 continue
+            if individual.active == 0:
+                continue
             individual.learning_from_belief(belief=individual.superior_majority_view)
 
 

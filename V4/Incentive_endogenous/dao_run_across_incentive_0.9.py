@@ -22,15 +22,10 @@ def func(m=None, n=None, group_size=None, lr=None, incentive=None,
     # pre-assign the token according to the asymmetry degree
     mode = 1
     # Fixing the asymmetry  !!!!!
-    asymmetry = 0
-    if asymmetry == 0:
-        for team in dao.teams:
-            for individual in team.individuals:
-                individual.token = 1
-    else:
-        for team in dao.teams:
-            for individual in team.individuals:
-                individual.token = (np.random.pareto(a=asymmetry) + 1) * mode
+    asymmetry = 2
+    for team in dao.teams:
+        for individual in team.individuals:
+            individual.token = (np.random.pareto(a=asymmetry) + 1) * mode
     for period in range(search_loop):
         dao.incentive_search(threshold_ratio=0.5, incentive=incentive, basic_active_rate=active_rate)
 
@@ -45,12 +40,12 @@ if __name__ == '__main__':
     m = 90
     n = 350
     lr = 0.3
-    repetition = 50
+    repetition = 100
     search_loop = 300
     incentive_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     group_size = 7  # the smallest group size in Fang's model: 7
 
-    concurrency = 50
+    concurrency = 100
     active_rate = 0.6
     # DVs
     performance_final_across_incentive = []
