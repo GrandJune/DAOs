@@ -3,8 +3,8 @@
 #SBATCH --job-name=Incen
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
-#SBATCH --mem=200gb
+#SBATCH --mem=300gb
 #SBATCH --partition=normal
 #SBATCH --cpus-per-task=50
 #SBATCH --nodes=1
-python dao_run.py
+python dao_run_mode150.py

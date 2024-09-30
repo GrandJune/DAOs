@@ -225,7 +225,7 @@ if __name__ == '__main__':
     reality = Reality(m=m, version="Rushed", alpha=3)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size, alpha=3)
     asymmetry = 4
-    mode = 1
+    mode = 200
     token_list = []
     individual_list = []
     for team in dao.teams:
@@ -235,7 +235,7 @@ if __name__ == '__main__':
             individual_list.append(individual)
     print("Token sum: ", sum(token_list), max(token_list))
     for period in range(search_loop):
-        dao.incentive_search(threshold_ratio=0.5, incentive=1, basic_active_rate=0.6, k=200)
+        dao.incentive_search(threshold_ratio=0.2, incentive=1, basic_active_rate=0.4, k=1)
         active_sum, token_sum = 0, 0
         token_list = []
         for individual in individual_list:
