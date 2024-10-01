@@ -148,7 +148,7 @@ class DAO:
         new_performance = sum(performance_list) / len(performance_list)
         performance_increment_ratio = (new_performance - prior_performance) / prior_performance  # ideally max: 1
         # The increment ratio/expansion should be mostly attributed/allocated to only active members
-        if (performance_increment_ratio > 0) and self.consensus_payoff > 0:  # if the value is added (for incentive rather than penalty)
+        if performance_increment_ratio > 0:  # if the value is added (for incentive rather than penalty)
             for individual in individuals:
                 if individual.active == 1:
                     individual.incentive = incentive * performance_increment_ratio * individual.token
@@ -235,7 +235,7 @@ if __name__ == '__main__':
             individual_list.append(individual)
     print("Token sum: ", sum(token_list), max(token_list))
     for period in range(search_loop):
-        dao.incentive_search(threshold_ratio=0.2, incentive=1, basic_active_rate=0.4, k=1)
+        dao.incentive_search(threshold_ratio=0.4, incentive=1, basic_active_rate=0.4, k=1)
         active_sum, token_sum = 0, 0
         token_list = []
         for individual in individual_list:
@@ -256,8 +256,8 @@ if __name__ == '__main__':
             if individual.token == q1_value:
                 print("Q1")
                 q1_index = index
-        print("Max: ", max_indicator, "Q1: ", q1_value, "Min: ", min_indicator)
-        print(token_list)
+        # print("Max: ", max_indicator, "Q1: ", q1_value, "Min: ", min_indicator)
+        # print(token_list)
 
         print(individual_list[max_index].prob_to_vote, individual_list[max_index].token,
               individual_list[max_index].incentive, individual_list[max_index].active)
