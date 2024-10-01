@@ -74,9 +74,7 @@ if __name__ == '__main__':
     for loop in range(repetition):
         incentive = np.random.choice(incentive_list)
         active_rate = np.random.choice(active_rate_list)
-        threshold_ratio = 1.1
-        while threshold_ratio > active_rate:  # no sufficient number for voting; never work -> autonomous
-            threshold_ratio = np.random.choice(threshold_ratio_list)
+        threshold_ratio = np.random.choice(threshold_ratio_list)
         asymmetry = np.random.choice(asymmetry_list)
         lr = np.random.choice(lr_list)
         # turbulence_freq = np.random.choice([20, 40, 60, 80, 100])
