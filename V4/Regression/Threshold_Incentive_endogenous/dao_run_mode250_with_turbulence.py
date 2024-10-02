@@ -54,8 +54,8 @@ if __name__ == '__main__':
     m = 90
     n = 350
     repetition = 200
-    search_loop = 300
-    mode = 200
+    search_loop = 500
+    mode = 250
     threshold_ratio_list = np.arange(0.01, 0.71, 0.01)  # 31 cases
     incentive_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     active_rate_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
@@ -71,9 +71,7 @@ if __name__ == '__main__':
     for loop in range(repetition):
         incentive = np.random.choice(incentive_list)
         active_rate = np.random.choice(active_rate_list)
-        threshold_ratio = 1.1
-        while threshold_ratio > active_rate:  # no sufficient number for voting; never work -> autonomous
-            threshold_ratio = np.random.choice(threshold_ratio_list)
+        threshold_ratio = np.random.choice(threshold_ratio_list)
         asymmetry = np.random.choice(asymmetry_list)
         lr = np.random.choice(lr_list)
         turbulence_freq = np.random.choice([20, 40, 60, 80, 100])
@@ -89,11 +87,11 @@ if __name__ == '__main__':
     results = return_dict.values()  # Don't need dict index, since it is repetition.
     # Automatic integration of results
     time.sleep(np.random.uniform(low=1, high=60))
-    if os.path.exists("dao_data_mode100"):
-        with open("dao_data_mode100", 'rb') as infile:
+    if os.path.exists("dao_data_mode250_turbulence"):
+        with open("dao_data_mode250_turbulence", 'rb') as infile:
             prior_results = pickle.load(infile)
             results += prior_results
-    with open("dao_data_mode100", 'wb') as out_file:
+    with open("dao_data_mode250_turbulence", 'wb') as out_file:
         pickle.dump(results, out_file)
 
     t1 = time.time()

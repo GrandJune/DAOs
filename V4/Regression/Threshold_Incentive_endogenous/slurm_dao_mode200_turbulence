@@ -7,4 +7,4 @@
 #SBATCH --partition=normal
 #SBATCH --cpus-per-task=50
 #SBATCH --nodes=1
-python dao_run_mode75.py
+python dao_run_mode200_with_turbulence.py
