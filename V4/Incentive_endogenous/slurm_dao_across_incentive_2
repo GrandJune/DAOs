@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=03:00:00
+#SBATCH --time=3-00:00:00
 #SBATCH --job-name=incentive_plot
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
@@ -7,4 +7,4 @@
 #SBATCH --partition=long
 #SBATCH --cpus-per-task=50
 #SBATCH --nodes=1
-python dao_run_across_incentive_0.9.py
+python dao_run_across_incentive_0.6.py

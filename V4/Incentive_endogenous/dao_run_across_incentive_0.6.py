@@ -20,7 +20,7 @@ def func(m=None, n=None, group_size=None, lr=None, incentive=None,
     reality = Reality(m=m)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
     # pre-assign the token according to the asymmetry degree
-    mode = 1
+    mode = 200
     # Fixing the asymmetry  !!!!!
     asymmetry = 2
     for team in dao.teams:
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     m = 90
     n = 350
     lr = 0.3
-    repetition = 50
+    repetition = 100
     search_loop = 300
     incentive_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     group_size = 7  # the smallest group size in Fang's model: 7
@@ -107,59 +107,59 @@ if __name__ == '__main__':
 
     # Automatic integration of results
     time.sleep(np.random.uniform(low=2, high=60))
-    if os.path.exists(r"dao_performance"):
-        with open("dao_performance", 'rb') as infile:
+    if os.path.exists(r"dao_performance_0.6"):
+        with open("dao_performance_0.6", 'rb') as infile:
             prior_results = pickle.load(infile)
             performance_final_across_incentive = [0.5 * (a + b) for a, b in zip(performance_final_across_incentive, prior_results)]
-        with open("dao_consensus_performance", 'rb') as infile:
+        with open("dao_consensus_performance_0.6", 'rb') as infile:
             prior_results = pickle.load(infile)
             consensus_final_across_incentive = [0.5 * (a + b) for a, b in zip(consensus_final_across_incentive, prior_results)]
-        with open("dao_diversity", 'rb') as infile:
+        with open("dao_diversity_0.6", 'rb') as infile:
             prior_results = pickle.load(infile)
             diversity_final_across_incentive = [0.5 * (a + b) for a, b in zip(diversity_final_across_incentive, prior_results)]
-        with open("dao_variance", 'rb') as infile:
+        with open("dao_variance_0.6", 'rb') as infile:
             prior_results = pickle.load(infile)
             variance_final_across_incentive = [0.5 * (a + b) for a, b in zip(variance_final_across_incentive, prior_results)]
 
-        with open("dao_performance_across_time", 'rb') as infile:
-            prior_results = pickle.load(infile)
-            for index, row_1, row_2 in zip(range(len(prior_results)), prior_results, performance_final_across_incentive_time):
-                new_row = [0.5 * (a + b) for a, b in zip(row_1, row_2)]
-                performance_final_across_incentive_time[index] = new_row
-        with open("dao_consensus_performance_across_time", 'rb') as infile:
-            prior_results = pickle.load(infile)
-            for index, row_1, row_2 in zip(range(len(prior_results)), prior_results, consensus_final_across_incentive_time):
-                new_row = [0.5 * (a + b) for a, b in zip(row_1, row_2)]
-                consensus_final_across_incentive_time[index] = new_row
-        with open("dao_diversity_across_time", 'rb') as infile:
-            prior_results = pickle.load(infile)
-            for index, row_1, row_2 in zip(range(len(prior_results)), prior_results, diversity_final_across_incentive_time):
-                new_row = [0.5 * (a + b) for a, b in zip(row_1, row_2)]
-                diversity_final_across_incentive_time[index] = new_row
-        with open("dao_variance_across_time", 'rb') as infile:
-            prior_results = pickle.load(infile)
-            for index, row_1, row_2 in zip(range(len(prior_results)), prior_results, variance_final_across_incentive_time):
-                new_row = [0.5 * (a + b) for a, b in zip(row_1, row_2)]
-                variance_final_across_incentive_time[index] = new_row
+        # with open("dao_performance_across_time_0.3", 'rb') as infile:
+        #     prior_results = pickle.load(infile)
+        #     for index, row_1, row_2 in zip(range(len(prior_results)), prior_results, performance_final_across_incentive_time):
+        #         new_row = [0.5 * (a + b) for a, b in zip(row_1, row_2)]
+        #         performance_final_across_incentive_time[index] = new_row
+        # with open("dao_consensus_performance_across_time_0.3", 'rb') as infile:
+        #     prior_results = pickle.load(infile)
+        #     for index, row_1, row_2 in zip(range(len(prior_results)), prior_results, consensus_final_across_incentive_time):
+        #         new_row = [0.5 * (a + b) for a, b in zip(row_1, row_2)]
+        #         consensus_final_across_incentive_time[index] = new_row
+        # with open("dao_diversity_across_time_0.3", 'rb') as infile:
+        #     prior_results = pickle.load(infile)
+        #     for index, row_1, row_2 in zip(range(len(prior_results)), prior_results, diversity_final_across_incentive_time):
+        #         new_row = [0.5 * (a + b) for a, b in zip(row_1, row_2)]
+        #         diversity_final_across_incentive_time[index] = new_row
+        # with open("dao_variance_across_time_0.3", 'rb') as infile:
+        #     prior_results = pickle.load(infile)
+        #     for index, row_1, row_2 in zip(range(len(prior_results)), prior_results, variance_final_across_incentive_time):
+        #         new_row = [0.5 * (a + b) for a, b in zip(row_1, row_2)]
+        #         variance_final_across_incentive_time[index] = new_row
 
     # remove time
-    with open("dao_performance", 'wb') as out_file:
+    with open("dao_performance_0.6", 'wb') as out_file:
         pickle.dump(performance_final_across_incentive, out_file)
-    with open("dao_consensus_performance", 'wb') as out_file:
+    with open("dao_consensus_performance_0.6", 'wb') as out_file:
         pickle.dump(consensus_final_across_incentive, out_file)
-    with open("dao_diversity", 'wb') as out_file:
+    with open("dao_diversity_0.6", 'wb') as out_file:
         pickle.dump(diversity_final_across_incentive, out_file)
-    with open("dao_variance", 'wb') as out_file:
+    with open("dao_variance_0.6", 'wb') as out_file:
         pickle.dump(variance_final_across_incentive, out_file)
     # keep time
-    with open("dao_performance_across_time", 'wb') as out_file:
-        pickle.dump(performance_final_across_incentive_time, out_file)
-    with open("dao_consensus_performance_across_time", 'wb') as out_file:
-        pickle.dump(consensus_final_across_incentive_time, out_file)
-    with open("dao_diversity_across_time", 'wb') as out_file:
-        pickle.dump(diversity_final_across_incentive_time, out_file)
-    with open("dao_variance_across_time", 'wb') as out_file:
-        pickle.dump(variance_final_across_incentive_time, out_file)
+    # with open("dao_performance_across_time", 'wb') as out_file:
+    #     pickle.dump(performance_final_across_incentive_time, out_file)
+    # with open("dao_consensus_performance_across_time", 'wb') as out_file:
+    #     pickle.dump(consensus_final_across_incentive_time, out_file)
+    # with open("dao_diversity_across_time", 'wb') as out_file:
+    #     pickle.dump(diversity_final_across_incentive_time, out_file)
+    # with open("dao_variance_across_time", 'wb') as out_file:
+    #     pickle.dump(variance_final_across_incentive_time, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))

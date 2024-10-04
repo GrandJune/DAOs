@@ -179,6 +179,10 @@ class DAO:
         return acc
 
     def get_gini(self,):
+        """
+        0: perfect equality  1: maximum inequality
+        :return:
+        """
         token_list = []
         for team in self.teams:
             for individual in team.individuals:

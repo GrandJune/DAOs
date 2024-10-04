@@ -148,7 +148,7 @@ class DAO:
         new_performance = sum(performance_list) / len(performance_list)
         performance_increment_ratio = (new_performance - prior_performance) / prior_performance  # ideally max: 1
         # The increment ratio/expansion should be mostly attributed/allocated to only active members
-        if (performance_increment_ratio > 0) and self.consensus_payoff > 0:  # if the value is added (for incentive rather than penalty)
+        if performance_increment_ratio > 0:  # if the value is added (for incentive rather than penalty)
             for individual in individuals:
                 if individual.active == 1:
                     individual.incentive = incentive * performance_increment_ratio * individual.token
@@ -179,6 +179,10 @@ class DAO:
         return acc
 
     def get_gini(self,):
+        """
+        0: perfect equality  1: maximum inequality
+        :return:
+        """
         token_list = []
         for team in self.teams:
             for individual in team.individuals:
@@ -224,8 +228,8 @@ if __name__ == '__main__':
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, version="Rushed", alpha=3)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size, alpha=3)
-    asymmetry = 1
-    mode = 1
+    asymmetry = 4
+    mode = 200
     token_list = []
     individual_list = []
     for team in dao.teams:
@@ -235,23 +239,39 @@ if __name__ == '__main__':
             individual_list.append(individual)
     print("Token sum: ", sum(token_list), max(token_list))
     for period in range(search_loop):
-        dao.incentive_search(threshold_ratio=0.4, incentive=0.8, basic_active_rate=0.2, k=1)
-        active_list = []
+        dao.incentive_search(threshold_ratio=0.4, incentive=1, basic_active_rate=0.4, k=1)
         active_sum, token_sum = 0, 0
-        max_indicator, max_index = 0, 0
-        min_indicator, min_index = np.inf, 0
+        token_list = []
+        for individual in individual_list:
+            active_sum += individual.active
+            token_list.append(individual.token)
+        token_list = sorted(token_list)
+        q1_value = np.percentile(token_list, 25)
+        print("q1_value: ", q1_value)
+        max_indicator, q1_index, max_index = 0, 0, 0
+        min_indicator, min_index = 100, 0
         for index, individual in enumerate(individual_list):
             if individual.token > max_indicator:
                 max_indicator = individual.token
                 max_index = index
-            if individual.token < min_index:
+            if individual.token < min_indicator:
                 min_indicator = individual.token
                 min_index = index
+            if individual.token == q1_value:
+                print("Q1")
+                q1_index = index
+        # print("Max: ", max_indicator, "Q1: ", q1_value, "Min: ", min_indicator)
+        # print(token_list)
+
         print(individual_list[max_index].prob_to_vote, individual_list[max_index].token,
               individual_list[max_index].incentive, individual_list[max_index].active)
 
         print(individual_list[min_index].prob_to_vote, individual_list[min_index].token,
               individual_list[min_index].incentive, individual_list[min_index].active)
+
+        print(individual_list[q1_index].prob_to_vote, individual_list[q1_index].token,
+              individual_list[q1_index].incentive, individual_list[q1_index].active)
+        print(active_sum / n)
         print("-" * 5)
     # import matplotlib.pyplot as plt
     # x = range(search_loop)
