@@ -54,7 +54,7 @@ if __name__ == '__main__':
     m = 90
     n = 350
     repetition = 200
-    search_loop = 500
+    search_loop = 600
     mode = 200
     threshold_ratio_list = np.arange(0.01, 0.71, 0.01)  # 31 cases
     incentive_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
@@ -74,8 +74,8 @@ if __name__ == '__main__':
         threshold_ratio = np.random.choice(threshold_ratio_list)
         asymmetry = np.random.choice(asymmetry_list)
         lr = np.random.choice(lr_list)
-        turbulence_freq = np.random.choice([20, 40, 60, 80, 100])
-        turbulence_level = np.random.choice([0.10, 0.12, 0.14, 0.16, 0.18, 0.20])
+        turbulence_freq = np.random.choice([100, 150, 200])
+        turbulence_level = np.random.choice([0.10, 0.12, 0.14])
         sema.acquire()
         p = mp.Process(target=func,
                        args=(m, n, group_size, lr, incentive, active_rate, asymmetry, mode, threshold_ratio,
