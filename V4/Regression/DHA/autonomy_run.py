@@ -42,9 +42,9 @@ if __name__ == '__main__':
     return_dict = manager.dict()
     for loop in range(repetition):
         # Randomization
-        m = np.random.choice(m_list)
-        group_num = np.random.choice(group_num_list)
-        group_size = np.random.choice(group_size_list)  # 28*40=1120; 10*7=70
+        m = 90
+        group_num = 50
+        group_size = 7
         n = group_size * group_num
         lr = np.random.choice(lr_list)
 

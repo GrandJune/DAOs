@@ -29,13 +29,9 @@ if __name__ == '__main__':
     t0 = time.time()
     np.random.seed(None)
     threshold_ratio = 0.5  # Fix parameters of interest
-    group_num_list = [75, 50, 25]
-    group_size_list = [7, 14, 21]
-    m_list = [60, 90, 120]
     lr_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     repetition = 100
     search_loop = 300
-
     concurrency = 100
     data = []
     sema = Semaphore(concurrency)
@@ -44,9 +40,9 @@ if __name__ == '__main__':
     jobs = []
     for loop in range(repetition):
         # Randomization
-        m = np.random.choice(m_list)
-        group_num = np.random.choice(group_num_list)
-        group_size = np.random.choice(group_size_list)  # 28*40=1120; 10*7=70
+        m = 90
+        group_num = 50
+        group_size = 7
         n = group_size * group_num
         lr = np.random.choice(lr_list)
         sema.acquire()
