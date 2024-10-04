@@ -50,14 +50,14 @@ if __name__ == '__main__':
     m = 90
     n = 350
     lr = 0.3
-    repetition = 200
+    repetition = 100
     search_loop = 300
     threshold_ratio_list = np.arange(0.40, 0.71, 0.01)  # 31 cases
     asymmetry_list = [1, 2, 3, 4]
     lr_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     group_size = 7  # the smallest group size in Fang's model: 7
 
-    concurrency = 50
+    concurrency = 100
     sema = Semaphore(concurrency)
     manager = mp.Manager()
     return_dict = manager.dict()
