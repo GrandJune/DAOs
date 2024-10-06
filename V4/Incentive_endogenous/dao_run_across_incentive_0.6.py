@@ -22,10 +22,11 @@ def func(m=None, n=None, group_size=None, lr=None, incentive=None,
     # pre-assign the token according to the asymmetry degree
     mode = 200
     # Fixing the asymmetry  !!!!!
-    asymmetry = 2
+    # asymmetry = 2
     for team in dao.teams:
         for individual in team.individuals:
-            individual.token = (np.random.pareto(a=asymmetry) + 1) * mode
+            # individual.token = (np.random.pareto(a=asymmetry) + 1) * mode
+            individual.token = mode
     for period in range(search_loop):
         dao.incentive_search(threshold_ratio=0.5, incentive=incentive, basic_active_rate=active_rate)
 
