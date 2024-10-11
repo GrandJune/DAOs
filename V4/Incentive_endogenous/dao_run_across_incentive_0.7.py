@@ -108,17 +108,17 @@ if __name__ == '__main__':
 
     # Automatic integration of results
     time.sleep(np.random.uniform(low=2, high=60))
-    if os.path.exists(r"dao_performance_0.6"):
-        with open("dao_performance_0.6", 'rb') as infile:
+    if os.path.exists(r"dao_performance_0.7"):
+        with open("dao_performance_0.7", 'rb') as infile:
             prior_results = pickle.load(infile)
             performance_final_across_incentive = [0.5 * (a + b) for a, b in zip(performance_final_across_incentive, prior_results)]
-        with open("dao_consensus_performance_0.6", 'rb') as infile:
+        with open("dao_consensus_performance_0.7", 'rb') as infile:
             prior_results = pickle.load(infile)
             consensus_final_across_incentive = [0.5 * (a + b) for a, b in zip(consensus_final_across_incentive, prior_results)]
-        with open("dao_diversity_0.6", 'rb') as infile:
+        with open("dao_diversity_0.7", 'rb') as infile:
             prior_results = pickle.load(infile)
             diversity_final_across_incentive = [0.5 * (a + b) for a, b in zip(diversity_final_across_incentive, prior_results)]
-        with open("dao_variance_0.6", 'rb') as infile:
+        with open("dao_variance_0.7", 'rb') as infile:
             prior_results = pickle.load(infile)
             variance_final_across_incentive = [0.5 * (a + b) for a, b in zip(variance_final_across_incentive, prior_results)]
 
@@ -144,13 +144,13 @@ if __name__ == '__main__':
         #         variance_final_across_incentive_time[index] = new_row
 
     # remove time
-    with open("dao_performance_0.6", 'wb') as out_file:
+    with open("dao_performance_0.7", 'wb') as out_file:
         pickle.dump(performance_final_across_incentive, out_file)
-    with open("dao_consensus_performance_0.6", 'wb') as out_file:
+    with open("dao_consensus_performance_0.7", 'wb') as out_file:
         pickle.dump(consensus_final_across_incentive, out_file)
-    with open("dao_diversity_0.6", 'wb') as out_file:
+    with open("dao_diversity_0.7", 'wb') as out_file:
         pickle.dump(diversity_final_across_incentive, out_file)
-    with open("dao_variance_0.6", 'wb') as out_file:
+    with open("dao_variance_0.7", 'wb') as out_file:
         pickle.dump(variance_final_across_incentive, out_file)
     # keep time
     # with open("dao_performance_across_time", 'wb') as out_file:
