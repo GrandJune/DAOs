@@ -4,8 +4,10 @@
 # @FileName: Team.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
+import math
+from Individual import Individual
 from Reality import Reality
-
+import numpy as np
 
 class Team:
     def __init__(self, m=None, index=None, alpha=None, reality=None):
@@ -68,8 +70,6 @@ class Team:
     def learn(self):
         for individual in self.individuals:
             if individual.superior_majority_view is None:
-                continue
-            if individual.active == 0:
                 continue
             individual.learning_from_belief(belief=individual.superior_majority_view)
 
