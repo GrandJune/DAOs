@@ -135,6 +135,7 @@ class DAO:
                 new_consensus.append(-1)
             else:
                 new_consensus.append(0)
+        prior_consensus = self.consensus.copy()  # save prior consensus
         self.consensus = new_consensus
         self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
         # 1) Generate and 2) adjust the superior majority view and 3) learn from it
@@ -149,11 +150,14 @@ class DAO:
         performance_increment_ratio = (new_performance - prior_performance) / prior_performance  # ideally max: 1
         # The increment ratio/expansion should be mostly attributed/allocated to only active members
         if performance_increment_ratio > 0:  # if the value is added (for incentive rather than penalty)
-            for individual in individuals:
-                if individual.active == 1:
-                    individual.incentive = incentive * performance_increment_ratio * individual.token
-                    individual.token *= (1 + incentive * performance_increment_ratio)
-                    # token increments are equally allocate to only active members
+            for old_policy, new_policy, index in zip(prior_consensus, new_consensus, range(self.policy_num)):
+                if old_policy != new_policy:
+                    for individual in individuals:
+                        if (individual.policy[index] == new_policy) and (individual.active == 1):
+                            individual.incentive += incentive * performance_increment_ratio * individual.token
+                            # omit a scaling constant: policy_num
+                        individual.token += individual.incentive
+                            # token increments are allocated to those who contribute to consensus
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
@@ -179,6 +183,10 @@ class DAO:
         return acc
 
     def get_gini(self,):
+        """
+        0: perfect equality  1: maximum inequality
+        :return:
+        """
         token_list = []
         for team in self.teams:
             for individual in team.individuals:
@@ -235,7 +243,7 @@ if __name__ == '__main__':
             individual_list.append(individual)
     print("Token sum: ", sum(token_list), max(token_list))
     for period in range(search_loop):
-        dao.incentive_search(threshold_ratio=0.4, incentive=1, basic_active_rate=0.4, k=1)
+        dao.incentive_search(threshold_ratio=0.4, incentive=0.9, basic_active_rate=0.5, k=1)
         active_sum, token_sum = 0, 0
         token_list = []
         for individual in individual_list:
@@ -243,7 +251,7 @@ if __name__ == '__main__':
             token_list.append(individual.token)
         token_list = sorted(token_list)
         q1_value = np.percentile(token_list, 25)
-        print("q1_value: ", q1_value)
+        print("first_quarter_value: ", round(q1_value, 1))
         max_indicator, q1_index, max_index = 0, 0, 0
         min_indicator, min_index = 100, 0
         for index, individual in enumerate(individual_list):
@@ -254,20 +262,20 @@ if __name__ == '__main__':
                 min_indicator = individual.token
                 min_index = index
             if individual.token == q1_value:
-                print("Q1")
+                # print("Q1")
                 q1_index = index
         # print("Max: ", max_indicator, "Q1: ", q1_value, "Min: ", min_indicator)
         # print(token_list)
 
-        print(individual_list[max_index].prob_to_vote, individual_list[max_index].token,
+        print("Max Voter: ", individual_list[max_index].prob_to_vote, round(individual_list[max_index].token, 1),
               individual_list[max_index].incentive, individual_list[max_index].active)
 
-        print(individual_list[min_index].prob_to_vote, individual_list[min_index].token,
+        print("Min Voter: ", individual_list[min_index].prob_to_vote, round(individual_list[min_index].token, 1),
               individual_list[min_index].incentive, individual_list[min_index].active)
 
-        print(individual_list[q1_index].prob_to_vote, individual_list[q1_index].token,
+        print("First Quarter Voter: ", individual_list[q1_index].prob_to_vote, round(individual_list[q1_index].token, 1),
               individual_list[q1_index].incentive, individual_list[q1_index].active)
-        print(active_sum / n)
+        print("active rate: ", active_sum / n)
         print("-" * 5)
     # import matplotlib.pyplot as plt
     # x = range(search_loop)
