@@ -125,6 +125,7 @@ class DAO:
 
         threshold = threshold_ratio * sum([individual.token for individual in individuals])
         # consider the active status
+        # if either party meet the threshold, select relative majority
         for i in range(self.policy_num):
             overall_sum = sum([individual.policy[i] * individual.token * individual.active for individual in individuals])
             positive_count = sum([individual.token for individual in individuals if (individual.policy[i] == 1) and (individual.active == 1)])
