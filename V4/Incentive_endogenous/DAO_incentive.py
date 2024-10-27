@@ -180,6 +180,10 @@ class DAO:
         return acc
 
     def get_gini(self,):
+        """
+        Gini = 0: perfect equality; Gini = 1: extreme inequality
+        :return:
+        """
         token_list = []
         for team in self.teams:
             for individual in team.individuals:
@@ -217,7 +221,7 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 60
+    m = 30
     n = 280
     search_loop = 200
     lr = 0.3
@@ -231,12 +235,13 @@ if __name__ == '__main__':
     individual_list = []
     for team in dao.teams:
         for individual in team.individuals:
-            individual.token = (np.random.pareto(a=asymmetry) + 1) * mode
+            # individual.token = (np.random.pareto(a=asymmetry) + 1) * mode
+            individual.token = mode
             token_list.append(individual.token)
             individual_list.append(individual)
     print("Token sum: ", sum(token_list), max(token_list))
     for period in range(search_loop):
-        dao.incentive_search(threshold_ratio=0.4, incentive=1, basic_active_rate=0.4, k=1)
+        dao.incentive_search(threshold_ratio=0.4, incentive=1, basic_active_rate=0.9, k=1)
         active_sum, token_sum = 0, 0
         token_list = []
         for individual in individual_list:
@@ -244,7 +249,8 @@ if __name__ == '__main__':
             token_list.append(individual.token)
         token_list = sorted(token_list)
         q1_value = np.percentile(token_list, 25)
-        print("q1_value: ", q1_value)
+        q3_value = np.percentile(token_list, 75)
+        print("Q1 token: ", q1_value, "Q3 token: ", q3_value)
         max_indicator, q1_index, max_index = 0, 0, 0
         min_indicator, min_index = 100, 0
         for index, individual in enumerate(individual_list):
@@ -255,7 +261,7 @@ if __name__ == '__main__':
                 min_indicator = individual.token
                 min_index = index
             if individual.token == q1_value:
-                print("Q1")
+                # print("Q1")
                 q1_index = index
         # print("Max: ", max_indicator, "Q1: ", q1_value, "Min: ", min_indicator)
         # print(token_list)
@@ -268,7 +274,8 @@ if __name__ == '__main__':
 
         print(individual_list[q1_index].prob_to_vote, individual_list[q1_index].token,
               individual_list[q1_index].incentive, individual_list[q1_index].active)
-        print(active_sum / n)
+        gini_index = dao.get_gini()
+        print("active rate: ", active_sum / n, "Gini: ", gini_index)
         print("-" * 5)
     # import matplotlib.pyplot as plt
     # x = range(search_loop)
