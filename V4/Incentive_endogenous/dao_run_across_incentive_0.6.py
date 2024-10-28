@@ -28,7 +28,7 @@ def func(m=None, n=None, group_size=None, lr=None, incentive=None,
             # individual.token = (np.random.pareto(a=asymmetry) + 1) * mode
             individual.token = mode
     for period in range(search_loop):
-        dao.incentive_search(threshold_ratio=0.3, incentive=incentive, basic_active_rate=active_rate)
+        dao.incentive_search(threshold_ratio=0.4, incentive=incentive, basic_active_rate=active_rate)
 
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
@@ -163,4 +163,4 @@ if __name__ == '__main__':
     #     pickle.dump(variance_final_across_incentive_time, out_file)
 
     t1 = time.time()
-    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
+    print("active=0.6", time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(t1 - t0)))
