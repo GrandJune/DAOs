@@ -6,15 +6,11 @@
 # Observing PEP 8 coding style
 import numpy as np
 from DAO_active import DAO
-from Hierarchy import Hierarchy
-from Autonomy import Autonomy
 from Reality import Reality
 import multiprocessing as mp
 import time
-from multiprocessing import Pool
 from multiprocessing import Semaphore
 import pickle
-import math
 
 
 
@@ -24,6 +20,13 @@ def func(m=None, n=None, group_size=None, lr=None, active_rate=None, threshold_r
     reality = Reality(m=m)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
     for _ in range(search_loop):
+        # randomly select active voters
+        for team in dao.teams:
+            for individual in team.individuals:
+                if np.random.uniform(0, 1) < active_rate:
+                    individual.active = 1
+                else:
+                    individual.active = 0
         dao.active_search(threshold_ratio=threshold_ratio)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
@@ -36,7 +39,7 @@ if __name__ == '__main__':
     m = 90
     n = 350
     active_rate_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-    repetition = 400
+    repetition = 500
     concurrency = 100
     search_loop = 500
     group_size = 7  # the smallest group size in Fang's model: 7
@@ -109,23 +112,23 @@ if __name__ == '__main__':
         variance_across_para_time.append(variance_across_time)
 
     # save the without-time data (ready for figure)
-    with open("dao_performance_across_lr", 'wb') as out_file:
+    with open("dao_performance_across_active_rate", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("consensus_performance_across_lr", 'wb') as out_file:
+    with open("consensus_performance_across_active_rate", 'wb') as out_file:
         pickle.dump(consensus_performance_across_para, out_file)
-    with open("dao_diversity_across_lr", 'wb') as out_file:
+    with open("dao_diversity_across_active_rate", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("dao_variance_across_lr", 'wb') as out_file:
+    with open("dao_variance_across_active_rate", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
 
     # save the with-time data
-    with open("dao_performance_across_lr_time", 'wb') as out_file:
+    with open("dao_performance_across_active_rate_time", 'wb') as out_file:
         pickle.dump(performance_across_para_time, out_file)
-    with open("consensus_performance_across_lr_time", 'wb') as out_file:
+    with open("consensus_performance_across_active_rate_time", 'wb') as out_file:
         pickle.dump(consensus_performance_across_para_time, out_file)
-    with open("dao_diversity_across_lr_time", 'wb') as out_file:
+    with open("dao_diversity_across_active_rate_time", 'wb') as out_file:
         pickle.dump(diversity_across_para_time, out_file)
-    with open("dao_variance_across_lr_time", 'wb') as out_file:
+    with open("dao_variance_across_active_rate_time", 'wb') as out_file:
         pickle.dump(variance_across_para_time, out_file)
 
     t1 = time.time()
