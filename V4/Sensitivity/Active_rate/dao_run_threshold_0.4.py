@@ -44,7 +44,7 @@ if __name__ == '__main__':
     search_loop = 500
     group_size = 7  # the smallest group size in Fang's model: 7
     lr = 0.3
-    threshold_ratio = 0.5
+    threshold_ratio = 0.4
     # DVs
     performance_across_para = []
     consensus_performance_across_para = []
@@ -112,24 +112,14 @@ if __name__ == '__main__':
         variance_across_para_time.append(variance_across_time)
 
     # save the without-time data (ready for figure)
-    with open("dao_performance_across_active_rate", 'wb') as out_file:
+    with open("dao_performance_across_active_rate_{0}".format(threshold_ratio), 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("consensus_performance_across_active_rate", 'wb') as out_file:
+    with open("consensus_performance_across_active_rate_{0}".format(threshold_ratio), 'wb') as out_file:
         pickle.dump(consensus_performance_across_para, out_file)
-    with open("dao_diversity_across_active_rate", 'wb') as out_file:
+    with open("dao_diversity_across_active_rate_{0}".format(threshold_ratio), 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("dao_variance_across_active_rate", 'wb') as out_file:
+    with open("dao_variance_across_active_rate_{0}".format(threshold_ratio), 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
-
-    # save the with-time data
-    with open("dao_performance_across_active_rate_time", 'wb') as out_file:
-        pickle.dump(performance_across_para_time, out_file)
-    with open("consensus_performance_across_active_rate_time", 'wb') as out_file:
-        pickle.dump(consensus_performance_across_para_time, out_file)
-    with open("dao_diversity_across_active_rate_time", 'wb') as out_file:
-        pickle.dump(diversity_across_para_time, out_file)
-    with open("dao_variance_across_active_rate_time", 'wb') as out_file:
-        pickle.dump(variance_across_para_time, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))
