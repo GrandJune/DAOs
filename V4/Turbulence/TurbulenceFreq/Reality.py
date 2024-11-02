@@ -1,24 +1,27 @@
 # -*- coding: utf-8 -*-
-# @Time     : 6/9/2022 15:21
+# @Time     : 24/01/2024 19:05
 # @Author   : Junyi
 # @FileName: Reality.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
-import random
 import time
 import numpy as np
-import math
 from itertools import product
 
 
 class Reality:
     def __init__(self, m=None, version="Rushed", alpha=3):
+        """
+        :param m: problem dimension
+        :param version: payoff calculation version
+        :param alpha: aggregation level
+        """
         self.m = m
-        if m % 3 != 0:
-            raise ValueError("m is not dividable by 3")
+        if m % alpha != 0:
+            raise ValueError("m={0} is not dividable by $\\alpha$={1}".format(m, alpha))
         self.version = version
         self.real_code = np.random.choice([-1, 1], self.m, p=[0.5, 0.5])
-        self.alpha = alpha  # aggregation degree, 3 by default
+        self.alpha = alpha
         self.policy_num = self.m // self.alpha
         self.real_policy = self.belief_2_policy(belief=self.real_code)
 

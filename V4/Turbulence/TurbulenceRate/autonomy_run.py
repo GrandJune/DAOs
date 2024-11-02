@@ -5,16 +5,12 @@
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import numpy as np
-from DAO import DAO
-from Hierarchy import Hierarchy
 from Autonomy import Autonomy
 from Reality import Reality
 import multiprocessing as mp
 import time
-from multiprocessing import Pool
 from multiprocessing import Semaphore
 import pickle
-import math
 
 
 def func(m=None, n=None, group_size=None, lr=None, turbulence_rate=None,
@@ -23,11 +19,10 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_rate=None,
     reality = Reality(m=m)
     autonomy = Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr)
     for period in range(search_loop):
-        if (period + 1) % 50 == 0:
+        if (period + 1) % 100 == 0:
             reality.change(reality_change_rate=turbulence_rate)
-            for team in autonomy.teams:
-                for individual in team.individuals:
-                    individual.payoff = reality.get_payoff(belief=individual.belief)
+            for individual in autonomy.individuals:
+                individual.payoff = reality.get_payoff(belief=individual.belief)
         autonomy.search()
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time,
                          autonomy.variance_across_time]
@@ -37,13 +32,13 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_rate=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    turbulence_rate_list = [0.10, 0.12, 0.14, 0.16, 0.18, 0.20]
+    turbulence_rate_list = [0.16, 0.18, 0.20]
     group_size = 7
     n = 350
     lr = 0.3
-    repetition = 200
-    concurrency = 50
-    search_loop = 2000
+    repetition = 300
+    concurrency = 100
+    search_loop = 1000
     # DVs
     # after taking an average across repetitions
     performance_across_para = []

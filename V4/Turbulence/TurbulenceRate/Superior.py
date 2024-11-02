@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-# @Time     : 7/19/2022 19:05
+# @Time     : 24/01/2024 19:05
 # @Author   : Junyi
 # @FileName: Superior.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import numpy as np
-import math
 from Reality import Reality
 from Manager import Manager
 
@@ -78,6 +77,11 @@ class Superior:
         else:
             pass  # if there is no superior group, the code remain unchanged.
         self.code_payoff = self.reality.get_policy_payoff(policy=self.code)
+
+    def turnover(self, turnover_rate=None):
+        if turnover_rate:
+            for manager in self.managers:
+                manager.turnover(turnover_rate=turnover_rate)
 
 
 if __name__ == '__main__':
