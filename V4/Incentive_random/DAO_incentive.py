@@ -152,7 +152,7 @@ class DAO:
         # randomly select the same number of voters to give incentive
         if performance_increment_ratio > 0:  # if the value is added (for incentive rather than penalty)
             for individual in individuals:
-                if np.random.uniform(0, 1) < 0.5:
+                if np.random.uniform(0, 1) < incentive:  # randomly assign a portion of crowd to be incentivized
                     individual.incentive = incentive * performance_increment_ratio * individual.token
                     individual.token *= (1 + incentive * performance_increment_ratio)
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
