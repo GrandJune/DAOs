@@ -163,4 +163,4 @@ if __name__ == '__main__':
     #     pickle.dump(variance_final_across_incentive_time, out_file)
 
     t1 = time.time()
-    print("active=0.6", time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(t1 - t0)))
+    print("active=0.6", time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))

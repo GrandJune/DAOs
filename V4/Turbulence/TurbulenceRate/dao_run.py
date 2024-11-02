@@ -19,7 +19,7 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_rate=None,
     reality = Reality(m=m)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
     for period in range(search_loop):
-        if (period + 1) % 100 == 0:
+        if (period + 1) % 50 == 0:
             reality.change(reality_change_rate=turbulence_rate)
             for individual in dao.individuals:
                 individual.payoff = reality.get_payoff(belief=individual.belief)
