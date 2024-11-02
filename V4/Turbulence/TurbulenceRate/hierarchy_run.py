@@ -134,4 +134,5 @@ if __name__ == '__main__':
         pickle.dump(variance_across_para_time, out_file)
 
     t1 = time.time()
-    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
+    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))  # Duration
+    print("active=0.4", time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time())))  # Complete time
