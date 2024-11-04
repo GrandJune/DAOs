@@ -138,6 +138,11 @@ class DAO:
                 new_consensus.append(0)
         self.consensus = new_consensus
         self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
+        # identify the contributor
+        for individual in individuals:
+            for i in range(self.policy_num):
+                if individual.policy[i] == self.consensus[i]:
+                    individual.contribution += 1
         # 1) Generate and 2) adjust the superior majority view and 3) learn from it
         for team in self.teams:
             team.form_individual_majority_view()
@@ -152,9 +157,10 @@ class DAO:
         if performance_increment_ratio > 0:  # if the value is added (for incentive rather than penalty)
             for individual in individuals:
                 if individual.active == 1:
-                    individual.incentive = incentive * performance_increment_ratio * individual.token
+                    individual.incentive = incentive * performance_increment_ratio * individual.token * individual.contribution
                     individual.token *= (1 + incentive * performance_increment_ratio)
                     # token increments are equally allocate to only active members
+                    individual.contribution = 0  # re-set
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
