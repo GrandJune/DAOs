@@ -104,6 +104,7 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Incentive_random" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Active_rate" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/HeterogeneousLr" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Incentive_endogenous_contribution" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Incentive_Strength" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />

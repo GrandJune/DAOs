@@ -20,7 +20,7 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
     autonomy = Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr)
     for period in range(search_loop):
         if (period + 1) % turbulence_freq == 0:
-            reality.change(reality_change_rate=0.20)
+            reality.change(reality_change_rate=0.16)
             for individual in autonomy.individuals:
                 individual.payoff = reality.get_payoff(belief=individual.belief)
         autonomy.search()
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     group_size = 7
     n = 350
     lr = 0.3
-    repetition = 300
+    repetition = 200
     concurrency = 100
     search_loop = 1000
     # DVs
