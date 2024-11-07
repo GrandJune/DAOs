@@ -5,6 +5,6 @@
 #SBATCH --mail-user=junyili@u.nus.edu
 #SBATCH --mem=300gb
 #SBATCH --partition=long
-#SBATCH --cpus-per-task=50
+#SBATCH --cpus-per-task=100
 #SBATCH --nodes=1
 python dao_run_across_incentive_0.1.py

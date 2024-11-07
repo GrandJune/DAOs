@@ -137,12 +137,12 @@ class DAO:
             else:
                 new_consensus.append(0)
         # identify the contributor
-        # consensus_change_list = []
-        # for index, old_policy, new_policy in zip(range(self.policy_num), self.consensus, new_consensus):
-        #     if old_policy != new_policy:
-        #         consensus_change_list.append(index)
+        consensus_change_list = []
+        for index, old_policy, new_policy in zip(range(self.policy_num), self.consensus, new_consensus):
+            if old_policy != new_policy:
+                consensus_change_list.append(index)
         for individual in individuals:
-            for i in range(self.policy_num):
+            for i in consensus_change_list:
                 if individual.policy[i] == new_consensus[i]:
                     individual.contribution += 1
         self.consensus = new_consensus
@@ -161,8 +161,9 @@ class DAO:
         if performance_increment_ratio > 0:  # if the value is added (for incentive rather than penalty)
             for individual in individuals:
                 if (individual.active == 1) and (individual.contribution > 0):  # only reward active contributors
-                    individual.incentive = incentive * performance_increment_ratio * individual.token
-                    individual.token *= (1 + incentive * performance_increment_ratio)
+                    individual.incentive = incentive * performance_increment_ratio * individual.token * individual.contribution
+                    # no need for regulation; since weighted consensus and/or threshold ratio
+                    individual.token *= (1 + incentive * performance_increment_ratio * individual.contribution)
                     individual.contribution = 0  # re-set
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
