@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @Time     : 24/01/2024 19:05
+# @Time     : 10/23/2022 19:04
 # @Author   : Junyi
 # @FileName: Manager.py
 # @Software  : PyCharm
@@ -12,14 +12,19 @@ class Manager:
         self.policy_num = policy_num
         self.reality = reality
         self.p1 = p1
-        self.scope = []
         self.policy = np.random.choice([-1, 0, 1], self.policy_num, p=[1/3, 1/3, 1/3])
         self.payoff = self.reality.get_policy_payoff(policy=self.policy)
 
     def turnover(self, turnover_rate=None):
         for index in range(self.policy_num):
             if np.random.uniform(0, 1) < turnover_rate:
-                self.policy *= -1
+                self.policy = np.random.choice([-1, 0, 1], self.policy_num, p=[1 / 3, 1 / 3, 1 / 3])
+                self.payoff = self.reality.get_policy_payoff(policy=self.policy)
+
+    def experimentation(self, experimentation_rate=None):
+        for index in range(self.policy_num):
+            if np.random.uniform(0, 1) < experimentation_rate:
+                self.policy[index] *= -1
         self.payoff = self.reality.get_policy_payoff(policy=self.policy)
 
     def learn_from_code(self, code=None):
