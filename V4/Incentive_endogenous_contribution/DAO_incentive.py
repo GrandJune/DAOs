@@ -124,14 +124,13 @@ class DAO:
             active_list.append(individual.active)
 
         threshold = threshold_ratio * sum([individual.token for individual in individuals])
-        # with threshold
         for i in range(self.policy_num):
             overall_sum = sum([individual.policy[i] * individual.token * individual.active for individual in individuals])
             positive_count = sum([individual.token for individual in individuals if (individual.policy[i] == 1) and (individual.active == 1)])
             negative_count = sum([individual.token for individual in individuals if (individual.policy[i] == -1) and (individual.active == 1)])
-            if (positive_count > threshold) and (overall_sum > 0):
+            if (positive_count > threshold) and overall_sum > 0:
                 new_consensus.append(1)
-            elif (negative_count > threshold) and (overall_sum < 0):
+            elif (negative_count > threshold) and overall_sum < 0:
                 new_consensus.append(-1)
             else:
                 new_consensus.append(0)
@@ -155,11 +154,11 @@ class DAO:
         # The increment ratio/expansion should be mostly attributed/allocated to only active members
         if performance_increment_ratio > 0:  # if the value is added (for incentive rather than penalty)
             for individual in individuals:
-                if (individual.active == 1) and (individual.contribution > 0):  # only reward active contributors
-                    individual.incentive = incentive * performance_increment_ratio * individual.token * individual.contribution
-                    # no need for regulation; since weighted consensus and/or threshold ratio
-                    individual.token *= (1 + incentive * performance_increment_ratio * individual.contribution)
-                    individual.contribution = 0  # re-set
+                if (individual.active == 1) and (individual.contribution != 0):
+                    individual.incentive = incentive * performance_increment_ratio
+                    individual.token *= (1 + incentive * performance_increment_ratio)
+                    individual.contribution = 0  # reset
+                    # token increments are equally allocate to only active members
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
@@ -226,7 +225,7 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 90
+    m = 30
     n = 280
     search_loop = 200
     lr = 0.3
@@ -234,8 +233,8 @@ if __name__ == '__main__':
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, version="Rushed", alpha=3)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size, alpha=3)
-    asymmetry = 0
-    mode = 10
+    asymmetry = 4
+    mode = 200
     token_list = []
     individual_list = []
     for team in dao.teams:
@@ -246,56 +245,54 @@ if __name__ == '__main__':
             individual_list.append(individual)
     print("Token sum: ", sum(token_list), max(token_list))
     for period in range(search_loop):
-        dao.incentive_search(threshold_ratio=0.4, incentive=0.9, basic_active_rate=0.4, k=1)
-        # active_sum, token_sum = 0, 0
-        # token_list = []
-        # for individual in individual_list:
-        #     active_sum += individual.active
-        #     token_list.append(individual.token)
-        # token_list = sorted(token_list)
-        # q1_value = np.percentile(token_list, 25)
-        # q3_value = np.percentile(token_list, 75)
-        # print("Q1 token: ", q1_value, "Q3 token: ", q3_value)
-        # max_indicator, q1_index, max_index = 0, 0, 0
-        # min_indicator, min_index = 100, 0
-        # for index, individual in enumerate(individual_list):
-        #     if individual.token > max_indicator:
-        #         max_indicator = individual.token
-        #         max_index = index
-        #     if individual.token < min_indicator:
-        #         min_indicator = individual.token
-        #         min_index = index
-        #     if individual.token == q1_value:
-        #         # print("Q1")
-        #         q1_index = index
-        # # print("Max: ", max_indicator, "Q1: ", q1_value, "Min: ", min_indicator)
-        # # print(token_list)
-        # print("Prob_to_vote,", "token,", "incentive,", "active")
-        #
-        # print(individual_list[max_index].prob_to_vote, individual_list[max_index].token,
-        #       individual_list[max_index].incentive, individual_list[max_index].active)
-        #
-        # print(individual_list[q1_index].prob_to_vote, individual_list[q1_index].token,
-        #       individual_list[q1_index].incentive, individual_list[q1_index].active)
-        #
-        # print(individual_list[min_index].prob_to_vote, individual_list[min_index].token,
-        #       individual_list[min_index].incentive, individual_list[min_index].active)
-        # gini_index = dao.get_gini()
-        # print("active rate: ", active_sum / n, "Gini: ", gini_index)
-        # print("-" * 5)
+        dao.incentive_search(threshold_ratio=0.4, incentive=1, basic_active_rate=0.9, k=1)
+        active_sum, token_sum = 0, 0
+        token_list = []
+        for individual in individual_list:
+            active_sum += individual.active
+            token_list.append(individual.token)
+        token_list = sorted(token_list)
+        q1_value = np.percentile(token_list, 25)
+        q3_value = np.percentile(token_list, 75)
+        print("Q1 token: ", q1_value, "Q3 token: ", q3_value)
+        max_indicator, q1_index, max_index = 0, 0, 0
+        min_indicator, min_index = 100, 0
+        for index, individual in enumerate(individual_list):
+            if individual.token > max_indicator:
+                max_indicator = individual.token
+                max_index = index
+            if individual.token < min_indicator:
+                min_indicator = individual.token
+                min_index = index
+            if individual.token == q1_value:
+                # print("Q1")
+                q1_index = index
+        # print("Max: ", max_indicator, "Q1: ", q1_value, "Min: ", min_indicator)
+        # print(token_list)
 
-    import matplotlib.pyplot as plt
-    x = range(search_loop)
+        print(individual_list[max_index].prob_to_vote, individual_list[max_index].token,
+              individual_list[max_index].incentive, individual_list[max_index].active)
 
-    plt.plot(x, dao.performance_across_time, "k-", label="Performance")
-    plt.plot(x, dao.consensus_performance_across_time, "r-", label="Consensus")
-    plt.title('Performance')
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-    plt.ylabel('Performance', fontweight='bold', fontsize=10)
-    plt.legend(frameon=False, ncol=3, fontsize=10)
-    # plt.savefig("DAO_performance.png", transparent=False, dpi=1200)
-    plt.show()
-    plt.clf()
+        print(individual_list[min_index].prob_to_vote, individual_list[min_index].token,
+              individual_list[min_index].incentive, individual_list[min_index].active)
+
+        print(individual_list[q1_index].prob_to_vote, individual_list[q1_index].token,
+              individual_list[q1_index].incentive, individual_list[q1_index].active)
+        gini_index = dao.get_gini()
+        print("active rate: ", active_sum / n, "Gini: ", gini_index)
+        print("-" * 5)
+    # import matplotlib.pyplot as plt
+    # x = range(search_loop)
+    #
+    # plt.plot(x, dao.performance_across_time, "k-", label="Mean")
+    # plt.plot(x, dao.consensus_performance_across_time, "r-", label="Consensus")
+    # plt.title('Performance')
+    # plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    # plt.ylabel('Performance', fontweight='bold', fontsize=10)
+    # plt.legend(frameon=False, ncol=3, fontsize=10)
+    # # plt.savefig("DAO_performance.png", transparent=False, dpi=1200)
+    # plt.show()
+    # plt.clf()
 
     # Diversity
     # plt.plot(x, dao.diversity_across_time, "k-", label="DAO")

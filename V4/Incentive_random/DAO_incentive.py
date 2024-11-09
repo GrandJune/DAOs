@@ -149,12 +149,12 @@ class DAO:
         new_performance = sum(performance_list) / len(performance_list)
         performance_increment_ratio = (new_performance - prior_performance) / prior_performance  # ideally max: 1
         # The increment ratio/expansion should be mostly attributed/allocated to only active members
-        # randomly select the same number of voters to give incentive
         if performance_increment_ratio > 0:  # if the value is added (for incentive rather than penalty)
             for individual in individuals:
-                if np.random.uniform(0, 1) < incentive:  # randomly assign a portion of crowd to be incentivized
+                if individual.active == 1:
                     individual.incentive = incentive * performance_increment_ratio * individual.token
                     individual.token *= (1 + incentive * performance_increment_ratio)
+                    # token increments are equally allocate to only active members
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())

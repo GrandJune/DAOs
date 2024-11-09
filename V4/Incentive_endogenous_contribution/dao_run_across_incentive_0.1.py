@@ -20,7 +20,7 @@ def func(m=None, n=None, group_size=None, lr=None, incentive=None,
     reality = Reality(m=m)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
     # pre-assign the token according to the asymmetry degree
-    mode = 5
+    mode = 200
     # Fixing the asymmetry  !!!!!
     # asymmetry = 2
     for team in dao.teams:
