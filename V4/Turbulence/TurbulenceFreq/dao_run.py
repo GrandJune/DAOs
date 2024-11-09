@@ -20,9 +20,10 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
     for period in range(search_loop):
         if (period + 1) % turbulence_freq == 0:
-            reality.change(reality_change_rate=0.14)
-            for individual in dao.individuals:
-                individual.payoff = reality.get_payoff(belief=individual.belief)
+            reality.change(reality_change_rate=0.15)
+            for team in dao.teams:
+                for individual in team.individuals:
+                    individual.payoff = reality.get_payoff(belief=individual.belief)
         dao.search(threshold_ratio=0.5)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]

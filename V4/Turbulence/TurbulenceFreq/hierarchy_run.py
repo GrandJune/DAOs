@@ -17,18 +17,20 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
-    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size, p1=0.1, p2=0.9)
-    for period in range(search_loop):
-        if (period + 1) % turbulence_freq == 0:
-            reality.change(reality_change_rate=0.14)
-            # update the individual payoff
-            for individual in hierarchy.individuals:
-                individual.payoff = reality.get_payoff(belief=individual.belief)
-            # update the manager payoff
-            for manager in hierarchy.superior.managers:
-                manager.payoff = reality.get_policy_payoff(policy=manager.policy)
-            # update the code payoff
-            hierarchy.superior.code_payoff = reality.get_policy_payoff(policy=hierarchy.superior.code)
+    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
+    for _ in range(search_loop):
+        for period in range(search_loop):
+            if (period + 1) % turbulence_freq == 0:
+                reality.change(reality_change_rate=0.15)
+                # update the individual payoff
+                for team in hierarchy.teams:
+                    for individual in team.individuals:
+                        individual.payoff = reality.get_payoff(belief=individual.belief)
+                # update the manager payoff
+                for manager in hierarchy.superior.managers:
+                    manager.payoff = reality.get_policy_payoff(policy=manager.policy)
+                # update the code payoff
+                hierarchy.superior.code_payoff = reality.get_policy_payoff(policy=hierarchy.superior.code)
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
                          hierarchy.diversity_across_time, hierarchy.variance_across_time]

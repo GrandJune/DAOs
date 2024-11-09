@@ -124,25 +124,20 @@ class DAO:
             active_list.append(individual.active)
 
         threshold = threshold_ratio * sum([individual.token for individual in individuals])
-        # consider the active status
-        # if either party meet the threshold, select relative majority
+        # with threshold
         for i in range(self.policy_num):
             overall_sum = sum([individual.policy[i] * individual.token * individual.active for individual in individuals])
             positive_count = sum([individual.token for individual in individuals if (individual.policy[i] == 1) and (individual.active == 1)])
             negative_count = sum([individual.token for individual in individuals if (individual.policy[i] == -1) and (individual.active == 1)])
-            if (positive_count > threshold) and overall_sum > 0:
+            if (positive_count > threshold) and (overall_sum > 0):
                 new_consensus.append(1)
-            elif (negative_count > threshold) and overall_sum < 0:
+            elif (negative_count > threshold) and (overall_sum < 0):
                 new_consensus.append(-1)
             else:
                 new_consensus.append(0)
         # identify the contributor
-        consensus_change_list = []
-        for index, old_policy, new_policy in zip(range(self.policy_num), self.consensus, new_consensus):
-            if old_policy != new_policy:
-                consensus_change_list.append(index)
         for individual in individuals:
-            for i in consensus_change_list:
+            for i in range(self.policy_num):
                 if individual.policy[i] == new_consensus[i]:
                     individual.contribution += 1
         self.consensus = new_consensus
@@ -231,7 +226,7 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 30
+    m = 90
     n = 280
     search_loop = 200
     lr = 0.3
@@ -239,8 +234,8 @@ if __name__ == '__main__':
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, version="Rushed", alpha=3)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size, alpha=3)
-    asymmetry = 4
-    mode = 200
+    asymmetry = 0
+    mode = 10
     token_list = []
     individual_list = []
     for team in dao.teams:
@@ -251,54 +246,56 @@ if __name__ == '__main__':
             individual_list.append(individual)
     print("Token sum: ", sum(token_list), max(token_list))
     for period in range(search_loop):
-        dao.incentive_search(threshold_ratio=0.4, incentive=1, basic_active_rate=0.9, k=1)
-        active_sum, token_sum = 0, 0
-        token_list = []
-        for individual in individual_list:
-            active_sum += individual.active
-            token_list.append(individual.token)
-        token_list = sorted(token_list)
-        q1_value = np.percentile(token_list, 25)
-        q3_value = np.percentile(token_list, 75)
-        print("Q1 token: ", q1_value, "Q3 token: ", q3_value)
-        max_indicator, q1_index, max_index = 0, 0, 0
-        min_indicator, min_index = 100, 0
-        for index, individual in enumerate(individual_list):
-            if individual.token > max_indicator:
-                max_indicator = individual.token
-                max_index = index
-            if individual.token < min_indicator:
-                min_indicator = individual.token
-                min_index = index
-            if individual.token == q1_value:
-                # print("Q1")
-                q1_index = index
-        # print("Max: ", max_indicator, "Q1: ", q1_value, "Min: ", min_indicator)
-        # print(token_list)
+        dao.incentive_search(threshold_ratio=0.4, incentive=0.9, basic_active_rate=0.4, k=1)
+        # active_sum, token_sum = 0, 0
+        # token_list = []
+        # for individual in individual_list:
+        #     active_sum += individual.active
+        #     token_list.append(individual.token)
+        # token_list = sorted(token_list)
+        # q1_value = np.percentile(token_list, 25)
+        # q3_value = np.percentile(token_list, 75)
+        # print("Q1 token: ", q1_value, "Q3 token: ", q3_value)
+        # max_indicator, q1_index, max_index = 0, 0, 0
+        # min_indicator, min_index = 100, 0
+        # for index, individual in enumerate(individual_list):
+        #     if individual.token > max_indicator:
+        #         max_indicator = individual.token
+        #         max_index = index
+        #     if individual.token < min_indicator:
+        #         min_indicator = individual.token
+        #         min_index = index
+        #     if individual.token == q1_value:
+        #         # print("Q1")
+        #         q1_index = index
+        # # print("Max: ", max_indicator, "Q1: ", q1_value, "Min: ", min_indicator)
+        # # print(token_list)
+        # print("Prob_to_vote,", "token,", "incentive,", "active")
+        #
+        # print(individual_list[max_index].prob_to_vote, individual_list[max_index].token,
+        #       individual_list[max_index].incentive, individual_list[max_index].active)
+        #
+        # print(individual_list[q1_index].prob_to_vote, individual_list[q1_index].token,
+        #       individual_list[q1_index].incentive, individual_list[q1_index].active)
+        #
+        # print(individual_list[min_index].prob_to_vote, individual_list[min_index].token,
+        #       individual_list[min_index].incentive, individual_list[min_index].active)
+        # gini_index = dao.get_gini()
+        # print("active rate: ", active_sum / n, "Gini: ", gini_index)
+        # print("-" * 5)
 
-        print(individual_list[max_index].prob_to_vote, individual_list[max_index].token,
-              individual_list[max_index].incentive, individual_list[max_index].active)
+    import matplotlib.pyplot as plt
+    x = range(search_loop)
 
-        print(individual_list[min_index].prob_to_vote, individual_list[min_index].token,
-              individual_list[min_index].incentive, individual_list[min_index].active)
-
-        print(individual_list[q1_index].prob_to_vote, individual_list[q1_index].token,
-              individual_list[q1_index].incentive, individual_list[q1_index].active)
-        gini_index = dao.get_gini()
-        print("active rate: ", active_sum / n, "Gini: ", gini_index)
-        print("-" * 5)
-    # import matplotlib.pyplot as plt
-    # x = range(search_loop)
-    #
-    # plt.plot(x, dao.performance_across_time, "k-", label="Mean")
-    # plt.plot(x, dao.consensus_performance_across_time, "r-", label="Consensus")
-    # plt.title('Performance')
-    # plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-    # plt.ylabel('Performance', fontweight='bold', fontsize=10)
-    # plt.legend(frameon=False, ncol=3, fontsize=10)
-    # # plt.savefig("DAO_performance.png", transparent=False, dpi=1200)
-    # plt.show()
-    # plt.clf()
+    plt.plot(x, dao.performance_across_time, "k-", label="Performance")
+    plt.plot(x, dao.consensus_performance_across_time, "r-", label="Consensus")
+    plt.title('Performance')
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Performance', fontweight='bold', fontsize=10)
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    # plt.savefig("DAO_performance.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
 
     # Diversity
     # plt.plot(x, dao.diversity_across_time, "k-", label="DAO")
