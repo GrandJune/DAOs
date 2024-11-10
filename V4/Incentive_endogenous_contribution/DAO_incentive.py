@@ -124,6 +124,8 @@ class DAO:
             active_list.append(individual.active)
 
         threshold = threshold_ratio * sum([individual.token for individual in individuals])
+        # consider the active status
+        # if either party meet the threshold, select relative majority
         for i in range(self.policy_num):
             overall_sum = sum([individual.policy[i] * individual.token * individual.active for individual in individuals])
             positive_count = sum([individual.token for individual in individuals if (individual.policy[i] == 1) and (individual.active == 1)])
@@ -135,6 +137,10 @@ class DAO:
             else:
                 new_consensus.append(0)
         # identify the contributor
+        # consensus_change_list = []
+        # for index, old_policy, new_policy in zip(range(self.policy_num), self.consensus, new_consensus):
+        #     if old_policy != new_policy:
+        #         consensus_change_list.append(index)
         for individual in individuals:
             for i in range(self.policy_num):
                 if individual.policy[i] == new_consensus[i]:
@@ -154,11 +160,10 @@ class DAO:
         # The increment ratio/expansion should be mostly attributed/allocated to only active members
         if performance_increment_ratio > 0:  # if the value is added (for incentive rather than penalty)
             for individual in individuals:
-                if (individual.active == 1) and (individual.contribution != 0):
-                    individual.incentive = incentive * performance_increment_ratio
+                if (individual.active == 1) and (individual.contribution > 0):  # only reward active contributors
+                    individual.incentive = incentive * performance_increment_ratio * individual.token
                     individual.token *= (1 + incentive * performance_increment_ratio)
-                    individual.contribution = 0  # reset
-                    # token increments are equally allocate to only active members
+                    individual.contribution = 0  # re-set
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
