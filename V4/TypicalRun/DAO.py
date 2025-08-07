@@ -183,7 +183,7 @@ class DAO:
 if __name__ == '__main__':
     m = 60
     n = 280
-    search_loop = 100
+    search_loop = 300
     lr = 0.3
     alpha = 3
     group_size = 7  # the smallest group size in Fang's model: 7
@@ -194,11 +194,7 @@ if __name__ == '__main__':
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
     for period in range(search_loop):
-        dao.incentive_search(threshold_ratio=0.5, incentive=50)
-        # print(period, dao.consensus, reality.real_policy, reality.real_code)
-        # print(dao.teams[0].individuals[0].belief, dao.teams[0].individuals[0].policy,
-        #       dao.teams[0].individuals[0].payoff)
-        print("--{0}--".format(period))
+        dao.search(threshold_ratio=0.5)
     import matplotlib.pyplot as plt
     x = range(search_loop)
 
@@ -208,7 +204,7 @@ if __name__ == '__main__':
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    # plt.savefig("DAO_performance.png", transparent=False, dpi=1200)
+    plt.savefig("DAO_performance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
@@ -218,7 +214,7 @@ if __name__ == '__main__':
     plt.ylabel('Diversity', fontweight='bold', fontsize=10)
     plt.title('Diversity')
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    # plt.savefig("DAO_diversity.png", transparent=False, dpi=1200)
+    plt.savefig("DAO_diversity.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
@@ -228,7 +224,7 @@ if __name__ == '__main__':
     plt.ylabel('Variance', fontweight='bold', fontsize=10)
     plt.title('Variance')
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    # plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
+    plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
