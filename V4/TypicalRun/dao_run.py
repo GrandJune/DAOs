@@ -17,15 +17,22 @@ import pickle
 import math
 
 
-def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None,
-         search_loop=None, loop=None, return_dict=None, sema=None):
+def func(loop=None, return_dict=None, sema=None):
     np.random.seed(None)
-    reality = Reality(m=m)
-    dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
-    for _ in range(search_loop):
-        dao.search(threshold_ratio=threshold_ratio)
+
+    m = 60 # policy_num = 20; every 50 iterations form a consensus -> need 1k iterations
+    n = 280
+    search_loop = 300
+    lr = 0.3
+    group_size = 7  # the smallest group size in Fang's model: 7
+    reality = Reality(m=m, version="Rushed", alpha=3)
+    dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size, alpha=3)
+
+    for period in range(search_loop):
+        dao.interrupted_search(threshold_ratio=0.5, current_iteration=period)
+
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
-                         dao.diversity_across_time, dao.variance_across_time]
+                         dao.diversity_across_time, dao.variance_across_time, dao.cv_across_time]
     sema.release()
 
 
@@ -44,6 +51,7 @@ if __name__ == '__main__':
     consensus_hyper = []
     diversity_hyper = []
     variance_hyper = []
+    cv_hyper = []
     for hyper_loop in range(hyper_iteration):
         sema = Semaphore(concurrency)
         manager = mp.Manager()
@@ -51,7 +59,7 @@ if __name__ == '__main__':
         return_dict = manager.dict()
         for loop in range(repetition):
             sema.acquire()
-            p = mp.Process(target=func, args=(m, n, group_size, lr, threshold_ratio, search_loop, loop, return_dict, sema))
+            p = mp.Process(target=func, args=(loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
@@ -61,22 +69,14 @@ if __name__ == '__main__':
         consensus_hyper += [result[1] for result in results]
         diversity_hyper += [result[2] for result in results]
         variance_hyper += [result[3] for result in results]
+        cv_hyper += [result[4] for result in results]
 
-    performance_final = []
-    consensus_final = []
-    diversity_final = []
-    variance_final = []
-    percentile_10_final = []
-    percentile_90_final = []
-    for index in range(search_loop):
-        temp_performance = sum([result[index] for result in performance_hyper]) / len(performance_hyper)
-        temp_consensus = sum([result[index] for result in consensus_hyper]) / len(consensus_hyper)
-        temp_diversity = sum([result[index] for result in diversity_hyper]) / len(diversity_hyper)
-        temp_variance = sum([result[index] for result in variance_hyper]) / len(variance_hyper)
-        performance_final.append(temp_performance)
-        consensus_final.append(temp_consensus)
-        diversity_final.append(temp_diversity)
-        variance_final.append(temp_variance)
+    performance_final = list(np.mean(performance_hyper, axis=0))
+    consensus_final = list(np.mean(consensus_hyper, axis=0))
+    diversity_final = list(np.mean(diversity_hyper, axis=0))
+    variance_final = list(np.mean(variance_hyper, axis=0))
+    cv_final = list(np.mean(cv_hyper, axis=0))
+
 
     with open("dao_performance", 'wb') as out_file:
         pickle.dump(performance_final, out_file)
@@ -86,16 +86,56 @@ if __name__ == '__main__':
         pickle.dump(diversity_final, out_file)
     with open("dao_variance", 'wb') as out_file:
         pickle.dump(variance_final, out_file)
+    with open("dao_cv", 'wb') as out_file:
+        pickle.dump(cv_final, out_file)
 
-    # save the original data to assess the iteration
-    with open("dao_original_performance", 'wb') as out_file:
-        pickle.dump(performance_hyper, out_file)
-    with open("dao_original_consensus_performance", 'wb') as out_file:
-        pickle.dump(consensus_hyper, out_file)
-    with open("dao_original_diversity", 'wb') as out_file:
-        pickle.dump(diversity_hyper, out_file)
-    with open("dao_original_variance", 'wb') as out_file:
-        pickle.dump(variance_hyper, out_file)
+    import matplotlib.pyplot as plt
+    x = range(search_loop)
+    plt.plot(x, performance_final, "k-", label="Mean")
+    plt.plot(x, consensus_final, "k--", label="Consensus")
+    plt.title('Performance')
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Performance', fontweight='bold', fontsize=10)
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    plt.savefig("DAO_performance.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
+
+    # Diversity
+    plt.plot(x, diversity_final, "k-", label="DAO")
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Diversity', fontweight='bold', fontsize=10)
+    plt.title('Diversity')
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    plt.savefig("DAO_diversity.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
+
+    # Variance
+    plt.plot(x, variance_final, "k-", label="DAO")
+    # Add vertical dashed lines every 50 on the x-axis
+    for i in range(0, max(x) + 1, 50):
+        plt.axvline(x=i, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Variance', fontweight='bold', fontsize=10)
+    plt.title('Variance')
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
+
+    # Coefficient of Variance
+    plt.plot(x, cv_final, "k-", label="DAO")
+    # Add vertical dashed lines every 50 on the x-axis
+    for i in range(0, max(x) + 1, 50):
+        plt.axvline(x=i, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Coefficient of Variance', fontweight='bold', fontsize=10)
+    plt.title('Coefficient of Variance')
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    plt.savefig("DAO_coefficient_of_variance.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1-t0)))

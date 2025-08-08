@@ -104,8 +104,13 @@ class DAO:
 
         threshold = threshold_ratio * self.n
         # only update consensus within a small time windows
-        if current_iteration % 50 in range(0, 10): # 10 iterations after the activations
-            for i in range(self.policy_num):
+        if current_iteration % 50 in range(0, 10):  # 10 iterations after each 50-step
+            t = current_iteration % 50
+            chunk_size = (self.policy_num + 9) // 10  # Ceiling division
+            start_idx = t * chunk_size
+            end_idx = min((t + 1) * chunk_size, self.policy_num)
+
+            for i in range(start_idx, end_idx):
                 crowd_opinion = [individual.policy[i] for individual in individuals]
                 positive_count = sum([1 for each in crowd_opinion if each == 1])
                 negative_count = sum([1 for each in crowd_opinion if each == -1])
@@ -115,13 +120,22 @@ class DAO:
                     new_consensus.append(-1)
                 else:
                     new_consensus.append(0)
+
+            # Fill unchanged elements with existing consensus values
+            for i in range(0, start_idx):
+                new_consensus.append(self.consensus[i])
+            for i in range(end_idx, self.policy_num):
+                new_consensus.append(self.consensus[i])
+
             self.consensus = new_consensus
             self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
+
             # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
             for team in self.teams:
                 team.form_individual_majority_view()
                 team.adjust_majority_view_2_consensus(policy=self.consensus)
                 team.learn()
+
         else:
             self.consensus = [0] * self.policy_num
             # autonomous learning
@@ -267,9 +281,14 @@ if __name__ == '__main__':
 
     # Variance
     plt.plot(x, dao.variance_across_time, "k-", label="DAO")
-    # Add vertical dashed lines every 50 on the x-axis
+
+    # Add shaded gray area for 10 iterations every 50 iterations
     for i in range(0, max(x) + 1, 50):
+        plt.axvspan(i, i + 10, color='gray', alpha=0.2)  # adjust alpha for visibility
+
+        # Optional: Add dashed lines at the start of each interval
         plt.axvline(x=i, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
+
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Variance', fontweight='bold', fontsize=10)
     plt.title('Variance')
@@ -280,9 +299,14 @@ if __name__ == '__main__':
 
     # Coefficient of Variance
     plt.plot(x, dao.cv_across_time, "k-", label="DAO")
-    # Add vertical dashed lines every 50 on the x-axis
+
+    # Add shaded gray area for 10 iterations every 50 iterations
     for i in range(0, max(x) + 1, 50):
+        plt.axvspan(i, i + 10, color='gray', alpha=0.2)  # adjust alpha for visibility
+
+        # Optional: Add dashed lines at the start of each interval
         plt.axvline(x=i, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
+
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Coefficient of Variance', fontweight='bold', fontsize=10)
     plt.title('Coefficient of Variance')
