@@ -39,6 +39,7 @@ class DAO:
             self.teams.append(team)
         self.performance_across_time = []
         self.variance_across_time = []
+        self.cv_across_time = []
         self.diversity_across_time = []
         self.consensus_performance_across_time = []
 
@@ -89,6 +90,53 @@ class DAO:
 
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
+        self.diversity_across_time.append(self.get_diversity())
+        self.consensus_performance_across_time.append(self.consensus_payoff)
+
+    def interrupted_search(self, threshold_ratio=None, current_iteration=None):
+        # Consensus Formation
+        new_consensus = []
+        individuals = []
+        for team in self.teams:
+            individuals += team.individuals
+        for individual in individuals:
+            individual.policy = self.reality.belief_2_policy(belief=individual.belief)
+
+        threshold = threshold_ratio * self.n
+        # only update consensus one by one
+        if current_iteration % 50 == 0:
+            zero_indexes = [i for i, val in enumerate(self.consensus) if val == 0]
+            new_consensus_index = None
+            for index in zero_indexes:
+                crowd_opinion = [individual.policy[index] for individual in individuals]
+                positive_count = sum([1 for each in crowd_opinion if each == 1])
+                negative_count = sum([1 for each in crowd_opinion if each == -1])
+                if (positive_count > threshold) and sum(crowd_opinion) > 0:
+                    new_consensus = 1
+                elif (negative_count > threshold) and sum(crowd_opinion) < 0:
+                    new_consensus = -1
+                else:
+                    new_consensus = 0
+                if new_consensus != 0:
+                    new_consensus_index = index
+                    break
+            # only update one policy
+            if new_consensus_index:
+                self.consensus[new_consensus_index] = new_consensus
+                self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
+        # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
+        for team in self.teams:
+            team.form_individual_majority_view()
+            team.adjust_majority_view_2_consensus(policy=self.consensus)
+            team.learn()
+        performance_list = []
+        for team in self.teams:
+            performance_list += [individual.payoff for individual in team.individuals]
+
+        self.performance_across_time.append(sum(performance_list) / len(performance_list))
+        self.variance_across_time.append(np.var(performance_list))
+        cv = np.var(performance_list) / np.mean(performance_list)
+        self.cv_across_time.append(cv)
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
 
@@ -181,28 +229,21 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 60
+    m = 60 # policy_num = 20; every 50 iterations form a consensus -> need 1k iterations
     n = 280
-    search_loop = 300
+    search_loop = 1000
     lr = 0.3
     alpha = 3
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, version="Rushed", alpha=3)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size, alpha=3)
-    # dao.teams[0].individuals[0].belief = reality.real_code.copy()
-    # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
-    # print(dao.teams[0].individuals[0].belief)
-    # print(dao.teams[0].individuals[0].payoff)
-    consensus_event_time = []
+
     for period in range(search_loop):
         previous_consensus = dao.consensus.copy()
-        dao.search(threshold_ratio=0.5)
-        num_changed = sum(c1 != c2 for c1, c2 in zip(previous_consensus, dao.consensus))
-        if num_changed > 0:
-            consensus_event_time.append(num_changed)
+        dao.interrupted_search(threshold_ratio=0.5, current_iteration=period)
+
     import matplotlib.pyplot as plt
     x = range(search_loop)
-
     plt.plot(x, dao.performance_across_time, "k-", label="Mean")
     plt.plot(x, dao.consensus_performance_across_time, "r-", label="Consensus")
     plt.title('Performance')
@@ -228,35 +269,19 @@ if __name__ == '__main__':
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Variance', fontweight='bold', fontsize=10)
     plt.title('Variance')
-    # add vertical lines to indicate consensus events
-    y_max = max(dao.variance_across_time)
-    for period, num_changed in consensus_event_time:
-        plt.axvline(x=period, linestyle='--', color='red', linewidth=0.8)
-        plt.text(period + 0.3, y_max * 0.95, f'{num_changed}', rotation=90,
-                 fontsize=7, color='red', ha='left', va='top')
     plt.legend(frameon=False, ncol=3, fontsize=10)
     plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
-    # # Gini Index
-    # plt.plot(x, dao.gini_across_time, "k-", label="DAO")
-    # plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-    # plt.ylabel('Gini Index', fontweight='bold', fontsize=10)
-    # plt.title('Gini Index')
-    # plt.legend(frameon=False, ncol=3, fontsize=10)
-    # # plt.savefig("DAO_gini.png", transparent=False, dpi=1200)
-    # plt.show()
-    # plt.clf()
-
-    # Reward number
-    # plt.plot(x, dao.reward_num_across_time, "k-", label="DAO")
-    # plt.xlabel('Iteration', fontweight='bold', fontsize=10)
-    # plt.ylabel('Reward Number', fontweight='bold', fontsize=10)
-    # plt.title('Reward Number')
-    # plt.legend(frameon=False, ncol=3, fontsize=10)
-    # # plt.savefig("DAO_gini.png", transparent=False, dpi=1200)
-    # plt.show()
-    # plt.clf()
+    # Coefficient of Variance
+    plt.plot(x, dao.cv_across_time, "k-", label="DAO")
+    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.ylabel('Coefficient of Variance', fontweight='bold', fontsize=10)
+    plt.title('Coefficient of Variance')
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    plt.savefig("DAO_coefficient_of_variance.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
 
 
