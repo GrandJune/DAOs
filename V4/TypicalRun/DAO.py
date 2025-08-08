@@ -103,36 +103,35 @@ class DAO:
             individual.policy = self.reality.belief_2_policy(belief=individual.belief)
 
         threshold = threshold_ratio * self.n
-        # only update consensus one by one
-        if current_iteration % 50 == 0:
-            zero_indexes = [i for i, val in enumerate(self.consensus) if val == 0]
-            new_consensus_index = None
-            for index in zero_indexes:
-                crowd_opinion = [individual.policy[index] for individual in individuals]
+        # only update consensus within a small time windows
+        if current_iteration % 50 in range(0, 10): # 10 iterations after the activations
+            for i in range(self.policy_num):
+                crowd_opinion = [individual.policy[i] for individual in individuals]
                 positive_count = sum([1 for each in crowd_opinion if each == 1])
                 negative_count = sum([1 for each in crowd_opinion if each == -1])
                 if (positive_count > threshold) and sum(crowd_opinion) > 0:
-                    new_consensus = 1
+                    new_consensus.append(1)
                 elif (negative_count > threshold) and sum(crowd_opinion) < 0:
-                    new_consensus = -1
+                    new_consensus.append(-1)
                 else:
-                    new_consensus = 0
-                if new_consensus != 0:
-                    new_consensus_index = index
-                    break
-            # only update one policy
-            if new_consensus_index:
-                self.consensus[new_consensus_index] = new_consensus
-                self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
-        # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
-        for team in self.teams:
-            team.form_individual_majority_view()
-            team.adjust_majority_view_2_consensus(policy=self.consensus)
-            team.learn()
+                    new_consensus.append(0)
+            self.consensus = new_consensus
+            self.consensus_payoff = self.reality.get_policy_payoff(policy=new_consensus)
+            # 1) Generate and 2) adjust the superior majority view and then 3) learn from it
+            for team in self.teams:
+                team.form_individual_majority_view()
+                team.adjust_majority_view_2_consensus(policy=self.consensus)
+                team.learn()
+        else:
+            self.consensus = [0] * self.policy_num
+            # autonomous learning
+            for team in self.teams:
+                team.form_individual_majority_view()
+                # team.adjust_majority_view_2_consensus(policy=self.consensus)
+                team.learn()
         performance_list = []
         for team in self.teams:
             performance_list += [individual.payoff for individual in team.individuals]
-
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
         cv = np.var(performance_list) / np.mean(performance_list)
