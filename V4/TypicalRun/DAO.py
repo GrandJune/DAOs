@@ -193,8 +193,13 @@ if __name__ == '__main__':
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].payoff)
+    consensus_event_time = []
     for period in range(search_loop):
+        previous_consensus = dao.consensus.copy()
         dao.search(threshold_ratio=0.5)
+        num_changed = sum(c1 != c2 for c1, c2 in zip(previous_consensus, dao.consensus))
+        if num_changed > 0:
+            consensus_event_time.append(num_changed)
     import matplotlib.pyplot as plt
     x = range(search_loop)
 
@@ -223,6 +228,12 @@ if __name__ == '__main__':
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Variance', fontweight='bold', fontsize=10)
     plt.title('Variance')
+    # add vertical lines to indicate consensus events
+    y_max = max(dao.variance_across_time)
+    for period, num_changed in consensus_event_time:
+        plt.axvline(x=period, linestyle='--', color='red', linewidth=0.8)
+        plt.text(period + 0.3, y_max * 0.95, f'{num_changed}', rotation=90,
+                 fontsize=7, color='red', ha='left', va='top')
     plt.legend(frameon=False, ncol=3, fontsize=10)
     plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
     plt.show()
