@@ -288,6 +288,8 @@ if __name__ == '__main__':
 
         # Optional: Add dashed lines at the start of each interval
         plt.axvline(x=i, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
+        # Dashed line at the end
+        plt.axvline(x=i + 10, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
 
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Variance', fontweight='bold', fontsize=10)
@@ -306,6 +308,8 @@ if __name__ == '__main__':
 
         # Optional: Add dashed lines at the start of each interval
         plt.axvline(x=i, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
+        # Dashed line at the end
+        plt.axvline(x=i + 10, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
 
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Coefficient of Variance', fontweight='bold', fontsize=10)

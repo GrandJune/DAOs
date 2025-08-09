@@ -113,9 +113,14 @@ if __name__ == '__main__':
 
     # Variance
     plt.plot(x, variance_final, "k-", label="DAO")
-    # Add vertical dashed lines every 50 on the x-axis
+    # Add shaded gray area for 10 iterations every 50 iterations
     for i in range(0, max(x) + 1, 50):
+        plt.axvspan(i, i + 10, color='gray', alpha=0.2)  # adjust alpha for visibility
+
+        # Optional: Add dashed lines at the start of each interval
         plt.axvline(x=i, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
+        # Dashed line at the end
+        plt.axvline(x=i + 10, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Variance', fontweight='bold', fontsize=10)
     plt.title('Variance')
@@ -126,9 +131,14 @@ if __name__ == '__main__':
 
     # Coefficient of Variance
     plt.plot(x, cv_final, "k-", label="DAO")
-    # Add vertical dashed lines every 50 on the x-axis
+    # Add shaded gray area for 10 iterations every 50 iterations
     for i in range(0, max(x) + 1, 50):
+        plt.axvspan(i, i + 10, color='gray', alpha=0.2)  # adjust alpha for visibility
+
+        # Optional: Add dashed lines at the start of each interval
         plt.axvline(x=i, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
+        # Dashed line at the end
+        plt.axvline(x=i + 10, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Coefficient of Variance', fontweight='bold', fontsize=10)
     plt.title('Coefficient of Variance')
