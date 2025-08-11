@@ -52,6 +52,8 @@ if __name__ == '__main__':
     diversity_hyper = []
     variance_hyper = []
     cv_hyper = []
+    entropy_hyper = []
+    antagonism_hyper = []
     for hyper_loop in range(hyper_iteration):
         sema = Semaphore(concurrency)
         manager = mp.Manager()
@@ -70,12 +72,16 @@ if __name__ == '__main__':
         diversity_hyper += [result[2] for result in results]
         variance_hyper += [result[3] for result in results]
         cv_hyper += [result[4] for result in results]
+        entropy_hyper += [result[5] for result in results]
+        antagonism_hyper += [result[6] for result in results]
 
     performance_final = list(np.mean(performance_hyper, axis=0))
     consensus_final = list(np.mean(consensus_hyper, axis=0))
     diversity_final = list(np.mean(diversity_hyper, axis=0))
     variance_final = list(np.mean(variance_hyper, axis=0))
     cv_final = list(np.mean(cv_hyper, axis=0))
+    entropy_final = list(np.mean(entropy_hyper, axis=0))
+    antagonism_final = list(np.mean(antagonism_hyper, axis=0))
 
 
     with open("dao_performance", 'wb') as out_file:
@@ -88,13 +94,17 @@ if __name__ == '__main__':
         pickle.dump(variance_final, out_file)
     with open("dao_cv", 'wb') as out_file:
         pickle.dump(cv_final, out_file)
+    with open("dao_entropy", 'wb') as out_file:
+        pickle.dump(entropy_final, out_file)
+    with open("dao_antagonism", 'wb') as out_file:
+        pickle.dump(antagonism_final, out_file)
 
     import matplotlib.pyplot as plt
     x = range(search_loop)
     plt.plot(x, performance_final, "k-", label="Mean")
     plt.plot(x, consensus_final, "k--", label="Consensus")
-    plt.title('Performance')
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    # plt.title('Performance')
+    plt.xlabel('Time', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
     plt.savefig("DAO_performance.png", transparent=False, dpi=1200)
@@ -103,9 +113,9 @@ if __name__ == '__main__':
 
     # Diversity
     plt.plot(x, diversity_final, "k-", label="DAO")
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.xlabel('Time', fontweight='bold', fontsize=10)
     plt.ylabel('Diversity', fontweight='bold', fontsize=10)
-    plt.title('Diversity')
+    # plt.title('Diversity')
     plt.legend(frameon=False, ncol=3, fontsize=10)
     plt.savefig("DAO_diversity.png", transparent=False, dpi=1200)
     plt.show()
@@ -121,9 +131,9 @@ if __name__ == '__main__':
         plt.axvline(x=i, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
         # Dashed line at the end
         plt.axvline(x=i + 10, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.xlabel('Time', fontweight='bold', fontsize=10)
     plt.ylabel('Variance', fontweight='bold', fontsize=10)
-    plt.title('Variance')
+    # plt.title('Variance')
     plt.legend(frameon=False, ncol=3, fontsize=10)
     plt.savefig("DAO_variance.png", transparent=False, dpi=1200)
     plt.show()
@@ -139,11 +149,47 @@ if __name__ == '__main__':
         plt.axvline(x=i, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
         # Dashed line at the end
         plt.axvline(x=i + 10, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
-    plt.xlabel('Iteration', fontweight='bold', fontsize=10)
+    plt.xlabel('Time', fontweight='bold', fontsize=10)
     plt.ylabel('Coefficient of Variance', fontweight='bold', fontsize=10)
-    plt.title('Coefficient of Variance')
+    # plt.title('Coefficient of Variance')
     plt.legend(frameon=False, ncol=3, fontsize=10)
     plt.savefig("DAO_coefficient_of_variance.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
+
+    # Entropy
+    plt.plot(x, entropy_final, "k-", label="DAO")
+    # Add shaded gray area for 10 iterations every 50 iterations
+    for i in range(0, max(x) + 1, 50):
+        plt.axvspan(i, i + 10, color='gray', alpha=0.2)  # adjust alpha for visibility
+
+        # Optional: Add dashed lines at the start of each interval
+        plt.axvline(x=i, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
+        # Dashed line at the end
+        plt.axvline(x=i + 10, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
+    plt.xlabel('Time', fontweight='bold', fontsize=10)
+    plt.ylabel('Shannon Entropy', fontweight='bold', fontsize=10)
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    plt.savefig("DAO_entropy.png", transparent=False, dpi=1200)
+    plt.show()
+    plt.clf()
+
+
+    # Antagonism
+    plt.plot(x, antagonism_final, "k-", label="DAO")
+    # Add shaded gray area for 10 iterations every 50 iterations
+    for i in range(0, max(x) + 1, 50):
+        plt.axvspan(i, i + 10, color='gray', alpha=0.2)  # adjust alpha for visibility
+
+        # Optional: Add dashed lines at the start of each interval
+        plt.axvline(x=i, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
+        # Dashed line at the end
+        plt.axvline(x=i + 10, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
+    plt.xlabel('Time', fontweight='bold', fontsize=10)
+    plt.ylabel('Antagonism Index', fontweight='bold', fontsize=10)
+    # plt.title('Coefficient of Variance')
+    plt.legend(frameon=False, ncol=3, fontsize=10)
+    plt.savefig("DAO_antagonism.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
