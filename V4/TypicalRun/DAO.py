@@ -89,11 +89,14 @@ class DAO:
         performance_list = []
         for team in self.teams:
             performance_list += [individual.payoff for individual in team.individuals]
-
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
+        cv = np.var(performance_list) / np.mean(performance_list)
+        self.cv_across_time.append(cv)
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
+        self.entropy_across_time.append(self.get_entropy_binary())
+        self.antagonism_across_time.append(self.get_antagonism_binary())
 
     def interrupted_search(self, threshold_ratio=None, current_iteration=None):
         # Consensus Formation
@@ -308,9 +311,9 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 60 # policy_num = 20; every 50 iterations form a consensus -> need 1k iterations
-    n = 280
-    search_loop = 200
+    m = 90 # policy_num = 20; every 50 iterations form a consensus -> need 1k iterations
+    n = 350
+    search_loop = 300
     lr = 0.3
     alpha = 3
     group_size = 7  # the smallest group size in Fang's model: 7
@@ -319,7 +322,7 @@ if __name__ == '__main__':
 
     for period in range(search_loop):
         previous_consensus = dao.consensus.copy()
-        dao.interrupted_search(threshold_ratio=0.5, current_iteration=period)
+        dao.search(threshold_ratio=0.5)
         if period % 100 == 0:
             print("-" * 10, period)
 
