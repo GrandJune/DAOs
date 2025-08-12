@@ -32,7 +32,7 @@ def func(loop=None, return_dict=None, sema=None):
         dao.interrupted_search(threshold_ratio=0.5, current_iteration=period)
 
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
-                         dao.diversity_across_time, dao.variance_across_time, dao.cv_across_time]
+                         dao.diversity_across_time, dao.variance_across_time, dao.cv_across_time, dao.entropy_across_time, dao.antagonism_across_time]
     sema.release()
 
 

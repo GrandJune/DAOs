@@ -320,9 +320,12 @@ if __name__ == '__main__':
     reality = Reality(m=m, version="Rushed", alpha=3)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size, alpha=3)
 
+    consensus_formation_timing = []
     for period in range(search_loop):
         previous_consensus = dao.consensus.copy()
         dao.search(threshold_ratio=0.5)
+        if previous_consensus != dao.consensus:
+            consensus_formation_timing.append(period)
         if period % 100 == 0:
             print("-" * 10, period)
 
@@ -350,16 +353,9 @@ if __name__ == '__main__':
 
     # Variance
     plt.plot(x, dao.variance_across_time, "k-", label="DAO")
-
-    # Add shaded gray area for 10 iterations every 50 iterations
-    for i in range(0, max(x) + 1, 50):
-        plt.axvspan(i, i + 10, color='gray', alpha=0.2)  # adjust alpha for visibility
-
-        # Optional: Add dashed lines at the start of each interval
-        plt.axvline(x=i, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
-        # Dashed line at the end
-        plt.axvline(x=i + 10, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
-
+    # Add vertical dashed lines for changed consensus times
+    for t in consensus_formation_timing:
+        plt.axvline(x=t, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
     plt.xlabel('Time', fontweight='bold', fontsize=10)
     plt.ylabel('Variance', fontweight='bold', fontsize=10)
     plt.title('Variance')
@@ -370,16 +366,9 @@ if __name__ == '__main__':
 
     # Coefficient of Variance
     plt.plot(x, dao.cv_across_time, "k-", label="DAO")
-
-    # Add shaded gray area for 10 iterations every 50 iterations
-    for i in range(0, max(x) + 1, 50):
-        plt.axvspan(i, i + 10, color='gray', alpha=0.2)  # adjust alpha for visibility
-
-        # Optional: Add dashed lines at the start of each interval
-        plt.axvline(x=i, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
-        # Dashed line at the end
-        plt.axvline(x=i + 10, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
-
+    # Add vertical dashed lines for changed consensus times
+    for t in consensus_formation_timing:
+        plt.axvline(x=t, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
     plt.xlabel('Time', fontweight='bold', fontsize=10)
     plt.ylabel('Coefficient of Variance', fontweight='bold', fontsize=10)
     plt.title('Coefficient of Variance')
@@ -390,16 +379,9 @@ if __name__ == '__main__':
 
     # Entropy
     plt.plot(x, dao.entropy_across_time, "k-", label="DAO")
-
-    # Add shaded gray area for 10 iterations every 50 iterations
-    for i in range(0, max(x) + 1, 50):
-        plt.axvspan(i, i + 10, color='gray', alpha=0.2)  # adjust alpha for visibility
-
-        # Optional: Add dashed lines at the start of each interval
-        plt.axvline(x=i, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
-        # Dashed line at the end
-        plt.axvline(x=i + 10, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
-
+    # Add vertical dashed lines for changed consensus times
+    for t in consensus_formation_timing:
+        plt.axvline(x=t, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
     plt.xlabel('Time', fontweight='bold', fontsize=10)
     plt.ylabel('Shannon Entropy', fontweight='bold', fontsize=10)
     plt.title('Variance')
@@ -411,16 +393,9 @@ if __name__ == '__main__':
 
     # Antagonism
     plt.plot(x, dao.entropy_across_time, "k-", label="DAO")
-
-    # Add shaded gray area for 10 iterations every 50 iterations
-    for i in range(0, max(x) + 1, 50):
-        plt.axvspan(i, i + 10, color='gray', alpha=0.2)  # adjust alpha for visibility
-
-        # Optional: Add dashed lines at the start of each interval
-        plt.axvline(x=i, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
-        # Dashed line at the end
-        plt.axvline(x=i + 10, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
-
+    # Add vertical dashed lines for changed consensus times
+    for t in consensus_formation_timing:
+        plt.axvline(x=t, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
     plt.xlabel('Time', fontweight='bold', fontsize=10)
     plt.ylabel('Antagonism', fontweight='bold', fontsize=10)
     plt.title('Variance')
