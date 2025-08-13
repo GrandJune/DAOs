@@ -152,11 +152,11 @@ class DAO:
         for team in self.teams:
             performance_list += [individual.payoff for individual in team.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
+        self.diversity_across_time.append(self.get_diversity())
+        self.consensus_performance_across_time.append(self.consensus_payoff)
         self.variance_across_time.append(np.std(performance_list))
         cv = np.var(performance_list) / np.mean(performance_list)
         self.cv_across_time.append(cv)
-        self.diversity_across_time.append(self.get_diversity())
-        self.consensus_performance_across_time.append(self.consensus_payoff)
         self.entropy_across_time.append(self.get_entropy_binary())
         self.antagonism_across_time.append(self.get_antagonism_binary())
 
@@ -323,7 +323,7 @@ if __name__ == '__main__':
     consensus_formation_timing = []
     for period in range(search_loop):
         previous_consensus = dao.consensus.copy()
-        dao.search(threshold_ratio=0.5)
+        dao.search(threshold_ratio=0.55)
         if previous_consensus != dao.consensus:
             consensus_formation_timing.append(period)
         if period % 100 == 0:

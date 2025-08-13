@@ -25,7 +25,7 @@ def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None,
     for _ in range(search_loop):
         dao.search(threshold_ratio=threshold_ratio)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
-                         dao.diversity_across_time, dao.variance_across_time]
+                         dao.diversity_across_time, dao.variance_across_time, dao.cv_across_time, dao.entropy_across_time, dao.antagonism_across_time]
     sema.release()
 
 
@@ -44,6 +44,9 @@ if __name__ == '__main__':
     consensus_hyper = []
     diversity_hyper = []
     variance_hyper = []
+    cv_hyper = []
+    entropy_hyper = []
+    antagonism_hyper = []
     for hyper_loop in range(hyper_iteration):
         sema = Semaphore(concurrency)
         manager = mp.Manager()
@@ -61,22 +64,18 @@ if __name__ == '__main__':
         consensus_hyper += [result[1] for result in results]
         diversity_hyper += [result[2] for result in results]
         variance_hyper += [result[3] for result in results]
+        cv_hyper += [result[4] for result in results]
+        entropy_hyper += [result[5] for result in results]
+        antagonism_hyper += [result[6] for result in results]
 
-    performance_final = []
-    consensus_final = []
-    diversity_final = []
-    variance_final = []
-    percentile_10_final = []
-    percentile_90_final = []
-    for index in range(search_loop):
-        temp_performance = sum([result[index] for result in performance_hyper]) / len(performance_hyper)
-        temp_consensus = sum([result[index] for result in consensus_hyper]) / len(consensus_hyper)
-        temp_diversity = sum([result[index] for result in diversity_hyper]) / len(diversity_hyper)
-        temp_variance = sum([result[index] for result in variance_hyper]) / len(variance_hyper)
-        performance_final.append(temp_performance)
-        consensus_final.append(temp_consensus)
-        diversity_final.append(temp_diversity)
-        variance_final.append(temp_variance)
+    # Convert lists of lists to NumPy arrays
+    performance_final = np.mean(performance_hyper, axis=0).tolist()
+    consensus_final = np.mean(consensus_hyper, axis=0).tolist()
+    diversity_final = np.mean(diversity_hyper, axis=0).tolist()
+    variance_final = np.mean(variance_hyper, axis=0).tolist()
+    cv_final = np.mean(cv_hyper, axis=0).tolist()
+    entropy_final = np.mean(entropy_hyper, axis=0).tolist()
+    antagonism_final = np.mean(antagonism_hyper, axis=0).tolist()
 
     with open("dao_performance", 'wb') as out_file:
         pickle.dump(performance_final, out_file)
@@ -86,18 +85,14 @@ if __name__ == '__main__':
         pickle.dump(diversity_final, out_file)
     with open("dao_variance", 'wb') as out_file:
         pickle.dump(variance_final, out_file)
-
-    # save the original data to assess the iteration
-    with open("dao_original_performance", 'wb') as out_file:
-        pickle.dump(performance_hyper, out_file)
-    with open("dao_original_consensus_performance", 'wb') as out_file:
-        pickle.dump(consensus_hyper, out_file)
-    with open("dao_original_diversity", 'wb') as out_file:
-        pickle.dump(diversity_hyper, out_file)
-    with open("dao_original_variance", 'wb') as out_file:
-        pickle.dump(variance_hyper, out_file)
+    with open("dao_cv", 'wb') as out_file:
+        pickle.dump(cv_final, out_file)
+    with open("dao_entropy", 'wb') as out_file:
+        pickle.dump(entropy_final, out_file)
+    with open("dao_antagonism", 'wb') as out_file:
+        pickle.dump(antagonism_final, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))  # Duration
-    print("active=0.4", time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time())))  # Complete time
+    print("DAO", time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time())))  # Complete time
 

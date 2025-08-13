@@ -38,6 +38,9 @@ class Autonomy:
         self.performance_across_time = []
         self.diversity_across_time = []
         self.variance_across_time = []
+        self.cv_across_time = []
+        self.entropy_across_time = []
+        self.antagonism_across_time = []
 
     def search(self):
         # For autonomy, only learn from an isolated subgroup, according to Fang (2010)'s paper
@@ -51,6 +54,10 @@ class Autonomy:
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
+        cv = np.var(performance_list) / np.mean(performance_list)
+        self.cv_across_time.append(cv)
+        self.entropy_across_time.append(self.get_entropy_binary())
+        self.antagonism_across_time.append(self.get_antagonism_binary())
 
     def get_majority_view(self, superior_belief=None):
         majority_view = []
@@ -95,6 +102,69 @@ class Autonomy:
                 for individual in team.individuals:
                     individual.experimentation(experimentation_rate=experimentation_rate)
 
+        # newly added for formal measures of polarization
+
+    def get_entropy_binary(self):
+        """
+        Compute average Shannon entropy across dimensions,
+        considering only {-1, 1} beliefs and ignoring 0's.
+        Entropy is maximal when -1 and 1 are equally common
+        among non-zero beliefs.
+        """
+        individuals = []
+        for team in self.teams:
+            individuals += team.individuals
+
+        belief_matrix = np.array([ind.belief for ind in individuals])
+        n, m = belief_matrix.shape
+
+        entropies = []
+        for dim in range(m):
+            # Extract only non-zero beliefs for this dimension
+            nonzero_beliefs = belief_matrix[belief_matrix[:, dim] != 0, dim]
+            total_nonzero = len(nonzero_beliefs)
+
+            if total_nonzero == 0:
+                entropies.append(0.0)  # No information if all are neutral
+                continue
+
+            # Count frequency of -1 and 1
+            values, counts = np.unique(nonzero_beliefs, return_counts=True)
+            probs = counts / total_nonzero
+
+            # Shannon entropy for this dimension (natural log)
+            H = -np.sum([p * math.log(p) for p in probs if p > 0])
+            entropies.append(H)
+
+        return np.mean(entropies)
+
+    def get_antagonism_binary(self):
+        """
+        Compute average binary antagonism across dimensions,
+        considering only {-1, 1} beliefs and ignoring 0's (neutral opinions).
+
+        Per dimension:
+            p = share of +1 among non-zero beliefs
+            A = 4 * p * (1 - p)   # ranges from 0 (unanimity) to 1 (perfect two-camp balance)
+        """
+        # Collect all individuals' beliefs into an array: shape (n, m)
+        individuals = [ind for team in self.teams for ind in team.individuals]
+        belief_matrix = np.array([ind.belief for ind in individuals], dtype=int)
+        n, m = belief_matrix.shape
+
+        antagonism_values = []
+        for j in range(m):
+            col = belief_matrix[:, j]
+            nz = col[col != 0]  # ignore neutrals
+            if nz.size == 0:
+                antagonism_values.append(0.0)  # no extremes, so antagonism = 0
+                continue
+
+            p = np.mean(nz == 1)  # fraction of +1 among non-zeros
+            antagonism_values.append(4.0 * p * (1.0 - p))
+
+        return float(np.mean(antagonism_values))
+
 
 if __name__ == '__main__':
     m = 60
@@ -103,8 +173,8 @@ if __name__ == '__main__':
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
     # according to the practice, such a subdivision of an organization, such a size of autonomous team cannot be large.
-    reality = Reality(m=m, s=s)
-    autonomy = Autonomy(m=m, s=s, n=n, group_size=group_size, reality=reality, lr=lr)
+    reality = Reality(m=m)
+    autonomy = Autonomy(m=m, n=n, group_size=group_size, reality=reality, lr=lr)
     for period in range(100):
         autonomy.search()
         print(period)
