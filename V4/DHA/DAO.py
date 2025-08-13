@@ -89,7 +89,6 @@ class DAO:
         performance_list = []
         for team in self.teams:
             performance_list += [individual.payoff for individual in team.individuals]
-
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
@@ -136,11 +135,14 @@ class DAO:
         performance_list = []
         for team in self.teams:
             performance_list += [individual.payoff for individual in team.individuals]
-
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
+        cv = np.var(performance_list) / np.mean(performance_list)
+        self.cv_across_time.append(cv)
+        self.entropy_across_time.append(self.get_entropy_binary())
+        self.antagonism_across_time.append(self.get_antagonism_binary())
 
     def get_diversity(self):
         diversity = 0

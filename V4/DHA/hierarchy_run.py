@@ -24,7 +24,7 @@ def func(m=None, n=None, group_size=None, lr=None, search_loop=None, loop=None, 
     for _ in range(search_loop):
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
-                         hierarchy.diversity_across_time, hierarchy.variance_across_time]
+                         hierarchy.diversity_across_time, hierarchy.variance_across_time, hierarchy.cv_across_time, hierarchy.entropy_across_time, hierarchy.antagonism_across_time]
     sema.release()
 
 
@@ -42,6 +42,9 @@ if __name__ == '__main__':
     superior_performance_across_time_hyper = []
     diversity_across_time_hyper = []
     variance_across_time_hyper = []
+    cv_across_time_hyper = []
+    entropy_across_time_hyper = []
+    antagonism_across_time_hyper = []
     for hyper_loop in range(hyper_iteration):
         sema = Semaphore(concurrency)
         manager = mp.Manager()
@@ -60,21 +63,17 @@ if __name__ == '__main__':
         superior_performance_across_time_hyper += [result[1] for result in results]
         diversity_across_time_hyper += [result[2] for result in results]
         variance_across_time_hyper += [result[3] for result in results]
+        cv_across_time_hyper += [result[4] for result in results]
+        entropy_across_time_hyper += [result[5] for result in results]
+        antagonism_across_time_hyper += [result[6] for result in results]
 
-    performance_across_time_final = []
-    superior_performance_across_time_final = []
-    diversity_across_time_final = []
-    variance_across_time_final = []
-    for index in range(search_loop):
-        temp_performance = sum([result[index] for result in performance_across_time_hyper]) / len(performance_across_time_hyper)
-        temp_superior = sum([result[index] for result in superior_performance_across_time_hyper]) / len(superior_performance_across_time_hyper)
-        temp_diveristy = sum([result[index] for result in diversity_across_time_hyper]) / len(diversity_across_time_hyper)
-        temp_variance = sum([result[index] for result in variance_across_time_hyper]) / len(variance_across_time_hyper)
-
-        performance_across_time_final.append(temp_performance)
-        superior_performance_across_time_final.append(temp_superior)
-        diversity_across_time_final.append(temp_diveristy)
-        variance_across_time_final.append(temp_variance)
+    performance_across_time_final = np.mean(performance_across_time_hyper, axis=0).tolist()
+    superior_performance_across_time_final = np.mean(superior_performance_across_time_hyper, axis=0).tolist()
+    diversity_across_time_final = np.mean(diversity_across_time_hyper, axis=0).tolist()
+    variance_across_time_final = np.mean(variance_across_time_hyper, axis=0).tolist()
+    cv_across_time_final = np.mean(cv_across_time_hyper, axis=0).tolist()
+    entropy_across_time_final = np.mean(entropy_across_time_hyper, axis=0).tolist()
+    antagonism_across_time_final = np.mean(antagonism_across_time_hyper, axis=0).tolist()
 
     with open("hierarchy_performance", 'wb') as out_file:
         pickle.dump(performance_across_time_final, out_file)
@@ -84,21 +83,14 @@ if __name__ == '__main__':
         pickle.dump(diversity_across_time_final, out_file)
     with open("hierarchy_variance", 'wb') as out_file:
         pickle.dump(variance_across_time_final, out_file)
-
-    # save the original data to assess the iteration
-    with open("hierarchy_original_performance", 'wb') as out_file:
-        pickle.dump(performance_across_time_hyper, out_file)
-    with open("hierarchy_original_superior_performance", 'wb') as out_file:
-        pickle.dump(superior_performance_across_time_hyper, out_file)
-    with open("hierarchy_original_diversity", 'wb') as out_file:
-        pickle.dump(diversity_across_time_hyper, out_file)
-    with open("hierarchy_original_variance", 'wb') as out_file:
-        pickle.dump(variance_across_time_hyper, out_file)
+    with open("hierarchy_cv", 'wb') as out_file:
+        pickle.dump(cv_across_time_final, out_file)
+    with open("hierarchy_entropy", 'wb') as out_file:
+        pickle.dump(entropy_across_time_final, out_file)
+    with open("hierarchy_antagonism", 'wb') as out_file:
+        pickle.dump(antagonism_across_time_final, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))  # Duration
-    print("active=0.4", time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time())))  # Complete time
-
-
-
+    print("Hierarchy", time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time())))  # Complete time
 

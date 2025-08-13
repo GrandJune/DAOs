@@ -27,7 +27,7 @@ class Hierarchy:
         self.n = n
         self.manager_num = manager_num
         self.group_size = group_size
-        self.confirmation = confirmation  # whether or the lower-level individual initially confirm to the upper-level
+        self.confirmation = confirmation  # whether or the lower-level individuals initially confirm to the upper-level
         if self.manager_num * self.group_size != self.n:
             print("auto-adjust the unfit manager_num")
             self.manager_num = self.n // self.group_size
@@ -190,8 +190,8 @@ if __name__ == '__main__':
     p1 = 0.1  # belief learning from code
     p2 = 0.9  # code learning from belief
     search_iteration = 100
-    reality = Reality(m=m, s=s)
-    hierarchy = Hierarchy(m=m, s=s, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=p2)
+    reality = Reality(m=m)
+    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size, p1=p1, p2=p2)
     for i in range(search_iteration):
         hierarchy.search()
         print(i)
