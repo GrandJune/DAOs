@@ -33,8 +33,7 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
 if __name__ == '__main__':
     t0 = time.time()
     m = 90
-    turbulence_frequency_list = [100, 150, 200, 250, 300]
-    turbulence_intensity_list = [0.1, 0.3, 0.5, 0.7]
+    turbulence_freq_list = [50, 100, 150, 200, 250, 300]
     group_size = 7
     n = 350
     lr = 0.3
