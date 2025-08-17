@@ -13,14 +13,14 @@ from multiprocessing import Semaphore
 import pickle
 
 
-def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
+def func(m=None, n=None, group_size=None, lr=None, turbulence_frequency=None, turbulence_intensity=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
     for period in range(search_loop):
-        if period % 200 == 0 and period != 0:
-            reality.change(reality_change_rate=0.1)
+        if period % turbulence_frequency == 0 and period != 0:
+            reality.change(reality_change_rate=turbulence_intensity)
             for team in dao.teams:
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
@@ -35,6 +35,7 @@ if __name__ == '__main__':
     m = 90
     turbulence_frequency_list = [100, 150, 200, 250, 300]
     turbulence_intensity_list = [0.1, 0.3, 0.5, 0.7]
+    #
     group_size = 7
     n = 350
     lr = 0.3
@@ -51,62 +52,63 @@ if __name__ == '__main__':
     diversity_across_para_time = []
     consensus_performance_across_para_time = []
     variance_across_para_time = []
-    for turbulence_freq in turbulence_freq_list:
-        sema = Semaphore(concurrency)
-        manager = mp.Manager()
-        return_dict = manager.dict()
-        jobs = []
-        for loop in range(repetition):
-            sema.acquire()
-            p = mp.Process(target=func,
-                           args=(m, n, group_size, lr, turbulence_freq, search_loop, loop, return_dict, sema))
-            jobs.append(p)
-            p.start()
-        for proc in jobs:
-            proc.join()
-        results = return_dict.values()  # Don't need dict index, since it is repetition.
+    for turbulence_freq in turbulence_frequency_list:
+        for turbulence_intensity in turbulence_intensity_list:
+            sema = Semaphore(concurrency)
+            manager = mp.Manager()
+            return_dict = manager.dict()
+            jobs = []
+            for loop in range(repetition):
+                sema.acquire()
+                p = mp.Process(target=func,
+                               args=(m, n, group_size, lr, turbulence_freq, search_loop, loop, return_dict, sema))
+                jobs.append(p)
+                p.start()
+            for proc in jobs:
+                proc.join()
+            results = return_dict.values()  # Don't need dict index, since it is repetition.
 
-        # remove the time dimension, only keep the last value
-        performance_across_repeat = [result[0][-1] for result in results]
-        consensus_performance_across_repeat = [result[1][-1] for result in results]
-        diversity_across_repeat = [result[2][-1] for result in results]
-        variance_across_repeat = [result[3][-1] for result in results]
+            # remove the time dimension, only keep the last value
+            performance_across_repeat = [result[0][-1] for result in results]
+            consensus_performance_across_repeat = [result[1][-1] for result in results]
+            diversity_across_repeat = [result[2][-1] for result in results]
+            variance_across_repeat = [result[3][-1] for result in results]
 
-        # take an average across repetition, only one value for one parameter
-        performance_across_para.append(sum(performance_across_repeat) / len(performance_across_repeat))
-        consensus_performance_across_para.append(
-            sum(consensus_performance_across_repeat) / len(consensus_performance_across_repeat))
-        diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
-        variance_across_para.append(sum(variance_across_repeat) / len(variance_across_repeat))
+            # take an average across repetition, only one value for one parameter
+            performance_across_para.append(sum(performance_across_repeat) / len(performance_across_repeat))
+            consensus_performance_across_para.append(
+                sum(consensus_performance_across_repeat) / len(consensus_performance_across_repeat))
+            diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
+            variance_across_para.append(sum(variance_across_repeat) / len(variance_across_repeat))
 
-        # keep the time dimension
-        performance_across_repeat_time = [result[0] for result in results]
-        consensus_performance_across_repeat_time = [result[1] for result in results]
-        diversity_across_repeat_time = [result[2] for result in results]
-        variance_across_repeat_time = [result[3] for result in results]
+            # keep the time dimension
+            performance_across_repeat_time = [result[0] for result in results]
+            consensus_performance_across_repeat_time = [result[1] for result in results]
+            diversity_across_repeat_time = [result[2] for result in results]
+            variance_across_repeat_time = [result[3] for result in results]
 
-        # take an average across repetition, for each time iteration, integrate into 600 values for one parameter
-        performance_across_time = []  # under the same parameter
-        consensus_performance_across_time = []
-        diversity_across_time = []
-        variance_across_time = []
-        for period in range(search_loop):
-            temp_performance = [performance_list[period] for performance_list in performance_across_repeat_time]
-            performance_across_time.append(sum(temp_performance) / len(temp_performance))
-            temp_consensus_performance = [performance_list[period] for performance_list in
-                                          consensus_performance_across_repeat_time]
-            consensus_performance_across_time.append(sum(temp_consensus_performance) / len(temp_consensus_performance))
+            # take an average across repetition, for each time iteration, integrate into 600 values for one parameter
+            performance_across_time = []  # under the same parameter
+            consensus_performance_across_time = []
+            diversity_across_time = []
+            variance_across_time = []
+            for period in range(search_loop):
+                temp_performance = [performance_list[period] for performance_list in performance_across_repeat_time]
+                performance_across_time.append(sum(temp_performance) / len(temp_performance))
+                temp_consensus_performance = [performance_list[period] for performance_list in
+                                              consensus_performance_across_repeat_time]
+                consensus_performance_across_time.append(sum(temp_consensus_performance) / len(temp_consensus_performance))
 
-            temp_diversity = [diversity_list[period] for diversity_list in diversity_across_repeat_time]
-            diversity_across_time.append(sum(temp_diversity) / len(temp_diversity))
+                temp_diversity = [diversity_list[period] for diversity_list in diversity_across_repeat_time]
+                diversity_across_time.append(sum(temp_diversity) / len(temp_diversity))
 
-            temp_variance = [variance_list[period] for variance_list in variance_across_repeat_time]
-            variance_across_time.append(sum(temp_variance) / len(temp_variance))
-        # retain the time dimension
-        performance_across_para_time.append(performance_across_time)
-        consensus_performance_across_para_time.append(consensus_performance_across_time)
-        diversity_across_para_time.append(diversity_across_time)
-        variance_across_para_time.append(variance_across_time)
+                temp_variance = [variance_list[period] for variance_list in variance_across_repeat_time]
+                variance_across_time.append(sum(temp_variance) / len(temp_variance))
+            # retain the time dimension
+            performance_across_para_time.append(performance_across_time)
+            consensus_performance_across_para_time.append(consensus_performance_across_time)
+            diversity_across_para_time.append(diversity_across_time)
+            variance_across_para_time.append(variance_across_time)
 
     # save the without-time data (ready for figure)
     with open("dao_performance_across_turbulence", 'wb') as out_file:

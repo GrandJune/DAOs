@@ -13,14 +13,14 @@ from multiprocessing import Semaphore
 import pickle
 
 
-def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
+def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None, turbulence_intensity=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
     autonomy = Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr)
     for period in range(search_loop):
-        if (period + 1) % turbulence_freq == 0:
-            reality.change(reality_change_rate=0.15)
+        if period % turbulence_freq == 0 and period != 0:
+            reality.change(reality_change_rate=turbulence_intensity)
             for team in autonomy.teams:
                 for individual in team.individuals:
                     individual.payoff = reality.get_payoff(belief=individual.belief)
