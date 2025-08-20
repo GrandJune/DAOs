@@ -20,7 +20,7 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
     autonomy = Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr)
     for period in range(search_loop):
         # if period % turbulence_freq == 0 and period != 0:
-        reality.change(reality_change_rate=0.1)
+        reality.change(reality_change_rate=0.15)
         for team in autonomy.teams:
             for individual in team.individuals:
                 individual.payoff = reality.get_payoff(belief=individual.belief)
