@@ -15,7 +15,7 @@ import time
 
 class Hierarchy:
     def __init__(self, m=None, n=None, reality=None, lr=None, alpha=3,
-                 group_size=None, p1=0.1, p2=0.9, manager_num=50, confirmation=True):
+                 group_size_list=None, p1=0.1, p2=0.9, manager_num=50, confirmation=True):
         """
         :param m: problem space
         :param s: the first complexity
@@ -26,23 +26,24 @@ class Hierarchy:
         self.m = m  # state length
         self.n = n
         self.manager_num = manager_num
-        self.group_size = group_size
+        # self.group_size = group_size
         self.confirmation = confirmation  # whether or the lower-level individual initially confirm to the upper-level
-        if self.manager_num * self.group_size != self.n:
-            print("auto-adjust the unfit manager_num")
-            self.manager_num = self.n // self.group_size
+        # if self.manager_num * self.group_size != self.n:
+        #     print("auto-adjust the unfit manager_num")
+        #     self.manager_num = self.n // self.group_size
         self.alpha = alpha
         self.policy_num = self.m // self.alpha
         self.lr = lr  # learning rate
         self.reality = reality
-        manager_num = self.n // self.group_size
+        # manager_num = self.n // self.group_size
         self.superior = Superior(policy_num=self.policy_num, reality=self.reality, manager_num=manager_num, p1=p1, p2=p2)
         # n is the number of managers, instead of employers;  In March's paper, n=50
         # p1, p2 is set to be the best one in March's paper
         self.teams = []
-        for i in range(self.n // self.group_size):
-            team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
-            for _ in range(self.group_size):
+        # Inequal Group Size (some are 7, and some are 14, etc)
+        for i, group_size in enumerate(group_size_list):
+            team = Team(m=self.m, alpha=self.alpha, reality=self.reality)
+            for _ in range(group_size):
                 individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
             team.manager = self.superior.managers[i]

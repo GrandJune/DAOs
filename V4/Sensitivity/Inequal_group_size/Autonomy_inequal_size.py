@@ -12,7 +12,7 @@ from Team import Team
 
 
 class Autonomy:
-    def __init__(self, m=None, n=None, reality=None, group_size=None, lr=None, alpha=3):
+    def __init__(self, m=None, n=None, reality=None, group_size_list=None, lr=None, alpha=3):
         """
         :param m: problem space
         :param n: the number of agents
@@ -22,17 +22,18 @@ class Autonomy:
         self.m = m  # state length
         self.n = n  # the number of subunits under this superior
         self.reality = reality
-        self.group_size = group_size
+        # self.group_size = group_size
         self.lr = lr  # learning rate; learn from majority view
         if self.n % self.group_size != 0:
             raise ValueError("N must be divisible by subgroup size")
         self.alpha = alpha
         self.policy_num = self.m // self.alpha
         self.teams = []
-        for i in range(self.n // self.group_size):
-            team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
-            for _ in range(self.group_size):
-                individual = Individual(m=self.m, reality=self.reality, lr=self.lr, alpha=self.alpha)
+        # Inequal Group Size (some are 7, and some are 14, etc)
+        for group_size in group_size_list:
+            team = Team(m=self.m, alpha=self.alpha, reality=self.reality)
+            for _ in range(group_size):
+                individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
             self.teams.append(team)
         self.performance_across_time = []
