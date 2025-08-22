@@ -107,7 +107,7 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Incentive_endogenous_contribution" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Incentive_Strength" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence/Turbulence_0.1_200" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Inequal_group_size" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Inequal_Group_size" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence/Turbulence_Heatmap" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />

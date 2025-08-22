@@ -12,7 +12,7 @@ import numpy as np
 
 
 class DAO:
-    def __init__(self, m=None, n=None, reality=None, lr=None, group_size=None,
+    def __init__(self, m=None, n=None, reality=None, lr=None, group_size_list=None,
                  alpha=3):
         """
         :param m: problem space
@@ -27,13 +27,14 @@ class DAO:
         self.policy_num = self.m // self.alpha
         self.reality = reality
         self.lr = lr  # learning from consensus
-        self.group_size = group_size
+        # self.group_size = group_size
         self.consensus = [0] * self.policy_num
         self.consensus_payoff = 0
         self.teams = []
-        for i in range(self.n // self.group_size):
-            team = Team(m=self.m, index=i, alpha=self.alpha, reality=self.reality)
-            for _ in range(self.group_size):
+        # Inequal Group Size (some are 7, and some are 14, etc)
+        for group_size in group_size_list:
+            team = Team(m=self.m, alpha=self.alpha, reality=self.reality)
+            for _ in range(group_size):
                 individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
             self.teams.append(team)
