@@ -5,23 +5,19 @@
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import numpy as np
-from DAO import DAO
-from Hierarchy import Hierarchy
-from Autonomy import Autonomy
+from Hierarchy_inequal_size import Hierarchy
 from Reality import Reality
 import multiprocessing as mp
 import time
-from multiprocessing import Pool
 from multiprocessing import Semaphore
 import pickle
-import math
 
 
-def func(m=None, n=None, group_size=None, lr=None, search_loop=None,
+def func(m=None, n=None, group_size_list=None, lr=None, search_loop=None,
          loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
-    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
+    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size_list=group_size_list)
     for _ in range(search_loop):
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,

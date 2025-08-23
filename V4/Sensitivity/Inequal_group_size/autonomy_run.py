@@ -5,23 +5,19 @@
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import numpy as np
-from DAO import DAO
-from Hierarchy import Hierarchy
-from Autonomy import Autonomy
+from Autonomy_inequal_size import Autonomy
 from Reality import Reality
 import multiprocessing as mp
 import time
-from multiprocessing import Pool
 from multiprocessing import Semaphore
 import pickle
-import math
 
 
-def func(m=None, n=None, group_size=None, lr=None,
+def func(m=None, n=None, group_size_list=None, lr=None,
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m, alpha=3)
-    autonomy = Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr)
+    autonomy = Autonomy(m=m, n=n, reality=reality, group_size_list=group_size_list, lr=lr)
     for _ in range(search_loop):
         autonomy.search()
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time,
