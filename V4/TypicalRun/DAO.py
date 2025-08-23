@@ -152,11 +152,11 @@ class DAO:
         for team in self.teams:
             performance_list += [individual.payoff for individual in team.individuals]
         self.performance_across_time.append(sum(performance_list) / len(performance_list))
-        self.diversity_across_time.append(self.get_diversity())
-        self.consensus_performance_across_time.append(self.consensus_payoff)
         self.variance_across_time.append(np.std(performance_list))
         cv = np.var(performance_list) / np.mean(performance_list)
         self.cv_across_time.append(cv)
+        self.diversity_across_time.append(self.get_diversity())
+        self.consensus_performance_across_time.append(self.consensus_payoff)
         self.entropy_across_time.append(self.get_entropy_binary())
         self.antagonism_across_time.append(self.get_antagonism_binary())
 
@@ -311,8 +311,8 @@ class DAO:
 
 
 if __name__ == '__main__':
-    m = 90 # policy_num = 20; every 50 iterations form a consensus -> need 1k iterations
-    n = 350
+    m = 60 # policy_num = 20; every 50 iterations form a consensus -> need 1k iterations
+    n = 280
     search_loop = 300
     lr = 0.3
     alpha = 3
@@ -384,7 +384,6 @@ if __name__ == '__main__':
         plt.axvline(x=t, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
     plt.xlabel('Time', fontweight='bold', fontsize=10)
     plt.ylabel('Shannon Entropy', fontweight='bold', fontsize=10)
-    plt.title('Variance')
     plt.legend(frameon=False, ncol=3, fontsize=10)
     plt.savefig("DAO_entropy.png", transparent=False, dpi=1200)
     plt.show()
@@ -398,7 +397,6 @@ if __name__ == '__main__':
         plt.axvline(x=t, color='gray', linestyle='--', linewidth=0.8, alpha=0.6)
     plt.xlabel('Time', fontweight='bold', fontsize=10)
     plt.ylabel('Antagonism', fontweight='bold', fontsize=10)
-    plt.title('Variance')
     plt.legend(frameon=False, ncol=3, fontsize=10)
     plt.savefig("DAO_antagonism.png", transparent=False, dpi=1200)
     plt.show()

@@ -248,7 +248,7 @@ class DAO:
 if __name__ == '__main__':
     m = 60
     n = 280
-    search_loop = 100
+    search_loop = 300
     lr = 0.3
     alpha = 3
     group_size = 7  # the smallest group size in Fang's model: 7
