@@ -24,7 +24,7 @@ class Hierarchy:
         :param reality: to provide feedback
         """
         self.m = m  # state length
-        self.n = n
+        # self.n = n
         self.manager_num = manager_num
         # self.group_size = group_size
         self.confirmation = confirmation  # whether or the lower-level individual initially confirm to the upper-level
@@ -50,6 +50,7 @@ class Hierarchy:
             if self.confirmation:
                 team.confirm(policy=team.manager.policy)
             self.teams.append(team)
+        self.n = sum(group_size_list)
         # DVs
         self.performance_across_time = []
         self.variance_across_time = []

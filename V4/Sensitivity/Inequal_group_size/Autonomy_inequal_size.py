@@ -20,12 +20,10 @@ class Autonomy:
         :param confirm: the extent to which agents confirm to their superior
         """
         self.m = m  # state length
-        self.n = n  # the number of subunits under this superior
+        # self.n = n  # the number of subunits under this superior
         self.reality = reality
         # self.group_size = group_size
         self.lr = lr  # learning rate; learn from majority view
-        if self.n % self.group_size != 0:
-            raise ValueError("N must be divisible by subgroup size")
         self.alpha = alpha
         self.policy_num = self.m // self.alpha
         self.teams = []
@@ -36,6 +34,7 @@ class Autonomy:
                 individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
             self.teams.append(team)
+        self.n = sum(group_size_list)
         self.performance_across_time = []
         self.diversity_across_time = []
         self.variance_across_time = []

@@ -36,23 +36,13 @@ if __name__ == '__main__':
     group_size_list = []
     for _ in range(50):
         group_size_list.append(np.random.randint(5, 21))
-    group_size_list = [7, 14, 21, 28]
+    # group_size_list = [7, 14, 21, 28]
     n = 420
     lr = 0.3
     repetition = 200
     concurrency = 80
     search_loop = 500
     threshold_ratio = 0.5
-    # DVs
-    performance_across_para = []
-    consensus_performance_across_para = []
-    diversity_across_para = []
-    variance_across_para = []
-
-    performance_across_para_time = []
-    diversity_across_para_time = []
-    consensus_performance_across_para_time = []
-    variance_across_para_time = []
 
     sema = Semaphore(concurrency)
     manager = mp.Manager()

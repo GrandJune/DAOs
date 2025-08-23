@@ -20,7 +20,7 @@ class DAO:
         :param reality: to provide feedback
         """
         self.m = m  # state length
-        self.n = n  # the number of subunits under this superior
+        # self.n = n  # the number of subunits under this superior
         if self.m % alpha != 0:
             raise ValueError("m is not dividable by {0}".format(alpha))
         self.alpha = alpha  # The aggregation degree
@@ -38,6 +38,7 @@ class DAO:
                 individual = Individual(m=self.m, alpha=self.alpha, reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
             self.teams.append(team)
+        self.n = sum(group_size_list)
         self.performance_across_time = []
         self.variance_across_time = []
         self.diversity_across_time = []
