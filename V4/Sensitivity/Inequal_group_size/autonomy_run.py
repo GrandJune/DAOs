@@ -38,7 +38,7 @@ if __name__ == '__main__':
         group_size_list.append(np.random.randint(5, 21))
     n = 420
     lr = 0.3
-    repetition = 200
+    repetition = 400
     concurrency = 100
     search_loop = 300
 
