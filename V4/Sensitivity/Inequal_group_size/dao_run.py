@@ -39,9 +39,9 @@ if __name__ == '__main__':
     # group_size_list = [7, 14, 21, 28]
     n = 420
     lr = 0.3
-    repetition = 200
-    concurrency = 80
-    search_loop = 500
+    repetition = 400
+    concurrency = 100
+    search_loop = 300
     threshold_ratio = 0.5
 
     sema = Semaphore(concurrency)
