@@ -109,7 +109,7 @@ class DAO:
 
         threshold = threshold_ratio * self.n
         # only update consensus within a small time windows
-        if current_iteration % 50 in range(0, 10):  # 10 iterations after each 50-step
+        if (current_iteration % 50 in range(0, 10)) and (current_iteration >= 50):  # 10 iterations after each 50-step
             t = current_iteration % 50
             chunk_size = (self.policy_num + 9) // 10  # Ceiling division
             start_idx = t * chunk_size
@@ -277,7 +277,7 @@ class DAO:
             probs = counts / total_nonzero
 
             # Shannon entropy for this dimension (natural log)
-            H = -np.sum([p * math.log(p) for p in probs if p > 0])
+            H = -np.sum([p * math.log(p, 2) for p in probs if p > 0])
             entropies.append(H)
 
         return np.mean(entropies)
@@ -323,7 +323,7 @@ if __name__ == '__main__':
     consensus_formation_timing = []
     for period in range(search_loop):
         previous_consensus = dao.consensus.copy()
-        dao.search(threshold_ratio=0.55)
+        dao.search(threshold_ratio=0.5)
         if previous_consensus != dao.consensus:
             consensus_formation_timing.append(period)
         if period % 100 == 0:

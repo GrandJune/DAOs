@@ -20,8 +20,8 @@ import math
 def func(loop=None, return_dict=None, sema=None):
     np.random.seed(None)
 
-    m = 60 # policy_num = 20; every 50 iterations form a consensus -> need 1k iterations
-    n = 280
+    m = 90 # policy_num = 20; every 50 iterations form a consensus -> need 1k iterations
+    n = 350
     search_loop = 300
     lr = 0.3
     group_size = 7  # the smallest group size in Fang's model: 7
