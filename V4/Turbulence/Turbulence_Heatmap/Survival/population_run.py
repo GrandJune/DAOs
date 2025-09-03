@@ -95,7 +95,6 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
 
 
 
-
     return_dict[loop] = [autonomy.performance_across_time, autonomy.diversity_across_time,
                          autonomy.variance_across_time]
     sema.release()
