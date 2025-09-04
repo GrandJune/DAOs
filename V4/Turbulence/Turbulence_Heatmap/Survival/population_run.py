@@ -121,7 +121,7 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
         for autonomy in autonomy_list:
             autonomy.search()
         for dao in dao_list:
-            dao.search()
+            dao.search(threshold_ratio=0.5)
         for hierarchy in hierarchy_list:
             hierarchy.search()
 
@@ -139,7 +139,7 @@ if __name__ == '__main__':
     hyper_repeat = 10
     repetition = 100  # hyper * repetition = 1000
     concurrency = 100
-    search_loop = 2000
+    search_loop = 1000
     # DVs
     dao_percentage_hyper, hierarchy_percentage_hyper, autonomy_percentage_hype = [], [], []
     for _ in range(hyper_repeat):
