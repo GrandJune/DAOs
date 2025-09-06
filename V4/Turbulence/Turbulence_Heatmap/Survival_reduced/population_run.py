@@ -20,7 +20,7 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
     np.random.seed(None)
     reality = Reality(m=m)
     autonomy_list, dao_list, hierarchy_list = [], [], []
-    num_per_type = 200
+    num_per_type = 100
     for _ in range(num_per_type):
         autonomy = Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr)
         dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
