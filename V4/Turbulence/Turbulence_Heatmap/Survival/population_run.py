@@ -20,11 +20,12 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
     np.random.seed(None)
     reality = Reality(m=m)
     autonomy_list, dao_list, hierarchy_list = [], [], []
-    num_per_type = 200
+    num_per_type = 20
     for _ in range(num_per_type):
         autonomy = Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr)
         dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
         hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
+
         autonomy_list.append(autonomy)
         dao_list.append(dao)
         hierarchy_list.append(hierarchy)
@@ -68,7 +69,7 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
             mean_perf = np.mean(population_performance)
             std_perf = np.std(population_performance)
             # Threshold
-            c = 1.28  # as per Greve 2002
+            c = 1.28  # as per Greve 2002, expected  failure rate = 10%
             threshold = mean_perf - c * std_perf
 
             # Identify indices below threshold
@@ -136,7 +137,7 @@ if __name__ == '__main__':
     group_size = 7
     n = 350
     lr = 0.3
-    hyper_repeat = 10
+    hyper_repeat = 1
     repetition = 100  # hyper * repetition = 1000
     concurrency = 100
     search_loop = 1000
