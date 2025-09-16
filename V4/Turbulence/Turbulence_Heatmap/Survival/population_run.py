@@ -20,7 +20,7 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
     np.random.seed(None)
     reality = Reality(m=m)
     autonomy_list, dao_list, hierarchy_list = [], [], []
-    num_per_type = 20
+    num_per_type = 40
     for _ in range(num_per_type):
         autonomy = Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr)
         dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
@@ -154,7 +154,7 @@ if __name__ == '__main__':
     hyper_repeat = 1
     repetition = 100  # hyper * repetition = 1000
     concurrency = 100
-    search_loop = 1000
+    search_loop = 1001
     # DVs
     dao_percentage_hyper, hierarchy_percentage_hyper, autonomy_percentage_hype = [], [], []
     for _ in range(hyper_repeat):
