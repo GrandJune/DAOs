@@ -74,17 +74,21 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
 
             # Identify indices below threshold
             below_indices = [i for i, perf in enumerate(population_performance) if perf < threshold]
-            autonomy_below = []
-            dao_below = []
-            hierarchy_below = []
+
+            # IMPORTANT: use *current* lengths to map global indices to per-type local indices
+            A = len(autonomy_list)
+            D = len(dao_list)
+            H = len(hierarchy_list)
+
+            autonomy_below, dao_below, hierarchy_below = [], [], []
             for idx in below_indices:
-                if idx < num_per_type:
-                    autonomy_below.append(idx)
-                elif idx < 2 * num_per_type:
-                    dao_below.append(idx - num_per_type)  # shift back into dao_list indexing
+                if idx < A:
+                    autonomy_below.append(idx)  # local index in autonomy_list
+                elif idx < A + D:
+                    dao_below.append(idx - A)  # local index in dao_list
                 else:
-                    hierarchy_below.append(idx - 2 * num_per_type)  # shift back into hierarchy_list indexing
-            # delete in reverse order
+                    hierarchy_below.append(idx - A - D)  # local index in hierarchy_list
+            # Delete from each list in reverse order to keep indices valid
             for idx in sorted(autonomy_below, reverse=True):
                 del autonomy_list[idx]
             for idx in sorted(dao_below, reverse=True):
@@ -92,10 +96,19 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
             for idx in sorted(hierarchy_below, reverse=True):
                 del hierarchy_list[idx]
 
-            # replacement
-            percentage_autonomy = len(autonomy_list) / (len(autonomy_list) + len(dao_list) + len(hierarchy_list))
-            percentage_dao = len(dao_list) / (len(autonomy_list) + len(dao_list) + len(hierarchy_list))
-            percentage_hierarchy = len(hierarchy_list) / (len(autonomy_list) + len(dao_list) + len(hierarchy_list))
+            # Replacement
+            total = len(autonomy_list) + len(dao_list) + len(hierarchy_list)
+            # Edge case: if everything was deleted, re-seed minimally (or skip replacement)
+            if total == 0:
+                autonomy_list.append(Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr))
+                dao_list.append(DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size))
+                hierarchy_list.append(Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size))
+                total = 3
+
+            percentage_autonomy = len(autonomy_list) / total
+            percentage_dao = len(dao_list) / total
+            percentage_hierarchy = len(hierarchy_list) / total
+
             # generate types according to percentage
             probs = [
                 percentage_autonomy,
@@ -103,21 +116,22 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
                 percentage_hierarchy
             ]
             k = len(dao_below) + len(autonomy_below) + len(hierarchy_below)  # number to replace/delete
-            choices = np.random.choice(
-                ["autonomy", "dao", "hierarchy"],
-                size=k,
-                p=probs
-            )
-            for choice in choices:
-                if choice == "autonomy":
-                    autonomy_list.append(Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr))
-                elif choice == "dao":
-                    dao_list.append(DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size))
-                elif choice == "hierarchy":
-                    hierarchy_list.append(Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size))
-            dao_percentage_list.append(len(dao_list) / (len(autonomy_list) + len(dao_list) + len(hierarchy_list)))
-            hierarchy_percentage_list.append(len(hierarchy_list) / (len(autonomy_list) + len(dao_list) + len(hierarchy_list)))
-            autonomy_percentage_list.append(len(autonomy_list) / (len(autonomy_list) + len(dao_list) + len(hierarchy_list)))
+            if k > 0:
+                choices = np.random.choice(
+                    ["autonomy", "dao", "hierarchy"],
+                    size=k,
+                    p=probs
+                )
+                for choice in choices:
+                    if choice == "autonomy":
+                        autonomy_list.append(Autonomy(m=m, n=n, reality=reality, group_size=group_size, lr=lr))
+                    elif choice == "dao":
+                        dao_list.append(DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size))
+                    elif choice == "hierarchy":
+                        hierarchy_list.append(Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size))
+                dao_percentage_list.append(len(dao_list) / (len(autonomy_list) + len(dao_list) + len(hierarchy_list)))
+                hierarchy_percentage_list.append(len(hierarchy_list) / (len(autonomy_list) + len(dao_list) + len(hierarchy_list)))
+                autonomy_percentage_list.append(len(autonomy_list) / (len(autonomy_list) + len(dao_list) + len(hierarchy_list)))
 
         for autonomy in autonomy_list:
             autonomy.search()
