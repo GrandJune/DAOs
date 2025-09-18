@@ -1,15 +1,14 @@
 #!/bin/bash
-#SBATCH --job-name=Optimized_T1401
+#SBATCH --job-name=Pool_1001
 #SBATCH --time=3-00:00:00
 #SBATCH --partition=long
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=102
 #SBATCH --mem=400G
-#SBATCH --hint=nomultithread
 #SBATCH --output=slurm_output_%j.out
 #SBATCH --error=slurm_output_%j.err
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=junyili@u.nus.edu
 
-srun --cpu-bind=cores --mpi=none --kill-on-bad-exit=1 python population_run.py
+srun python population_run.py
 

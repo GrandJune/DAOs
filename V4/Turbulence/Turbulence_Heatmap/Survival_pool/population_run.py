@@ -61,15 +61,23 @@ def func(m=None, n=None, group_size=None, lr=None, turbulence_freq=None,
             dao_perf = [d.performance_across_time[-1] for d in dao_list]
             hierarchy_perf = [h.performance_across_time[-1] for h in hierarchy_list]
             population_performance = autonomy_perf + dao_perf + hierarchy_perf
+            arr = np.asarray(population_performance, dtype=float)
+            # Greve's approach
+            # mean_perf = np.mean(population_performance)
+            # std_perf = np.std(population_performance)
+            #
+            # # Threshold (Greve 2002; expected failure rate ≈ 10%)
+            # c = 1.28
+            # threshold = mean_perf - c * std_perf
+            #
+            # below_indices = [i for i, perf in enumerate(population_performance) if perf < threshold]
 
-            mean_perf = np.mean(population_performance)
-            std_perf = np.std(population_performance)
-
-            # Threshold (Greve 2002; expected failure rate ≈ 10%)
-            c = 1.28
-            threshold = mean_perf - c * std_perf
-
-            below_indices = [i for i, perf in enumerate(population_performance) if perf < threshold]
+            # Simplified approach
+            k = max(1, int(np.ceil(0.10 * arr.size)))  # bottom ~10%, at least 1
+            idx = np.argpartition(arr, k - 1)[:k]  # k smallest, unsorted
+            # (optional) sort these k by actual value for nicer order
+            idx = idx[np.argsort(arr[idx])]
+            below_indices = idx.tolist()
 
             # map global indices to per-type local indices
             A = len(autonomy_list)
