@@ -15,7 +15,7 @@ import pickle
 
 def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None,
          search_loop=None, loop=None, beta=None, return_dict=None,
-         sema=None, alpha=3, p1=0.1, p2=0.9, token=True):
+         sema=None, alpha=3, p1=0.1, p2=0.9, token=False):
     np.random.seed(None)
     reality = Reality(m=m, alpha=alpha)
     hybrid = Hybrid(m=m, n=n, reality=reality, lr=lr, alpha=alpha,
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     concurrency = 50
     search_loop = 300
     group_size = 7  # the smallest group size in Fang's model: 7
-    token = True
+    token = False
     beta_list = np.arange(0, 1.01, 0.1).round(1).tolist()
 
     performance_beta = []
