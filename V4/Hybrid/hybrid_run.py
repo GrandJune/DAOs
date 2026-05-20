@@ -46,8 +46,8 @@ if __name__ == '__main__':
     p2 = 0.9
     threshold_ratio = 0.5
     hyper_iteration = 10
-    repetition = 50
-    concurrency = 50
+    repetition = 100
+    concurrency = 100
     search_loop = 300
     group_size = 7  # the smallest group size in Fang's model: 7
     token = False

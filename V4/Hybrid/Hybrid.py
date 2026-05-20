@@ -33,8 +33,7 @@ from Team import Team
 
 class Hybrid:
     def __init__(self, m=None, n=None, reality=None, lr=None, alpha=3,
-                 group_size=None, beta=0.5, p1=0.1, p2=0.9,
-                 manager_num=50, confirmation=True):
+                 group_size=None, beta=0.5, p1=0.1, p2=0.9, manager_num=50):
         """
         :param m: problem space size
         :param n: number of lower-level individuals
@@ -46,7 +45,6 @@ class Hybrid:
         :param p1: manager learning from organization code
         :param p2: organizational code learning from superior managers
         :param manager_num: number of managers; auto-adjusted if inconsistent
-        :param confirmation: whether individuals initially conform to managers
         """
         if m is None or n is None or group_size is None:
             raise ValueError("m, n, and group_size must be specified.")
@@ -63,7 +61,6 @@ class Hybrid:
         self.policy_num = self.m // self.alpha
         self.group_size = group_size
         self.beta = beta
-        self.confirmation = confirmation
         self.manager_num = manager_num
 
         if self.manager_num * self.group_size != self.n:
@@ -88,15 +85,11 @@ class Hybrid:
                                         reality=self.reality, lr=self.lr)
                 team.individuals.append(individual)
             team.manager = self.superior.managers[i]
-            if self.confirmation:
-                team.confirm(policy=team.manager.policy)
             self.teams.append(team)
 
         # Organizational code states
         self.consensus = [0] * self.policy_num
         self.consensus_payoff = 0
-        self.hybrid_code = [0] * self.policy_num
-        self.hybrid_code_payoff = 0
         self.last_mode = None
 
         # DVs and diagnostic histories
@@ -109,7 +102,7 @@ class Hybrid:
         self.consensus_performance_across_time = []
         self.mode_across_time = []
 
-    def search(self, threshold_ratio=None, token=True, beta=None):
+    def search(self, threshold_ratio=None, token=False, beta=None):
         """
         One period of hybrid search.
 
@@ -325,11 +318,13 @@ if __name__ == '__main__':
 
     x = range(search_iteration)
     plt.plot(x, hybrid.performance_across_time, "k-", label="Mean")
+    plt.plot(x, hybrid.consensus_performance_across_time, "r-",
+             label="Consensus Code")
     plt.title('Performance')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Hybrid_performance.png", transparent=False, dpi=1200)
+    # plt.savefig("Hybrid_performance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
@@ -338,7 +333,7 @@ if __name__ == '__main__':
     plt.ylabel('Diversity', fontweight='bold', fontsize=10)
     plt.title('Diversity')
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Hybrid_diversity.png", transparent=False, dpi=1200)
+    # plt.savefig("Hybrid_diversity.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
@@ -347,7 +342,7 @@ if __name__ == '__main__':
     plt.ylabel('Variance', fontweight='bold', fontsize=10)
     plt.title('Variance')
     plt.legend(frameon=False, ncol=3, fontsize=10)
-    plt.savefig("Hybrid_variance.png", transparent=False, dpi=1200)
+    # plt.savefig("Hybrid_variance.png", transparent=False, dpi=1200)
     plt.show()
     plt.clf()
 
