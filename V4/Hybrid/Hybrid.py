@@ -107,8 +107,6 @@ class Hybrid:
         self.entropy_across_time = []
         self.antagonism_across_time = []
         self.consensus_performance_across_time = []
-        self.superior_performance_across_time = []
-        self.hybrid_code_performance_across_time = []
         self.mode_across_time = []
 
     def search(self, threshold_ratio=None, token=True, beta=None):
@@ -132,20 +130,15 @@ class Hybrid:
         if np.random.uniform(0, 1) < effective_beta:
             self._consensus_search(threshold_ratio=threshold_ratio, token=token)
             self.last_mode = "consensus"
-            self.hybrid_code = self.consensus.copy()
-            self.hybrid_code_payoff = self.consensus_payoff
         else:
             self._hierarchy_search()
             self.last_mode = "hierarchy"
-            self.hybrid_code = self.superior.code.copy()
-            self.hybrid_code_payoff = self.reality.get_policy_payoff(policy=self.hybrid_code)
 
         self._record_performance()
 
     def _consensus_search(self, threshold_ratio=None, token=True):
         """
-        DAO-style channel: individuals form a consensus. Managers are not
-        included as voters in this baseline hybrid specification.
+        DAO-style channel: individuals specify the consensus through voting.
         """
         new_consensus = []
         individuals = self._get_individuals()
@@ -191,25 +184,23 @@ class Hybrid:
             team.learn()
 
     def _hierarchy_search(self):
-        """Hierarchy-style channel: managers specify policy."""
+        """Hierarchy-style channel: managers (or delegators?) specify the consensus."""
         self.superior.search()
+        self.consensus = self.superior.code.copy()
+        self.consensus_payoff = self.reality.get_policy_payoff(policy=self.consensus)
         for team in self.teams:
-            team.confirm(policy=team.manager.policy)
             team.form_individual_majority_view()
+            team.adjust_majority_view_2_consensus(policy=self.consensus)
             team.learn()
 
     def _record_performance(self):
         performance_list = [individual.payoff for team in self.teams for individual in team.individuals]
-        mean_performance = sum(performance_list) / len(performance_list)
         mean_payoff = np.mean(performance_list)
 
-        self.performance_across_time.append(mean_performance)
+        self.performance_across_time.append(mean_payoff)
         self.variance_across_time.append(np.std(performance_list))
         self.diversity_across_time.append(self.get_diversity())
         self.consensus_performance_across_time.append(self.consensus_payoff)
-        self.superior_performance_across_time.append(
-            self.reality.get_policy_payoff(policy=self.superior.code))
-        self.hybrid_code_performance_across_time.append(self.hybrid_code_payoff)
         self.mode_across_time.append(self.last_mode)
 
         if mean_payoff == 0:
@@ -334,8 +325,6 @@ if __name__ == '__main__':
 
     x = range(search_iteration)
     plt.plot(x, hybrid.performance_across_time, "k-", label="Mean")
-    plt.plot(x, hybrid.hybrid_code_performance_across_time, "r-",
-             label="Hybrid Code")
     plt.title('Performance')
     plt.xlabel('Iteration', fontweight='bold', fontsize=10)
     plt.ylabel('Performance', fontweight='bold', fontsize=10)
