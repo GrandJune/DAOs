@@ -16,14 +16,19 @@ from Reality import Reality
 
 
 def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None,
-         search_loop=None, loop=None, beta=None, return_dict=None,
+         search_loop=None, loop=None, recentralization=None, return_dict=None,
          sema=None, alpha=3, p1=0.1, p2=0.9, token=False):
-    """Run one independent simulation repetition."""
+    """Run one independent simulation repetition.
+
+    recentralization is passed to Hybrid as beta, because the revised
+    Hybrid class defines beta as the degree of re-centralization.
+    """
     try:
         np.random.seed(None)
         reality = Reality(m=m, alpha=alpha)
         hybrid = Hybrid(m=m, n=n, reality=reality, lr=lr, alpha=alpha,
-                        group_size=group_size, beta=beta, p1=p1, p2=p2)
+                        group_size=group_size, beta=recentralization,
+                        p1=p1, p2=p2)
 
         for _ in range(search_loop):
             hybrid.search(threshold_ratio=threshold_ratio, token=token)
@@ -44,32 +49,32 @@ def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None,
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 60
-    n = 70
+    m = 90
+    n = 350
     lr = 0.3
     alpha = 3
     p1 = 0.1
     p2 = 0.9
     threshold_ratio = 0.5
-    hyper_iteration = 1
+    hyper_iteration = 5
     repetition = 100
     concurrency = 100
     search_loop = 300
     group_size = 7  # the smallest group size in Fang's model: 7
     token = False
-    beta_list = np.arange(0, 1.01, 0.1).round(1).tolist()
+    recentralization_list = np.arange(0, 1.01, 0.05).round(1).tolist()
 
-    performance_beta = []
-    diversity_beta = []
-    variance_beta = []
-    cv_beta = []
-    entropy_beta = []
-    antagonism_beta = []
-    consensus_beta = []
-    mode_beta = []
+    performance_recentralization = []
+    diversity_recentralization = []
+    variance_recentralization = []
+    cv_recentralization = []
+    entropy_recentralization = []
+    antagonism_recentralization = []
+    consensus_recentralization = []
+    mode_recentralization = []
 
-    for beta in beta_list:
-        print("Beta", beta,
+    for recentralization in recentralization_list:
+        print("Re-centralization", recentralization,
               time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time())))
 
         performance_hyper = []
@@ -92,7 +97,8 @@ if __name__ == '__main__':
                 p = mp.Process(
                     target=func,
                     args=(m, n, group_size, lr, threshold_ratio, search_loop,
-                          loop, beta, return_dict, sema, alpha, p1, p2, token)
+                          loop, recentralization, return_dict, sema,
+                          alpha, p1, p2, token)
                 )
                 jobs.append(p)
                 p.start()
@@ -119,37 +125,45 @@ if __name__ == '__main__':
             consensus_hyper += [result["consensus_performance"] for result in results]
             mode_hyper += [result["mode"] for result in results]
 
-        # Convert lists of lists to beta-level average trajectories.
-        performance_beta.append(np.mean(performance_hyper, axis=0).tolist())
-        diversity_beta.append(np.mean(diversity_hyper, axis=0).tolist())
-        variance_beta.append(np.mean(variance_hyper, axis=0).tolist())
-        cv_beta.append(np.mean(cv_hyper, axis=0).tolist())
-        entropy_beta.append(np.mean(entropy_hyper, axis=0).tolist())
-        antagonism_beta.append(np.mean(antagonism_hyper, axis=0).tolist())
-        consensus_beta.append(np.mean(consensus_hyper, axis=0).tolist())
+        # Convert lists of lists to re-centralization-level average
+        # trajectories.
+        performance_recentralization.append(
+            np.mean(performance_hyper, axis=0).tolist())
+        diversity_recentralization.append(
+            np.mean(diversity_hyper, axis=0).tolist())
+        variance_recentralization.append(
+            np.mean(variance_hyper, axis=0).tolist())
+        cv_recentralization.append(np.mean(cv_hyper, axis=0).tolist())
+        entropy_recentralization.append(
+            np.mean(entropy_hyper, axis=0).tolist())
+        antagonism_recentralization.append(
+            np.mean(antagonism_hyper, axis=0).tolist())
+        consensus_recentralization.append(
+            np.mean(consensus_hyper, axis=0).tolist())
 
         # This diagnostic is not averaged numerically. It preserves raw mode
-        # sequences across all repetitions and hyper-iterations for each beta.
-        mode_beta.append(mode_hyper)
+        # sequences across all repetitions and hyper-iterations for each
+        # re-centralization level.
+        mode_recentralization.append(mode_hyper)
 
-    with open("hybrid_beta_list", 'wb') as out_file:
-        pickle.dump(beta_list, out_file)
+    with open("hybrid_recentralization_list", 'wb') as out_file:
+        pickle.dump(recentralization_list, out_file)
     with open("hybrid_performance", 'wb') as out_file:
-        pickle.dump(performance_beta, out_file)
+        pickle.dump(performance_recentralization, out_file)
     with open("hybrid_diversity", 'wb') as out_file:
-        pickle.dump(diversity_beta, out_file)
+        pickle.dump(diversity_recentralization, out_file)
     with open("hybrid_variance", 'wb') as out_file:
-        pickle.dump(variance_beta, out_file)
+        pickle.dump(variance_recentralization, out_file)
     with open("hybrid_cv", 'wb') as out_file:
-        pickle.dump(cv_beta, out_file)
+        pickle.dump(cv_recentralization, out_file)
     with open("hybrid_entropy", 'wb') as out_file:
-        pickle.dump(entropy_beta, out_file)
+        pickle.dump(entropy_recentralization, out_file)
     with open("hybrid_antagonism", 'wb') as out_file:
-        pickle.dump(antagonism_beta, out_file)
+        pickle.dump(antagonism_recentralization, out_file)
     with open("hybrid_consensus_performance", 'wb') as out_file:
-        pickle.dump(consensus_beta, out_file)
+        pickle.dump(consensus_recentralization, out_file)
     with open("hybrid_mode", 'wb') as out_file:
-        pickle.dump(mode_beta, out_file)
+        pickle.dump(mode_recentralization, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))  # Duration

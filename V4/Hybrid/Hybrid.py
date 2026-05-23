@@ -11,9 +11,11 @@ organizational code formation:
 1. Decentralized channel: token-weighted consensus among individuals.
 2. Hierarchical channel: centralized specification through the managerial layer.
 
-The parameter beta captures the degree of decentralization. In each search
-period, organizational code is formed by decentralized consensus with
-probability beta and by hierarchical specification with probability 1 - beta.
+The parameter beta captures the degree of re-centralization. The default
+organizational form is DAO-style decentralized consensus. As beta increases,
+additional hierarchy is reintroduced: in each search period, organizational
+code is formed by hierarchical specification with probability beta and by
+decentralized consensus with probability 1 - beta.
 
 In the baseline implementation, managers do not vote in the consensus channel.
 This keeps the two mechanisms analytically separate. Managerial voting can be
@@ -41,7 +43,7 @@ class Hybrid:
         :param lr: individual learning rate
         :param alpha: aggregation degree from belief to policy
         :param group_size: number of individuals under each manager/team
-        :param beta: probability that code is formed by consensus
+        :param beta: degree of re-centralization; probability that code is formed by hierarchy
         :param p1: manager learning from organization code
         :param p2: organizational code learning from superior managers
         :param manager_num: number of managers; auto-adjusted if inconsistent
@@ -106,12 +108,14 @@ class Hybrid:
         """
         One period of hybrid search.
 
-        With probability beta, the organization uses DAO-style consensus.
-        With probability 1 - beta, it uses hierarchy-style centralized specification.
+        The baseline logic starts from a DAO-style decentralized organization.
+        With probability beta, hierarchy is reintroduced and the organization
+        uses hierarchy-style centralized specification. With probability
+        1 - beta, it remains in the DAO-style consensus channel.
 
         :param threshold_ratio: voting threshold used in the consensus channel
         :param token: whether consensus is token-weighted
-        :param beta: optional period-specific decentralization probability
+        :param beta: optional period-specific re-centralization probability
         """
         if threshold_ratio is None:
             raise ValueError("threshold_ratio must be specified.")
@@ -121,11 +125,11 @@ class Hybrid:
             raise ValueError("beta must be between 0 and 1.")
 
         if np.random.uniform(0, 1) < effective_beta:
-            self._consensus_search(threshold_ratio=threshold_ratio, token=token)
-            self.last_mode = "consensus"
-        else:
             self._hierarchy_search()
             self.last_mode = "hierarchy"
+        else:
+            self._consensus_search(threshold_ratio=threshold_ratio, token=token)
+            self.last_mode = "consensus"
 
         self._record_performance()
 
@@ -303,7 +307,7 @@ if __name__ == '__main__':
     group_size = 7
     p1 = 0.1
     p2 = 0.9
-    beta = 0.5
+    beta = 0.5  # degree of re-centralization
     search_iteration = 100
 
     reality = Reality(m=m, alpha=alpha)
