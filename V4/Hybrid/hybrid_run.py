@@ -62,7 +62,7 @@ if __name__ == '__main__':
     search_loop = 300
     group_size = 7  # the smallest group size in Fang's model: 7
     token = False
-    recentralization_list = np.arange(0, 1.01, 0.05).round(1).tolist()
+    recentralization_list = np.arange(0, 1.01, 0.05).tolist()
 
     performance_recentralization = []
     diversity_recentralization = []
