@@ -31,14 +31,14 @@ def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None,
             lr=lr,
             alpha=alpha,
             group_size=group_size,
-            delegation_rate=delegation_rate,
-            delegation_mode=delegation_mode
+            delegation_rate=delegation_rate
         )
 
         for _ in range(search_loop):
             dao.search(
                 threshold_ratio=threshold_ratio,
-                token=token
+                token=token,
+                delegation_mode=delegation_mode
             )
 
         return_dict[loop] = {
@@ -55,13 +55,13 @@ def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None,
 if __name__ == '__main__':
     t0 = time.time()
 
-    m = 60
-    n = 70
+    m = 90
+    n = 350
     lr = 0.3
     alpha = 3
     threshold_ratio = 0.5
 
-    hyper_iteration = 1
+    hyper_iteration = 5
     repetition = 100
     concurrency = 100
     search_loop = 300
@@ -72,8 +72,8 @@ if __name__ == '__main__':
     # "random" or "performance"
     delegation_mode = "random"
 
-    # focal parameter
-    delegation_rate_list = np.arange(0.0, 1.0, 0.2).tolist()
+    # focal parameter: 0.0, 0.1, ..., 0.9
+    delegation_rate_list = np.arange(0.0, 1.0, 0.1).tolist()
 
     performance_across_rate = []
     diversity_across_rate = []
