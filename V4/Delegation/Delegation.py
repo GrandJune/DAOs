@@ -24,12 +24,9 @@ separate hierarchical layer.
 Two delegate-selection modes are supported:
 
 1. random: delegators randomly select a direct voter.
-2. performance: delegators are more likely to select higher-performing direct
-   voters.
+2. performance: delegators are more likely to select higher-performing voters.
 
-Delegation is allowed across groups, because consensus formation is an
-organization-wide governance process rather than a within-team learning
-process.
+Delegation is allowed across groups.
 """
 
 import math
