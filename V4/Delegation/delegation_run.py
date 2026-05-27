@@ -167,19 +167,21 @@ if __name__ == '__main__':
             np.mean(consensus_hyper, axis=0).tolist()
         )
 
-    with open("delegation_rate_list", 'wb') as out_file:
+    output_prefix = delegation_mode + "_delegation"
+
+    with open(output_prefix + "_rate_list", 'wb') as out_file:
         pickle.dump(delegation_rate_list, out_file)
 
-    with open("delegation_performance", 'wb') as out_file:
+    with open(output_prefix + "_performance", 'wb') as out_file:
         pickle.dump(performance_across_rate, out_file)
 
-    with open("delegation_diversity", 'wb') as out_file:
+    with open(output_prefix + "_diversity", 'wb') as out_file:
         pickle.dump(diversity_across_rate, out_file)
 
-    with open("delegation_variance", 'wb') as out_file:
+    with open(output_prefix + "_variance", 'wb') as out_file:
         pickle.dump(variance_across_rate, out_file)
 
-    with open("delegation_consensus_performance", 'wb') as out_file:
+    with open(output_prefix + "_consensus_performance", 'wb') as out_file:
         pickle.dump(consensus_across_rate, out_file)
 
     t1 = time.time()
