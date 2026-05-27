@@ -70,7 +70,7 @@ if __name__ == '__main__':
     token = False
 
     # "random" or "performance"
-    delegation_mode = "random"
+    delegation_mode = "performance"
 
     # focal parameter: 0.0, 0.1, ..., 0.9
     delegation_rate_list = np.arange(0.0, 1.0, 0.1).tolist()
