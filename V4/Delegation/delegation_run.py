@@ -84,8 +84,7 @@ if __name__ == '__main__':
         print(
             "Delegation Rate:",
             delegation_rate,
-            time.strftime("%Y-%m-%d %H:%M:%S",
-                          time.gmtime(time.time()))
+            time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time()))
         )
 
         performance_hyper = []
@@ -135,37 +134,15 @@ if __name__ == '__main__':
                     .format(len(results), repetition)
                 )
 
-            performance_hyper += [
-                result["performance"] for result in results
-            ]
+            performance_hyper += [result["performance"] for result in results]
+            diversity_hyper += [result["diversity"] for result in results]
+            variance_hyper += [result["variance"] for result in results]
+            consensus_hyper += [result["consensus_performance"] for result in results]
 
-            diversity_hyper += [
-                result["diversity"] for result in results
-            ]
-
-            variance_hyper += [
-                result["variance"] for result in results
-            ]
-
-            consensus_hyper += [
-                result["consensus_performance"] for result in results
-            ]
-
-        performance_across_rate.append(
-            np.mean(performance_hyper, axis=0).tolist()
-        )
-
-        diversity_across_rate.append(
-            np.mean(diversity_hyper, axis=0).tolist()
-        )
-
-        variance_across_rate.append(
-            np.mean(variance_hyper, axis=0).tolist()
-        )
-
-        consensus_across_rate.append(
-            np.mean(consensus_hyper, axis=0).tolist()
-        )
+        performance_across_rate.append(np.mean(performance_hyper, axis=0).tolist())
+        diversity_across_rate.append(np.mean(diversity_hyper, axis=0).tolist())
+        variance_across_rate.append(np.mean(variance_hyper, axis=0).tolist())
+        consensus_across_rate.append(np.mean(consensus_hyper, axis=0).tolist())
 
     output_prefix = delegation_mode + "_delegation"
 
@@ -188,7 +165,7 @@ if __name__ == '__main__':
 
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
     print(
-        "Delegation",
-        time.strftime("%Y-%m-%d %H:%M:%S",
-                      time.gmtime(time.time()))
+        "Delegation:",
+        delegation_mode,
+        time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time()))
     )
