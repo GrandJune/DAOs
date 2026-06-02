@@ -14,7 +14,9 @@ perceived majority position, thereby strengthening coordination and reducing
 expressed disagreement.
 
 Important design note:
-- token = False means no token asymmetry. Every individual receives one token
+- The script keeps the same assign_tokens function used in the quadratic
+  voting experiment.
+- asymmetry = 0 means no token asymmetry. Every individual receives one token
   before the simulation starts.
 - strategic_rate controls the probability that an individual aligns their vote
   with the currently perceived majority position rather than voting sincerely
@@ -33,17 +35,25 @@ from DAO_strategic import DAOStrategic
 from Reality import Reality
 
 
-def assign_equal_tokens(dao=None):
+def assign_tokens(dao=None, asymmetry=None, mode=10):
     """
-    Assign equal token holdings to all individuals.
+    Assign token holdings to individuals.
 
-    This implements token=False in the experiment design: each individual has
-    one token, so the experiment isolates the behavioral effect of strategic
-    voting from token-concentration effects.
+    asymmetry = 0 gives everyone one token, corresponding to the no-asymmetry
+    baseline. asymmetry > 0 gives Pareto-distributed token holdings.
+
+    In the strategic-voting experiment below, asymmetry is configured as 0 so
+    the experiment isolates the behavioral effect of strategic voting from
+    token-concentration effects.
     """
-    for team in dao.teams:
-        for individual in team.individuals:
-            individual.token = 1
+    if asymmetry == 0:
+        for team in dao.teams:
+            for individual in team.individuals:
+                individual.token = 1
+    else:
+        for team in dao.teams:
+            for individual in team.individuals:
+                individual.token = (np.random.pareto(a=asymmetry) + 1) * mode
 
     token_list = [
         individual.token
@@ -53,9 +63,9 @@ def assign_equal_tokens(dao=None):
     return token_list
 
 
-def func(m=None, n=None, group_size=None, lr=None, strategic_rate=None,
-         search_loop=None, loop=None, return_dict=None, sema=None,
-         threshold_ratio=0.5, alpha=3):
+def func(m=None, n=None, group_size=None, lr=None, asymmetry=None,
+         strategic_rate=None, search_loop=None, loop=None, return_dict=None,
+         sema=None, threshold_ratio=0.5, alpha=3):
     """Run one independent simulation repetition."""
     try:
         np.random.seed(None)
@@ -64,7 +74,7 @@ def func(m=None, n=None, group_size=None, lr=None, strategic_rate=None,
         dao = DAOStrategic(m=m, n=n, reality=reality, lr=lr,
                            group_size=group_size, alpha=alpha)
 
-        assign_equal_tokens(dao=dao)
+        assign_tokens(dao=dao, asymmetry=asymmetry)
 
         for _ in range(search_loop):
             dao.search(threshold_ratio=threshold_ratio,
@@ -97,10 +107,14 @@ if __name__ == '__main__':
     group_size = 7  # the smallest group size in Fang's model: 7
     concurrency = 100
 
+    # Configure token holdings as the equal-token baseline.
+    # asymmetry = 0 gives every individual one token.
+    asymmetry = 0
+
     # strategic_rate = 0 is the sincere-voting baseline.
     # Larger values imply stronger strategic coordination around the perceived
     # majority position.
-    strategic_rate_list = [0, 0.1, 0.3, 0.5, 0.7, 0.9]
+    strategic_rate_list = np.arange(0, 1.01, 0.1).tolist()
 
     # After taking an average across repetitions.
     performance_across_para = []
@@ -144,8 +158,9 @@ if __name__ == '__main__':
                 sema.acquire()
                 p = mp.Process(
                     target=func,
-                    args=(m, n, group_size, lr, strategic_rate, search_loop,
-                          loop, return_dict, sema, threshold_ratio, alpha)
+                    args=(m, n, group_size, lr, asymmetry, strategic_rate,
+                          search_loop, loop, return_dict, sema,
+                          threshold_ratio, alpha)
                 )
                 jobs.append(p)
                 p.start()
@@ -205,9 +220,11 @@ if __name__ == '__main__':
         antagonism_across_para_hyper.append(antagonism_hyper)
         switch_rate_across_para_hyper.append(switch_rate_hyper)
 
-    # Parameter list.
+    # Parameter list and token configuration.
     with open("dao_strategic_rate_list", 'wb') as out_file:
         pickle.dump(strategic_rate_list, out_file)
+    with open("dao_strategic_asymmetry", 'wb') as out_file:
+        pickle.dump(asymmetry, out_file)
 
     # After taking an average across repetitions.
     with open("dao_strategic_performance", 'wb') as out_file:
