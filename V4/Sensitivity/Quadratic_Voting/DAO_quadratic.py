@@ -89,7 +89,7 @@ class DAOQuadratic:
             individual.policy = self.reality.belief_2_policy(
                 belief=individual.belief)
 
-        weights = [self._quadratic_weight(individual.token)
+        weights = [self._quadratic_weight(token)
                    for individual in individuals]
         threshold = threshold_ratio * sum(weights)
 
