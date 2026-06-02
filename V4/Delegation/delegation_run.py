@@ -72,8 +72,8 @@ if __name__ == '__main__':
     # "random" or "performance" or "similarity"
     delegation_mode = "similarity"
 
-    # focal parameter: 0.0, 0.1, ..., 0.9
-    delegation_rate_list = np.arange(0.0, 1.0, 0.1).tolist()
+    # focal parameter
+    delegation_rate_list = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
     performance_across_rate = []
     diversity_across_rate = []

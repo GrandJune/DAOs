@@ -114,7 +114,7 @@ if __name__ == '__main__':
     # strategic_rate = 0 is the sincere-voting baseline.
     # Larger values imply stronger strategic coordination around the perceived
     # majority position.
-    strategic_rate_list = np.arange(0, 1.01, 0.1).tolist()
+    strategic_rate_list = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 
     # After taking an average across repetitions.
     performance_across_para = []
