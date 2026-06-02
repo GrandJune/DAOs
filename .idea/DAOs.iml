@@ -111,6 +111,7 @@
       <sourceFolder url="file://$MODULE_DIR$/V4/Hybrid" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Quadratic_Voting" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Delegation" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/V4/Sensitivity/Strategic_Voting" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/V4/Turbulence/Turbulence_Heatmap" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Consensus" />
       <excludeFolder url="file://$MODULE_DIR$/Marlo2022" />

@@ -89,7 +89,7 @@ class DAOQuadratic:
             individual.policy = self.reality.belief_2_policy(
                 belief=individual.belief)
 
-        weights = [self._quadratic_weight(token)
+        weights = [self._quadratic_weight(individual.token)
                    for individual in individuals]
         threshold = threshold_ratio * sum(weights)
 
@@ -312,6 +312,13 @@ if __name__ == '__main__':
     group_size = 7  # the smallest group size in Fang's model: 7
     reality = Reality(m=m, version="Rushed", alpha=3)
     dao = DAOQuadratic(m=m, n=n, reality=reality, lr=lr, group_size=group_size, alpha=3)
+
+    # Assign equal token holdings for the standalone test.
+    # In the full experiment, this is usually handled by assign_tokens().
+    for team in dao.teams:
+        for individual in team.individuals:
+            individual.token = 1
+
     # dao.teams[0].individuals[0].belief = reality.real_code.copy()
     # dao.teams[0].individuals[0].payoff = reality.get_payoff(dao.teams[0].individuals[0].belief)
     # print(dao.teams[0].individuals[0].belief)

@@ -436,6 +436,10 @@ if __name__ == '__main__':
     dao = DAOStrategic(m=m, n=n, reality=reality, lr=lr,
                        group_size=group_size, alpha=3)
 
+    for team in dao.teams:
+        for individual in team.individuals:
+            individual.token = 1
+
     for period in range(search_loop):
         dao.search(threshold_ratio=0.5, strategic_rate=strategic_rate)
         print("--{0}--".format(period))
