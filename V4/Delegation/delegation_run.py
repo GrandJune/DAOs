@@ -69,8 +69,8 @@ if __name__ == '__main__':
     group_size = 7
     token = False
 
-    # "random" or "performance"
-    delegation_mode = "performance"
+    # "random" or "performance" or "similarity"
+    delegation_mode = "similarity"
 
     # focal parameter: 0.0, 0.1, ..., 0.9
     delegation_rate_list = np.arange(0.0, 1.0, 0.1).tolist()

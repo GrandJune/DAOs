@@ -21,10 +21,12 @@ vote directly; instead, their voting weight is transferred to selected direct
 voters. Delegates remain ordinary DAO members rather than managers or a
 separate hierarchical layer.
 
-Two delegate-selection modes are supported:
+Three delegate-selection modes are supported:
 
 1. random: delegators randomly select a direct voter.
 2. performance: delegators are more likely to select higher-performing voters.
+3. similarity: delegators are more likely to select direct voters
+   whose beliefs are more similar to their own.
 
 Delegation is allowed across groups.
 """
@@ -95,7 +97,7 @@ class Delegation:
         :param threshold_ratio: voting threshold used for consensus formation
         :param token: whether baseline voting weight comes from token holdings
         :param delegation_rate: optional period-specific delegation rate
-        :param delegation_mode: "random" or "performance"
+        :param delegation_mode: "random", "performance", or "similarity"
         """
         if threshold_ratio is None:
             raise ValueError("threshold_ratio must be specified.")
@@ -104,8 +106,12 @@ class Delegation:
                                      else delegation_rate)
         if not 0 <= effective_delegation_rate <= 1:
             raise ValueError("delegation_rate must be between 0 and 1.")
-        if delegation_mode not in ["random", "performance"]:
-            raise ValueError("delegation_mode must be 'random' or 'performance'.")
+        valid_modes = ["random", "performance", "similarity"]
+        if delegation_mode not in valid_modes:
+            raise ValueError(
+                "delegation_mode must be 'random', 'performance', "
+                "or 'similarity'."
+            )
 
         # Consensus Formation
         new_consensus = []
@@ -184,6 +190,7 @@ class Delegation:
         for delegator_index in delegator_indices:
             delegate_index = self._select_delegate(
                 individuals=individuals,
+                delegator_index=delegator_index,
                 candidate_indices=direct_voter_indices,
                 delegation_mode=delegation_mode)
 
@@ -192,31 +199,54 @@ class Delegation:
 
         return effective_weights
 
-    def _select_delegate(self, individuals=None, candidate_indices=None,
-                         delegation_mode="random"):
+    def _select_delegate(self, individuals=None, delegator_index=None,
+                         candidate_indices=None, delegation_mode="random"):
         """
         Select one delegate from direct voters.
         """
         if delegation_mode == "random":
             return np.random.choice(candidate_indices)
 
-        candidate_payoffs = np.array([individuals[index].payoff
-                                      for index in candidate_indices],
-                                     dtype=float)
+        if delegation_mode == "performance":
+            candidate_payoffs = np.array([individuals[index].payoff
+                                          for index in candidate_indices],
+                                         dtype=float)
 
-        # Payoffs are usually non-negative. The shift below keeps the method
-        # robust if experimentation or environmental change produces unusual
-        # values.
-        min_payoff = np.min(candidate_payoffs)
-        if min_payoff < 0:
-            candidate_payoffs = candidate_payoffs - min_payoff
+            # Payoffs are usually non-negative. The shift below keeps the
+            # method robust if experimentation or environmental change
+            # produces unusual values.
+            min_payoff = np.min(candidate_payoffs)
+            if min_payoff < 0:
+                candidate_payoffs = candidate_payoffs - min_payoff
 
-        if np.sum(candidate_payoffs) == 0:
-            probabilities = np.ones(len(candidate_indices)) / len(candidate_indices)
-        else:
-            probabilities = candidate_payoffs / np.sum(candidate_payoffs)
+            if np.sum(candidate_payoffs) == 0:
+                probabilities = np.ones(len(candidate_indices)) / len(candidate_indices)
+            else:
+                probabilities = candidate_payoffs / np.sum(candidate_payoffs)
 
-        return np.random.choice(candidate_indices, p=probabilities)
+            return np.random.choice(candidate_indices, p=probabilities)
+
+        if delegation_mode == "similarity":
+            delegator_belief = individuals[delegator_index].belief
+            candidate_similarities = np.array(
+                [self._get_belief_similarity(delegator_belief,
+                                             individuals[index].belief)
+                 for index in candidate_indices],
+                dtype=float)
+
+            if np.sum(candidate_similarities) == 0:
+                probabilities = np.ones(len(candidate_indices)) / len(candidate_indices)
+            else:
+                probabilities = candidate_similarities / np.sum(candidate_similarities)
+
+            return np.random.choice(candidate_indices, p=probabilities)
+
+    def _get_belief_similarity(self, belief_a=None, belief_b=None):
+        """
+        Return belief similarity as one minus normalized Hamming distance.
+        """
+        distance = self.get_distance(belief_a, belief_b)
+        return 1 - distance / self.m
 
     def _record_performance(self):
         performance_list = []
@@ -342,6 +372,8 @@ if __name__ == '__main__':
                           delegation_mode="random")
         # delegation.search(threshold_ratio=0.5, token=False,
         #                   delegation_mode="performance")
+        # delegation.search(threshold_ratio=0.5, token=False,
+        #                   delegation_mode="similarity")
         print("--{0}--".format(period))
 
     import matplotlib.pyplot as plt
