@@ -43,7 +43,7 @@ from Team import Team
 
 class Delegation:
     def __init__(self, m=None, n=None, reality=None, lr=None, group_size=None,
-                 alpha=3, delegation_rate=0):
+                 alpha=3, delegation_rate=0, similarity_threshold=0.5):
         """
         :param m: problem space
         :param n: number of agents
@@ -52,6 +52,8 @@ class Delegation:
         :param group_size: number of individuals in each autonomous group
         :param alpha: aggregation degree from belief to policy
         :param delegation_rate: probability that an individual delegates voting rights
+        :param similarity_threshold: minimum belief similarity required for
+            similarity-based delegation
         """
         if m is None or n is None or group_size is None:
             raise ValueError("m, n, and group_size must be specified.")
@@ -59,6 +61,8 @@ class Delegation:
             raise ValueError("m is not dividable by {0}".format(alpha))
         if not 0 <= delegation_rate <= 1:
             raise ValueError("delegation_rate must be between 0 and 1.")
+        if not 0 <= similarity_threshold <= 1:
+            raise ValueError("similarity_threshold must be between 0 and 1.")
 
         self.m = m
         self.n = n
@@ -68,6 +72,7 @@ class Delegation:
         self.alpha = alpha
         self.policy_num = self.m // self.alpha
         self.delegation_rate = delegation_rate
+        self.similarity_threshold = similarity_threshold
 
         self.consensus = [0] * self.policy_num
         self.consensus_payoff = 0
@@ -90,7 +95,7 @@ class Delegation:
         self.antagonism_across_time = []
 
     def search(self, threshold_ratio=None, token=False, delegation_rate=None,
-               delegation_mode="random"):
+               delegation_mode="random", similarity_threshold=None):
         """
         One period of delegative DAO search.
 
@@ -98,6 +103,8 @@ class Delegation:
         :param token: whether baseline voting weight comes from token holdings
         :param delegation_rate: optional period-specific delegation rate
         :param delegation_mode: "random", "performance", or "similarity"
+        :param similarity_threshold: optional period-specific minimum belief
+            similarity required for similarity-based delegation
         """
         if threshold_ratio is None:
             raise ValueError("threshold_ratio must be specified.")
@@ -106,6 +113,12 @@ class Delegation:
                                      else delegation_rate)
         if not 0 <= effective_delegation_rate <= 1:
             raise ValueError("delegation_rate must be between 0 and 1.")
+        effective_similarity_threshold = (self.similarity_threshold
+                                          if similarity_threshold is None
+                                          else similarity_threshold)
+        if not 0 <= effective_similarity_threshold <= 1:
+            raise ValueError("similarity_threshold must be between 0 and 1.")
+
         valid_modes = ["random", "performance", "similarity"]
         if delegation_mode not in valid_modes:
             raise ValueError(
@@ -127,7 +140,8 @@ class Delegation:
             individuals=individuals,
             base_weights=base_weights,
             delegation_rate=effective_delegation_rate,
-            delegation_mode=delegation_mode)
+            delegation_mode=delegation_mode,
+            similarity_threshold=effective_similarity_threshold)
 
         threshold = threshold_ratio * sum(base_weights)
 
@@ -165,13 +179,16 @@ class Delegation:
         return [1 for _ in individuals]
 
     def _get_effective_weights(self, individuals=None, base_weights=None,
-                               delegation_rate=None, delegation_mode="random"):
+                               delegation_rate=None, delegation_mode="random",
+                               similarity_threshold=0.5):
         """
         Convert baseline voting weights into effective voting weights after
         delegation.
 
         Delegators transfer their full voting weight to direct voters. Direct
         voters retain their own voting weight and may receive delegated weight.
+        Under similarity-based delegation, if no direct voter is sufficiently
+        similar, the delegator remains inactive and the weight is not cast.
         """
         effective_weights = base_weights.copy()
         n = len(individuals)
@@ -188,22 +205,34 @@ class Delegation:
             direct_voter_indices.append(retained_index)
 
         for delegator_index in delegator_indices:
+            # The delegator first becomes inactive. The vote is restored only
+            # if a valid delegate is selected. In similarity mode, no valid
+            # delegate means the voting weight is not cast in this period.
+            effective_weights[delegator_index] = 0
+
             delegate_index = self._select_delegate(
                 individuals=individuals,
                 delegator_index=delegator_index,
                 candidate_indices=direct_voter_indices,
-                delegation_mode=delegation_mode)
+                delegation_mode=delegation_mode,
+                similarity_threshold=similarity_threshold)
+
+            if delegate_index is None:
+                continue
 
             effective_weights[delegate_index] += base_weights[delegator_index]
-            effective_weights[delegator_index] = 0
 
         return effective_weights
 
     def _select_delegate(self, individuals=None, delegator_index=None,
-                         candidate_indices=None, delegation_mode="random"):
+                         candidate_indices=None, delegation_mode="random",
+                         similarity_threshold=0.5):
         """
-        Select one delegate from direct voters.
+        Select one delegate from direct voters. Return None when no valid
+        delegate is available.
         """
+        if len(candidate_indices) == 0:
+            return None
         if delegation_mode == "random":
             return np.random.choice(candidate_indices)
 
@@ -234,12 +263,22 @@ class Delegation:
                  for index in candidate_indices],
                 dtype=float)
 
-            if np.sum(candidate_similarities) == 0:
-                probabilities = np.ones(len(candidate_indices)) / len(candidate_indices)
-            else:
-                probabilities = candidate_similarities / np.sum(candidate_similarities)
+            valid_positions = np.where(
+                candidate_similarities >= similarity_threshold)[0]
+            if len(valid_positions) == 0:
+                return None
 
-            return np.random.choice(candidate_indices, p=probabilities)
+            valid_candidate_indices = [candidate_indices[position]
+                                       for position in valid_positions]
+            valid_similarities = candidate_similarities[valid_positions]
+
+            if np.sum(valid_similarities) == 0:
+                probabilities = (np.ones(len(valid_candidate_indices)) /
+                                 len(valid_candidate_indices))
+            else:
+                probabilities = valid_similarities / np.sum(valid_similarities)
+
+            return np.random.choice(valid_candidate_indices, p=probabilities)
 
     def _get_belief_similarity(self, belief_a=None, belief_b=None):
         """

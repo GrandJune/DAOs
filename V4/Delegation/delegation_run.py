@@ -16,8 +16,9 @@ from Reality import Reality
 
 
 def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None,
-         search_loop=None, loop=None, delegation_rate=None, return_dict=None,
-         sema=None, alpha=3, token=False, delegation_mode="random"):
+         search_loop=None, loop=None, delegation_rate=None,
+         similarity_threshold=None, return_dict=None, sema=None, alpha=3,
+         token=False, delegation_mode="random"):
     """Run one independent simulation repetition."""
     try:
         np.random.seed(None)
@@ -31,14 +32,16 @@ def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None,
             lr=lr,
             alpha=alpha,
             group_size=group_size,
-            delegation_rate=delegation_rate
+            delegation_rate=delegation_rate,
+            similarity_threshold=similarity_threshold
         )
 
         for _ in range(search_loop):
             dao.search(
                 threshold_ratio=threshold_ratio,
                 token=token,
-                delegation_mode=delegation_mode
+                delegation_mode=delegation_mode,
+                similarity_threshold=similarity_threshold
             )
 
         return_dict[loop] = {
@@ -71,6 +74,7 @@ if __name__ == '__main__':
 
     # "random" or "performance" or "similarity"
     delegation_mode = "similarity"
+    similarity_threshold = 0.5
 
     # focal parameter
     delegation_rate_list = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
@@ -112,6 +116,7 @@ if __name__ == '__main__':
                         search_loop,
                         loop,
                         delegation_rate,
+                        similarity_threshold,
                         return_dict,
                         sema,
                         alpha,
