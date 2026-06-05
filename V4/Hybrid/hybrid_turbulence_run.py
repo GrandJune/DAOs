@@ -15,6 +15,23 @@ from Hybrid import Hybrid
 from Reality import Reality
 
 
+def update_payoffs_after_turbulence(hybrid=None, reality=None):
+    """Refresh all payoff values after environmental turbulence.
+
+    The lower-level individuals are stored in hybrid.teams. The managers are
+    stored separately in hybrid.superior.managers, so both layers need to be
+    updated after Reality changes.
+    """
+    for team in hybrid.teams:
+        for individual in team.individuals:
+            individual.payoff = reality.get_payoff(belief=individual.belief)
+
+    for manager in hybrid.superior.managers:
+        manager.payoff = reality.get_policy_payoff(policy=manager.policy)
+
+    hybrid.consensus_payoff = reality.get_policy_payoff(policy=hybrid.consensus)
+
+
 def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None,
          turbulence_freq=None, turbulence_intensity=None, search_loop=None,
          loop=None, recentralization=None, return_dict=None, sema=None,
@@ -22,8 +39,10 @@ def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None,
     """Run one independent simulation repetition under turbulence.
 
     Turbulence follows the DAO turbulence configuration: every
-    turbulence_freq periods, Reality changes by turbulence_intensity, and
-    all individuals' payoffs are recalculated before the next search step.
+    turbulence_freq periods, Reality changes by turbulence_intensity. Because
+    Hybrid contains both lower-level individuals and a separate managerial
+    layer, payoffs for both individuals and managers are recalculated before
+    the next search step.
 
     recentralization is passed to Hybrid as beta, because the revised
     Hybrid class defines beta as the degree of re-centralization.
@@ -38,11 +57,7 @@ def func(m=None, n=None, group_size=None, lr=None, threshold_ratio=None,
         for period in range(search_loop):
             if period % turbulence_freq == 0 and period != 0:
                 reality.change(reality_change_rate=turbulence_intensity)
-                for team in hybrid.teams:
-                    for individual in team.individuals:
-                        individual.payoff = reality.get_payoff(
-                            belief=individual.belief
-                        )
+                update_payoffs_after_turbulence(hybrid=hybrid, reality=reality)
 
             hybrid.search(threshold_ratio=threshold_ratio, token=token)
 
@@ -170,7 +185,7 @@ if __name__ == '__main__':
 
     with open("hybrid_turbulence_recentralization_list", 'wb') as out_file:
         pickle.dump(recentralization_list, out_file)
-    with open("hybrid_turbulence_performance", 'wb') as out_file:
+    with open("hybrid_turbulence_performance", 'wb') as out_file:  # 1000 points
         pickle.dump(performance_recentralization, out_file)
     with open("hybrid_turbulence_diversity", 'wb') as out_file:
         pickle.dump(diversity_recentralization, out_file)
