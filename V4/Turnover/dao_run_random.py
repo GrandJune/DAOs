@@ -74,6 +74,8 @@ if __name__ == '__main__':
     # consensus_performance_across_para_time = []
     # variance_across_para_time = []
     for turnover_rate in turnover_rate_list:
+        print("Turnover Rate", turnover_rate,
+              time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time())))
         sema = Semaphore(concurrency)
         manager = mp.Manager()
         return_dict = manager.dict()
@@ -179,5 +181,7 @@ if __name__ == '__main__':
         pickle.dump(variance_across_para, out_file)
 
     t1 = time.time()
-    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
+    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))  # Duration
+    print("DAO Random",
+          time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time())))
 
