@@ -18,7 +18,7 @@ import os
 import math
 
 
-def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
+def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None, turnover_mode="random",
          search_loop=None, loop=None, return_dict=None, sema=None):
     np.random.seed(None)
     reality = Reality(m=m)
@@ -32,7 +32,20 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
         #             individual.payoff = reality.get_payoff(belief=individual.belief)
         # Turnover
         if turnover_rate != 0:
-            dao.turnover(turnover_rate=turnover_rate)
+            if turnover_mode == "random":
+                dao.turnover(turnover_rate=turnover_rate)
+            elif turnover_mode in ["low_performer", "high_performer"]:
+                individuals = []
+                for team in dao.teams:
+                    individuals += team.individuals
+                turnover_num = int(round(turnover_rate * len(individuals)))
+                if turnover_num > 0:
+                    reverse = turnover_mode == "high_performer"
+                    selected_individuals = sorted(individuals, key=lambda x: x.payoff, reverse=reverse)[:turnover_num]
+                    for individual in selected_individuals:
+                        individual.turnover(turnover_rate=1)
+            else:
+                raise ValueError("Unsupported turnover_mode: {0}".format(turnover_mode))
         dao.search(threshold_ratio=0.5)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
@@ -43,11 +56,12 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     turnover_rate_list = [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4]
+    turnover_mode = "low_performer"  # Options: "random", "low_performer", "high_performer"
     group_size = 7
     n = 350
     lr = 0.3
-    repetition = 50
-    concurrency = 50
+    repetition = 500
+    concurrency = 100
     search_loop = 300
     # DVs
     performance_across_para = []
@@ -67,7 +81,7 @@ if __name__ == '__main__':
         for loop in range(repetition):
             sema.acquire()
             p = mp.Process(target=func,
-                           args=(m, n, group_size, lr, turnover_rate, search_loop, loop, return_dict, sema))
+                           args=(m, n, group_size, lr, turnover_rate, turnover_mode, search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
@@ -152,16 +166,16 @@ if __name__ == '__main__':
     delay = np.random.uniform(10, 60)
     time.sleep(delay)
     index = 1
-    performance_file_name = "dao_performance_across_turnover_{0}".format(index)
+    performance_file_name = "dao_{0}_performance_across_turnover_{1}".format(turnover_mode, index)
     while os.path.exists(performance_file_name):
         index += 1
-        performance_file_name = "dao_performance_across_turnover_{0}".format(index)
+        performance_file_name = "dao_{0}_performance_across_turnover_{1}".format(turnover_mode, index)
 
-    with open("dao_performance_across_turnover_{0}".format(index), 'wb') as out_file:
+    with open("dao_{0}_performance_across_turnover_{1}".format(turnover_mode, index), 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("dao_diversity_across_turnover_{0}".format(index), 'wb') as out_file:
+    with open("dao_{0}_diversity_across_turnover_{1}".format(turnover_mode, index), 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("dao_variance_across_turnover_{0}".format(index), 'wb') as out_file:
+    with open("dao_{0}_variance_across_turnover_{1}".format(turnover_mode, index), 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
 
     t1 = time.time()
