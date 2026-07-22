@@ -36,7 +36,7 @@ if __name__ == '__main__':
     lr = 0.3
     repetition = 100
     # search_loop = 2000
-    threshold_ratio_list = np.arange(0.05, 0.65, 0.05)
+    threshold_ratio_list = np.arange(0.65, 1.05, 0.05)
     search_loop_list = [
         300 if t < 0.50 else 1000
         for t in threshold_ratio_list
@@ -112,23 +112,23 @@ if __name__ == '__main__':
         variance_across_para_time.append(variance_across_time)
 
     # save the without-time data (ready for figure)
-    with open("dao_performance_across_threshold", 'wb') as out_file:
+    with open("dao_performance_across_threshold_2", 'wb') as out_file:
         pickle.dump(performance_across_para, out_file)
-    with open("dao_consensus_performance_across_threshold", 'wb') as out_file:
+    with open("dao_consensus_performance_across_threshold_2", 'wb') as out_file:
         pickle.dump(consensus_performance_across_para, out_file)
-    with open("dao_diversity_across_threshold", 'wb') as out_file:
+    with open("dao_diversity_across_threshold_2", 'wb') as out_file:
         pickle.dump(diversity_across_para, out_file)
-    with open("dao_variance_across_threshold", 'wb') as out_file:
+    with open("dao_variance_across_threshold_2", 'wb') as out_file:
         pickle.dump(variance_across_para, out_file)
 
     # save the with-time data
-    with open("dao_performance_across_threshold_time", 'wb') as out_file:
+    with open("dao_performance_across_threshold_time_2", 'wb') as out_file:
         pickle.dump(performance_across_para_time, out_file)
-    with open("dao_consensus_performance_across_threshold_time", 'wb') as out_file:
+    with open("dao_consensus_performance_across_threshold_time_2", 'wb') as out_file:
         pickle.dump(consensus_performance_across_para_time, out_file)
-    with open("dao_diversity_across_threshold_time", 'wb') as out_file:
+    with open("dao_diversity_across_threshold_time_2", 'wb') as out_file:
         pickle.dump(diversity_across_para_time, out_file)
-    with open("dao_variance_across_threshold_time", 'wb') as out_file:
+    with open("dao_variance_across_threshold_time_2", 'wb') as out_file:
         pickle.dump(variance_across_para_time, out_file)
 
     t1 = time.time()
