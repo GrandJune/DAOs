@@ -6,20 +6,21 @@
 # Observing PEP 8 coding style
 import numpy as np
 from DAO import DAO
-from Hierarchy import Hierarchy
-from Autonomy import Autonomy
 from Reality import Reality
 import multiprocessing as mp
 import time
-from multiprocessing import Pool
 from multiprocessing import Semaphore
 import pickle
-import os
-import math
+
+
+TURNOVER_MODES = ("random", "low_performer", "high_performer")
 
 
 def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None, turnover_mode="random",
          search_loop=None, loop=None, return_dict=None, sema=None):
+    if turnover_mode not in TURNOVER_MODES:
+        raise ValueError("Unsupported turnover_mode: {0}".format(turnover_mode))
+
     np.random.seed(None)
     reality = Reality(m=m)
     dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
@@ -32,20 +33,19 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None, turnover_
         #             individual.payoff = reality.get_payoff(belief=individual.belief)
         # Turnover
         if turnover_rate != 0:
-            if turnover_mode == "random":
-                dao.turnover(turnover_rate=turnover_rate)
-            elif turnover_mode in ["low_performer", "high_performer"]:
-                individuals = []
-                for team in dao.teams:
-                    individuals += team.individuals
-                turnover_num = int(round(turnover_rate * len(individuals)))
-                if turnover_num > 0:
-                    reverse = turnover_mode == "high_performer"
-                    selected_individuals = sorted(individuals, key=lambda x: x.payoff, reverse=reverse)[:turnover_num]
-                    for individual in selected_individuals:
-                        individual.turnover(turnover_rate=1)
-            else:
-                raise ValueError("Unsupported turnover_mode: {0}".format(turnover_mode))
+            if (period + 1) % 100 == 0:
+                if turnover_mode == "random":
+                    dao.turnover(turnover_rate=turnover_rate)
+                elif turnover_mode in ["low_performer", "high_performer"]:
+                    individuals = []
+                    for team in dao.teams:
+                        individuals += team.individuals
+                    turnover_num = int(round(turnover_rate * len(individuals)))
+                    if turnover_num > 0:
+                        reverse = turnover_mode == "high_performer"
+                        selected_individuals = sorted(individuals, key=lambda x: x.payoff, reverse=reverse)[:turnover_num]
+                        for individual in selected_individuals:
+                            individual.turnover(turnover_rate=1)
         dao.search(threshold_ratio=0.5)
     return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
                          dao.diversity_across_time, dao.variance_across_time]
@@ -56,13 +56,13 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     turnover_rate_list = [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4]
-    turnover_mode = "high_performer"  # Options: "random", "low_performer", "high_performer"
+    turnover_mode = "high_performer"  # Select from TURNOVER_MODES.
     group_size = 7
     n = 350
     lr = 0.3
     repetition = 500
     concurrency = 100
-    search_loop = 300
+    search_loop = 500
     # DVs
     performance_across_para = []
     consensus_performance_across_para = []
@@ -133,55 +133,17 @@ if __name__ == '__main__':
         # diversity_across_para_time.append(diversity_across_time)
         # variance_across_para_time.append(variance_across_time)
 
-    # small tasks
-    # =============================
-    # delay = np.random.uniform(1, 6)
-    # time.sleep(delay)
-    # performance_file_name = "dao_performance_across_turnover_1"
-    #
-    # if os.path.exists(performance_file_name):
-    #     with open("dao_performance_across_turnover_1", 'rb') as infile:
-    #         prior_performance = pickle.load(infile)
-    #     with open("dao_diversity_across_turnover_1", 'rb') as infile:
-    #         prior_diversity = pickle.load(infile)
-    #     with open("dao_variance_across_turnover_1", 'rb') as infile:
-    #         prior_variance = pickle.load(infile)
-    #     performance_final = [(each_1 + each_2) / 2 for each_1, each_2 in
-    #                          zip(prior_performance, performance_across_para)]
-    #     diversity_final = [(each_1 + each_2) / 2 for each_1, each_2 in zip(prior_diversity, diversity_across_para)]
-    #     variance_final = [(each_1 + each_2) / 2 for each_1, each_2 in zip(prior_variance, variance_across_para)]
-    #     with open("dao_performance_across_turnover_1", 'wb') as out_file:
-    #         pickle.dump(performance_final, out_file)
-    #     with open("dao_diversity_across_turnover_1", 'wb') as out_file:
-    #         pickle.dump(diversity_final, out_file)
-    #     with open("dao_variance_across_turnover_1", 'wb') as out_file:
-    #         pickle.dump(variance_final, out_file)
-    #
-    # else:
-    #     with open("dao_performance_across_turnover_1", 'wb') as out_file:
-    #         pickle.dump(performance_across_para, out_file)
-    #     with open("dao_diversity_across_turnover_1", 'wb') as out_file:
-    #         pickle.dump(diversity_across_para, out_file)
-    #     with open("dao_variance_across_turnover_1", 'wb') as out_file:
-    #         pickle.dump(variance_across_para, out_file)
-    # ==============================
-    delay = np.random.uniform(10, 60)
-    time.sleep(delay)
-    index = 1
-    performance_file_name = "dao_{0}_performance_across_turnover_{1}".format(turnover_mode, index)
-    while os.path.exists(performance_file_name):
-        index += 1
-        performance_file_name = "dao_{0}_performance_across_turnover_{1}".format(turnover_mode, index)
-
-    with open("dao_{0}_performance_across_turnover_{1}".format(turnover_mode, index), 'wb') as out_file:
-        pickle.dump(performance_across_para, out_file)
-    with open("dao_{0}_diversity_across_turnover_{1}".format(turnover_mode, index), 'wb') as out_file:
-        pickle.dump(diversity_across_para, out_file)
-    with open("dao_{0}_variance_across_turnover_{1}".format(turnover_mode, index), 'wb') as out_file:
-        pickle.dump(variance_across_para, out_file)
+    results_to_save = {
+        "performance": performance_across_para,
+        "diversity": diversity_across_para,
+        "variance": variance_across_para,
+    }
+    for metric, values in results_to_save.items():
+        file_name = "dao_{0}_{1}_across_turnover".format(turnover_mode, metric)
+        with open(file_name, "wb") as out_file:
+            pickle.dump(values, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))  # Duration
-    print("DAO High Performer",
+    print("DAO {0}".format(turnover_mode.replace("_", " ").title()),
           time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time())))
-

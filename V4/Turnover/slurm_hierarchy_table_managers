@@ -8,4 +8,4 @@
 #SBATCH --cpus-per-task=50
 #SBATCH --nodes=1
 #SBATCH --exclude=xcne[0-7]
-srun python hierarchy_keep_managers_run.py
+srun python hierarchy_stable_managers_run.py
