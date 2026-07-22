@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-# @Time     : 10/9/2022 22:52
+# @Time     : 10/13/2022 15:20
 # @Author   : Junyi
-# @FileName: dao_run.py
+# @FileName: hierarchy_run.py
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import numpy as np
-from DAO import DAO
+from Hierarchy import Hierarchy
 from Reality import Reality
 import multiprocessing as mp
 import time
@@ -23,32 +23,50 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None, turnover_
 
     np.random.seed(None)
     reality = Reality(m=m)
-    dao = DAO(m=m, n=n, reality=reality, lr=lr, group_size=group_size)
+    hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size, p1=0.1, p2=0.9)
     for period in range(search_loop):
         # Turbulence
         # if (period + 1) % 100 == 0:
         #     reality.change(reality_change_rate=0.1)
-        #     for team in dao.teams:
+        #     # update the individual payoff
+        #     for team in hierarchy.teams:
         #         for individual in team.individuals:
         #             individual.payoff = reality.get_payoff(belief=individual.belief)
+        #     # update the manager payoff
+        #     for manager in hierarchy.superior.managers:
+        #         manager.payoff = reality.get_policy_payoff(policy=manager.policy)
+        #     # update the code payoff
+        #     hierarchy.superior.code_payoff = reality.get_policy_payoff(policy=hierarchy.superior.code)
         # Turnover
         if turnover_rate != 0:
             if (period + 1) % 100 == 0:
                 if turnover_mode == "random":
-                    dao.turnover(turnover_rate=turnover_rate)
+                    hierarchy.turnover(turnover_rate=turnover_rate)
                 elif turnover_mode in ["low_performer", "high_performer"]:
                     individuals = []
-                    for team in dao.teams:
+                    for team in hierarchy.teams:
                         individuals += team.individuals
-                    turnover_num = int(round(turnover_rate * len(individuals)))
-                    if turnover_num > 0:
-                        reverse = turnover_mode == "high_performer"
-                        selected_individuals = sorted(individuals, key=lambda x: x.payoff, reverse=reverse)[:turnover_num]
+                    managers = hierarchy.superior.managers
+                    reverse = turnover_mode == "high_performer"
+
+                    individual_turnover_num = int(round(turnover_rate * len(individuals)))
+                    if individual_turnover_num > 0:
+                        selected_individuals = sorted(
+                            individuals, key=lambda x: x.payoff, reverse=reverse
+                        )[:individual_turnover_num]
                         for individual in selected_individuals:
                             individual.turnover(turnover_rate=1)
-        dao.search(threshold_ratio=0.5)
-    return_dict[loop] = [dao.performance_across_time, dao.consensus_performance_across_time,
-                         dao.diversity_across_time, dao.variance_across_time]
+
+                    manager_turnover_num = int(round(turnover_rate * len(managers)))
+                    if manager_turnover_num > 0:
+                        selected_managers = sorted(
+                            managers, key=lambda x: x.payoff, reverse=reverse
+                        )[:manager_turnover_num]
+                        for manager in selected_managers:
+                            manager.turnover(turnover_rate=1)
+        hierarchy.search()
+    return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
+                         hierarchy.diversity_across_time, hierarchy.variance_across_time]
     sema.release()
 
 
@@ -56,7 +74,7 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     turnover_rate_list = [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4]
-    turnover_mode = "low_performer"  # Select from TURNOVER_MODES.
+    turnover_mode = "high_performer"  # Select from TURNOVER_MODES.
     # TURNOVER_MODES = ("random", "low_performer", "high_performer")
     group_size = 7
     n = 350
@@ -66,13 +84,13 @@ if __name__ == '__main__':
     search_loop = 500
     # DVs
     performance_across_para = []
-    consensus_performance_across_para = []
+    superior_performance_across_para = []
     diversity_across_para = []
     variance_across_para = []
 
     # performance_across_para_time = []
+    # superior_performance_across_para_time = []
     # diversity_across_para_time = []
-    # consensus_performance_across_para_time = []
     # variance_across_para_time = []
     for turnover_rate in turnover_rate_list:
         print("Turnover Rate", turnover_rate,
@@ -84,7 +102,8 @@ if __name__ == '__main__':
         for loop in range(repetition):
             sema.acquire()
             p = mp.Process(target=func,
-                           args=(m, n, group_size, lr, turnover_rate, turnover_mode, search_loop, loop, return_dict, sema))
+                           args=(m, n, group_size, lr, turnover_rate, turnover_mode,
+                                 search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
@@ -93,34 +112,35 @@ if __name__ == '__main__':
 
         # remove the time dimension, only keep the last value
         performance_across_repeat = [result[0][-1] for result in results]
-        consensus_performance_across_repeat = [result[1][-1] for result in results]
+        superior_performance_across_repeat = [result[1][-1] for result in results]
         diversity_across_repeat = [result[2][-1] for result in results]
         variance_across_repeat = [result[3][-1] for result in results]
 
         # take an average across repetition, only one value for one parameter
         performance_across_para.append(sum(performance_across_repeat) / len(performance_across_repeat))
-        consensus_performance_across_para.append(
-            sum(consensus_performance_across_repeat) / len(consensus_performance_across_repeat))
+        superior_performance_across_para.append(
+            sum(superior_performance_across_repeat) / len(superior_performance_across_repeat))
         diversity_across_para.append(sum(diversity_across_repeat) / len(diversity_across_repeat))
         variance_across_para.append(sum(variance_across_repeat) / len(variance_across_repeat))
 
         # keep the time dimension
         # performance_across_repeat_time = [result[0] for result in results]
-        # consensus_performance_across_repeat_time = [result[1] for result in results]
+        # superior_performance_across_repeat_time = [result[1] for result in results]
         # diversity_across_repeat_time = [result[2] for result in results]
         # variance_across_repeat_time = [result[3] for result in results]
 
         # take an average across repetition, for each time iteration, integrate into 600 values for one parameter
         # performance_across_time = []  # under the same parameter
-        # consensus_performance_across_time = []
+        # superior_performance_across_time = []
         # diversity_across_time = []
         # variance_across_time = []
         # for period in range(search_loop):
         #     temp_performance = [performance_list[period] for performance_list in performance_across_repeat_time]
         #     performance_across_time.append(sum(temp_performance) / len(temp_performance))
-        #     temp_consensus_performance = [performance_list[period] for performance_list in
-        #                                   consensus_performance_across_repeat_time]
-        #     consensus_performance_across_time.append(sum(temp_consensus_performance) / len(temp_consensus_performance))
+        #
+        #     temp_superior_performance = [performance_list[period] for performance_list in
+        #                                  superior_performance_across_repeat_time]
+        #     superior_performance_across_time.append(sum(temp_superior_performance) / len(temp_superior_performance))
         #
         #     temp_diversity = [diversity_list[period] for diversity_list in diversity_across_repeat_time]
         #     diversity_across_time.append(sum(temp_diversity) / len(temp_diversity))
@@ -130,21 +150,20 @@ if __name__ == '__main__':
 
         # retain the time dimension
         # performance_across_para_time.append(performance_across_time)
-        # consensus_performance_across_para_time.append(consensus_performance_across_time)
+        # superior_performance_across_para_time.append(superior_performance_across_time)
         # diversity_across_para_time.append(diversity_across_time)
         # variance_across_para_time.append(variance_across_time)
-
     results_to_save = {
         "performance": performance_across_para,
         "diversity": diversity_across_para,
         "variance": variance_across_para,
     }
     for metric, values in results_to_save.items():
-        file_name = "dao_{0}_{1}_across_turnover".format(turnover_mode, metric)
+        file_name = "hierarchy_{0}_{1}_across_turnover".format(turnover_mode, metric)
         with open(file_name, "wb") as out_file:
             pickle.dump(values, out_file)
 
     t1 = time.time()
     print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))  # Duration
-    print("DAO {0}".format(turnover_mode.replace("_", " ").title()),
+    print("Hierarchy {0}".format(turnover_mode.replace("_", " ").title()),
           time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time())))

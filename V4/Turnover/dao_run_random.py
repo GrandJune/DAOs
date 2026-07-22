@@ -57,6 +57,7 @@ if __name__ == '__main__':
     m = 90
     turnover_rate_list = [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4]
     turnover_mode = "random"  # Select from TURNOVER_MODES.
+    # TURNOVER_MODES = ("random", "low_performer", "high_performer")
     group_size = 7
     n = 350
     lr = 0.3

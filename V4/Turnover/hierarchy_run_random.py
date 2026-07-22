@@ -5,21 +5,22 @@
 # @Software  : PyCharm
 # Observing PEP 8 coding style
 import numpy as np
-from DAO import DAO
 from Hierarchy import Hierarchy
-from Autonomy import Autonomy
 from Reality import Reality
 import multiprocessing as mp
 import time
-from multiprocessing import Pool
 from multiprocessing import Semaphore
 import pickle
-import os
-import math
 
 
-def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
+TURNOVER_MODES = ("random", "low_performer", "high_performer")
+
+
+def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None, turnover_mode="random",
          search_loop=None, loop=None, return_dict=None, sema=None):
+    if turnover_mode not in TURNOVER_MODES:
+        raise ValueError("Unsupported turnover_mode: {0}".format(turnover_mode))
+
     np.random.seed(None)
     reality = Reality(m=m)
     hierarchy = Hierarchy(m=m, n=n, reality=reality, lr=lr, group_size=group_size, p1=0.1, p2=0.9)
@@ -38,7 +39,31 @@ def func(m=None, n=None, group_size=None, lr=None, turnover_rate=None,
         #     hierarchy.superior.code_payoff = reality.get_policy_payoff(policy=hierarchy.superior.code)
         # Turnover
         if turnover_rate != 0:
-            hierarchy.turnover(turnover_rate=turnover_rate)
+            if (period + 1) % 100 == 0:
+                if turnover_mode == "random":
+                    hierarchy.turnover(turnover_rate=turnover_rate)
+                elif turnover_mode in ["low_performer", "high_performer"]:
+                    individuals = []
+                    for team in hierarchy.teams:
+                        individuals += team.individuals
+                    managers = hierarchy.superior.managers
+                    reverse = turnover_mode == "high_performer"
+
+                    individual_turnover_num = int(round(turnover_rate * len(individuals)))
+                    if individual_turnover_num > 0:
+                        selected_individuals = sorted(
+                            individuals, key=lambda x: x.payoff, reverse=reverse
+                        )[:individual_turnover_num]
+                        for individual in selected_individuals:
+                            individual.turnover(turnover_rate=1)
+
+                    manager_turnover_num = int(round(turnover_rate * len(managers)))
+                    if manager_turnover_num > 0:
+                        selected_managers = sorted(
+                            managers, key=lambda x: x.payoff, reverse=reverse
+                        )[:manager_turnover_num]
+                        for manager in selected_managers:
+                            manager.turnover(turnover_rate=1)
         hierarchy.search()
     return_dict[loop] = [hierarchy.performance_across_time, hierarchy.superior.performance_average_across_time,
                          hierarchy.diversity_across_time, hierarchy.variance_across_time]
@@ -49,12 +74,14 @@ if __name__ == '__main__':
     t0 = time.time()
     m = 90
     turnover_rate_list = [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4]
+    turnover_mode = "random"  # Select from TURNOVER_MODES.
+    # TURNOVER_MODES = ("random", "low_performer", "high_performer")
     group_size = 7
     n = 350
     lr = 0.3
-    repetition = 50
-    concurrency = 50
-    search_loop = 300
+    repetition = 500
+    concurrency = 100
+    search_loop = 500
     # DVs
     performance_across_para = []
     superior_performance_across_para = []
@@ -66,6 +93,8 @@ if __name__ == '__main__':
     # diversity_across_para_time = []
     # variance_across_para_time = []
     for turnover_rate in turnover_rate_list:
+        print("Turnover Rate", turnover_rate,
+              time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time())))
         sema = Semaphore(concurrency)
         manager = mp.Manager()
         return_dict = manager.dict()
@@ -73,7 +102,8 @@ if __name__ == '__main__':
         for loop in range(repetition):
             sema.acquire()
             p = mp.Process(target=func,
-                           args=(m, n, group_size, lr, turnover_rate, search_loop, loop, return_dict, sema))
+                           args=(m, n, group_size, lr, turnover_rate, turnover_mode,
+                                 search_loop, loop, return_dict, sema))
             jobs.append(p)
             p.start()
         for proc in jobs:
@@ -123,52 +153,17 @@ if __name__ == '__main__':
         # superior_performance_across_para_time.append(superior_performance_across_time)
         # diversity_across_para_time.append(diversity_across_time)
         # variance_across_para_time.append(variance_across_time)
-    # small tasks
-    # ================================
-    # delay = np.random.uniform(1, 6)
-    # time.sleep(delay)
-    # performance_file_name = "hierarchy_performance_across_turnover_1"
-    #
-    # if os.path.exists(performance_file_name):
-    #     with open("hierarchy_performance_across_turnover_1", 'rb') as infile:
-    #         prior_performance = pickle.load(infile)
-    #     with open("hierarchy_diversity_across_turnover_1", 'rb') as infile:
-    #         prior_diversity = pickle.load(infile)
-    #     with open("hierarchy_variance_across_turnover_1", 'rb') as infile:
-    #         prior_variance = pickle.load(infile)
-    #     performance_final = [(each_1 + each_2) / 2 for each_1, each_2 in
-    #                          zip(prior_performance, performance_across_para)]
-    #     diversity_final = [(each_1 + each_2) / 2 for each_1, each_2 in zip(prior_diversity, diversity_across_para)]
-    #     variance_final = [(each_1 + each_2) / 2 for each_1, each_2 in zip(prior_variance, variance_across_para)]
-    #     with open("hierarchy_performance_across_turnover_1", 'wb') as out_file:
-    #         pickle.dump(performance_final, out_file)
-    #     with open("hierarchy_diversity_across_turnover_1", 'wb') as out_file:
-    #         pickle.dump(diversity_final, out_file)
-    #     with open("hierarchy_variance_across_turnover_1", 'wb') as out_file:
-    #         pickle.dump(variance_final, out_file)
-    #
-    # else:
-    #     with open("hierarchy_performance_across_turnover_1", 'wb') as out_file:
-    #         pickle.dump(performance_across_para, out_file)
-    #     with open("hierarchy_diversity_across_turnover_1", 'wb') as out_file:
-    #         pickle.dump(diversity_across_para, out_file)
-    #     with open("hierarchy_variance_across_turnover_1", 'wb') as out_file:
-    #         pickle.dump(variance_across_para, out_file)
-    # ================================
-    delay = np.random.uniform(10, 60)
-    time.sleep(delay)
-    index = 1
-    performance_file_name = "hierarchy_performance_across_turnover_{0}".format(index)
-    while os.path.exists(performance_file_name):
-        index += 1
-        performance_file_name = "hierarchy_performance_across_turnover_{0}".format(index)
-
-    with open("hierarchy_performance_across_turnover_{0}".format(index), 'wb') as out_file:
-        pickle.dump(performance_across_para, out_file)
-    with open("hierarchy_diversity_across_turnover_{0}".format(index), 'wb') as out_file:
-        pickle.dump(diversity_across_para, out_file)
-    with open("hierarchy_variance_across_turnover_{0}".format(index), 'wb') as out_file:
-        pickle.dump(variance_across_para, out_file)
+    results_to_save = {
+        "performance": performance_across_para,
+        "diversity": diversity_across_para,
+        "variance": variance_across_para,
+    }
+    for metric, values in results_to_save.items():
+        file_name = "hierarchy_{0}_{1}_across_turnover".format(turnover_mode, metric)
+        with open(file_name, "wb") as out_file:
+            pickle.dump(values, out_file)
 
     t1 = time.time()
-    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))
+    print(time.strftime("%H:%M:%S", time.gmtime(t1 - t0)))  # Duration
+    print("Hierarchy {0}".format(turnover_mode.replace("_", " ").title()),
+          time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time())))
